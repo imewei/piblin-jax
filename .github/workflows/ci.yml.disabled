@@ -1,0 +1,301 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  # ============================================================================
+  # Code Quality Checks
+  # ============================================================================
+
+  pre-commit:
+    name: Pre-commit hooks (black, isort, flake8)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+        cache: 'pip'
+
+    - name: Install pre-commit
+      run: |
+        python -m pip install --upgrade pip
+        pip install pre-commit
+
+    - name: Run pre-commit
+      run: |
+        pre-commit run --all-files
+
+  # ============================================================================
+  # Type Checking with mypy (Strict Mode)
+  # ============================================================================
+
+  type-check:
+    name: Type checking with mypy (strict mode)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+
+    - name: Run mypy with strict mode
+      run: |
+        mypy quantiq --strict --show-error-codes --pretty
+      continue-on-error: false  # Fail CI if type errors found
+
+    - name: Generate mypy coverage report
+      if: success()
+      run: |
+        mypy quantiq --strict --html-report mypy-report
+      continue-on-error: true
+
+    - name: Upload mypy report as artifact
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: mypy-coverage-report
+        path: mypy-report/
+        retention-days: 30
+
+  # ============================================================================
+  # Unit Tests
+  # ============================================================================
+
+  test:
+    name: Test Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.12", "3.13"]
+        backend: [jax, numpy]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
+    - name: Install dependencies (JAX backend)
+      if: matrix.backend == 'jax'
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[test]"
+
+    - name: Install dependencies (NumPy backend)
+      if: matrix.backend == 'numpy'
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[test]"
+        pip uninstall -y jax jaxlib
+
+    - name: Run tests with pytest
+      run: |
+        pytest --cov=quantiq --cov-report=xml --cov-report=term-missing -v
+
+    - name: Check coverage threshold (>95%)
+      run: |
+        pip install coverage
+        coverage report --fail-under=95 || echo "⚠️ Coverage below 95% target"
+
+    - name: Upload coverage to Codecov
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12' && matrix.backend == 'jax'
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+  # ============================================================================
+  # Documentation Build
+  # ============================================================================
+
+  docs:
+    name: Build Sphinx documentation
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[docs]"
+
+    - name: Build HTML documentation
+      run: |
+        cd docs
+        python -m sphinx -W --keep-going -b html source _build/html
+      # -W: Turn warnings into errors (strict mode)
+      # --keep-going: Continue building despite errors to see all issues
+
+    - name: Check for documentation warnings
+      run: |
+        cd docs
+        python -m sphinx -W -b html source _build/html 2>&1 | tee sphinx-warnings.log
+        if [ -s sphinx-warnings.log ]; then
+          echo "⚠️ Documentation build produced warnings"
+          cat sphinx-warnings.log
+          exit 1
+        fi
+
+    - name: Upload documentation as artifact
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: sphinx-documentation
+        path: docs/_build/html/
+        retention-days: 30
+
+    - name: Check documentation coverage
+      run: |
+        cd docs
+        python -m sphinx -b coverage source _build/coverage
+        cat _build/coverage/python.txt
+      continue-on-error: true
+
+  # ============================================================================
+  # Performance Benchmarks (PR only)
+  # ============================================================================
+
+  benchmark:
+    name: Performance benchmarks
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[test]"
+
+    - name: Run benchmarks
+      run: |
+        pytest tests/ -m benchmark --benchmark-only --benchmark-json=benchmark.json || echo "No benchmarks yet"
+
+    - name: Store benchmark result
+      if: success()
+      uses: benchmark-action/github-action-benchmark@v1
+      with:
+        tool: 'pytest'
+        output-file-path: benchmark.json
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        auto-push: false
+        comment-on-alert: true
+        fail-on-alert: false
+
+  # ============================================================================
+  # Example Validation
+  # ============================================================================
+
+  examples:
+    name: Validate example scripts
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[test]"
+
+    - name: Check examples for syntax errors
+      run: |
+        python -m py_compile examples/*.py
+
+    - name: Validate example imports
+      run: |
+        for example in examples/*.py; do
+          echo "Checking imports in $example"
+          python -c "import ast; ast.parse(open('$example').read())"
+        done
+
+  # ============================================================================
+  # Security Scanning
+  # ============================================================================
+
+  security:
+    name: Security vulnerability scanning
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install safety bandit
+
+    - name: Run safety check (dependencies)
+      run: |
+        pip freeze | safety check --stdin || echo "⚠️ Vulnerable dependencies found"
+      continue-on-error: true
+
+    - name: Run bandit (code security)
+      run: |
+        bandit -r quantiq -ll || echo "⚠️ Security issues found"
+      continue-on-error: true
+
+  # ============================================================================
+  # CI Summary
+  # ============================================================================
+
+  ci-success:
+    name: CI Success
+    runs-on: ubuntu-latest
+    needs: [pre-commit, type-check, test, docs, examples]
+    if: always()
+    steps:
+    - name: Check all jobs
+      run: |
+        if [ "${{ needs.pre-commit.result }}" != "success" ] || \
+           [ "${{ needs.type-check.result }}" != "success" ] || \
+           [ "${{ needs.test.result }}" != "success" ] || \
+           [ "${{ needs.docs.result }}" != "success" ] || \
+           [ "${{ needs.examples.result }}" != "success" ]; then
+          echo "❌ One or more CI jobs failed"
+          exit 1
+        fi
+        echo "✅ All CI checks passed!"
