@@ -63,6 +63,7 @@ coverage.xml
 .pytest_cache/
 cover/
 .benchmarks/
+.nlsq_cache/
 
 # ----------------------------------------------------------------------------
 # Virtual Environments

@@ -340,6 +340,7 @@ clean:
 	rm -rf htmlcov/
 	rm -rf coverage.xml
 	rm -rf .hypothesis
+	rm -rf .nlsq_cache/
 	@echo "$(BOLD)$(BLUE)Removing __pycache__ directories and .pyc files...$(RESET)"
 	find . -type d -name __pycache__ \
 		-not -path "./venv/*" \
@@ -367,6 +368,7 @@ clean-all: clean
 	rm -rf .pytest_cache/ 2>/dev/null || true
 	rm -rf node_modules/ 2>/dev/null || true
 	rm -rf .benchmarks/ 2>/dev/null || true
+	rm -rf .nlsq_cache/ 2>/dev/null || true
 	find . -type d -name "*.egg-info" \
 		-not -path "./venv/*" \
 		-not -path "./.claude/*" \
