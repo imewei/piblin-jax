@@ -31,7 +31,7 @@ def fit_curve(
     Parameters
     ----------
     func : Callable
-        Model function to fit. Should have signature func(x, \*params).
+        Model function to fit. Should have signature func(x, \\*params).
     x : np.ndarray
         Independent variable data.
     y : np.ndarray
@@ -54,7 +54,7 @@ def fit_curve(
         - 'covariance': Parameter covariance matrix
         - 'method': Method used ('nlsq' or 'scipy')
         - 'success': Whether fit converged
-        - 'residuals': Residuals (y - func(x, \*params))
+        - 'residuals': Residuals (y - func(x, \\*params))
 
     Examples
     --------

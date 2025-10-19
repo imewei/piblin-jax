@@ -88,7 +88,7 @@ class BayesianModel(ABC):
     Notes
     -----
     This class cannot be instantiated directly. Subclasses must implement:
-    - model(x, y=None, \*\*kwargs): Define the NumPyro probabilistic model
+    - model(x, y=None, \\*\\*kwargs): Define the NumPyro probabilistic model
     - predict(x, credible_interval=0.95): Generate predictions with uncertainty
 
     The MCMC sampler uses the No-U-Turn Sampler (NUTS) algorithm, which is
