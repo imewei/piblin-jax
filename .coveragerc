@@ -1,0 +1,28 @@
+[run]
+source = quantiq
+omit =
+    */tests/*
+    */__init__.py
+    */setup.py
+    */conftest.py
+
+[report]
+precision = 2
+show_missing = True
+skip_covered = False
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    if TYPE_CHECKING:
+    @abstractmethod
+    @abc.abstractmethod
+    class .*\bProtocol\):
+
+[html]
+directory = htmlcov
+
+[xml]
+output = coverage.xml

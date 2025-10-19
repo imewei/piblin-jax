@@ -1,0 +1,212 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quantiq"
+version = "0.1.0"
+description = "Modern JAX-Powered Framework for Measurement Data Science"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "quantiq developers"}
+]
+requires-python = ">=3.12"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+keywords = [
+    "scientific-computing",
+    "data-analysis",
+    "rheology",
+    "jax",
+    "bayesian-inference",
+    "uncertainty-quantification",
+]
+
+dependencies = [
+    "jax>=0.4.0",
+    "jaxlib>=0.4.0",
+    "numpyro>=0.13.0",
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "matplotlib>=3.7",
+    "pandas>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "pytest-mpl>=0.16",
+    "pytest-benchmark>=4.0",
+    "hypothesis>=6.80",
+    "mypy>=1.5",
+    "black>=23.0",
+    "isort>=5.12",
+    "flake8>=6.0",
+    "pre-commit>=3.3",
+    "build>=0.10",
+]
+
+test = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "pytest-mpl>=0.16",
+    "pytest-benchmark>=4.0",
+    "hypothesis>=6.80",
+]
+
+docs = [
+    "sphinx>=6.0",
+    "sphinx-rtd-theme>=1.0",
+    "numpydoc>=1.5",
+]
+
+gpu-cuda = [
+    "jax[cuda12]>=0.4.0",
+]
+
+gpu-metal = [
+    "jax[metal]>=0.4.0",
+]
+
+gpu-rocm = [
+    "jax[rocm]>=0.4.0",
+]
+
+all = [
+    "quantiq[dev,test,docs]",
+]
+
+[project.urls]
+Homepage = "https://github.com/quantiq/quantiq"
+Documentation = "https://quantiq.readthedocs.io"
+Repository = "https://github.com/quantiq/quantiq"
+"Bug Tracker" = "https://github.com/quantiq/quantiq/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["quantiq*"]
+exclude = ["tests*", "docs*"]
+
+[tool.black]
+line-length = 100
+target-version = ["py312", "py313"]
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+src_paths = ["quantiq", "tests"]
+known_first_party = ["quantiq"]
+skip_gitignore = true
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_any_unimported = false
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+check_untyped_defs = true
+strict_equality = true
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = [
+    "jax.*",
+    "jaxlib.*",
+    "numpyro.*",
+    "matplotlib.*",
+    "pandas.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "7.4"
+addopts = [
+    "-ra",
+    "-q",
+    "--strict-markers",
+    "--cov=quantiq",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+    "--cov-fail-under=95",
+]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "gpu: marks tests requiring GPU (deselect with '-m \"not gpu\"')",
+    "benchmark: marks performance benchmarks",
+    "visual: marks visual regression tests",
+]
+
+[tool.coverage.run]
+source = ["quantiq"]
+omit = [
+    "*/tests/*",
+    "*/__init__.py",
+    "*/setup.py",
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "@abstractmethod",
+    "@abc.abstractmethod",
+]
+
+[tool.flake8]
+max-line-length = 100
+extend-ignore = ["E203", "E501", "W503"]
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    ".eggs",
+    "*.egg",
+    ".venv",
+    "venv",
+]
+per-file-ignores = [
+    "__init__.py:F401",
+]
