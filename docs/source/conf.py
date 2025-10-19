@@ -58,7 +58,17 @@ numpydoc_use_plots = True
 autosummary_generate = True
 autosummary_imported_members = False
 
-# Suppress warnings
+# Strict mode: Fail on warnings during build
+# Set to True for CI/CD to catch documentation issues early
+nitpicky = True  # Warn about all missing references
+nitpick_ignore = [
+    # Ignore external type references that may not resolve
+    ('py:class', 'jax.Array'),
+    ('py:class', 'numpy.ndarray'),
+    ('py:class', 'ArrayLike'),
+]
+
+# Suppress warnings (for development builds)
 suppress_warnings = [
     "autosummary",  # Suppress autosummary stub file warnings
     "ref.citation",  # Suppress unreferenced citation warnings (low priority)

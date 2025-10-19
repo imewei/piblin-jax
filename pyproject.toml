@@ -126,17 +126,30 @@ skip_gitignore = true
 
 [tool.mypy]
 python_version = "3.12"
+
+# Strict mode: Enable all optional checks
+strict = true
+
+# Individual strict checks (for clarity)
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
-disallow_any_unimported = false
+disallow_any_unimported = false  # Allow external untyped libraries
 no_implicit_optional = true
 warn_redundant_casts = true
 warn_unused_ignores = true
 warn_no_return = true
 check_untyped_defs = true
 strict_equality = true
-ignore_missing_imports = true
+disallow_any_generics = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+
+# Pragmatic settings
+ignore_missing_imports = true  # External libraries may not have types
+show_error_codes = true        # Show error codes for easier suppression
 
 [[tool.mypy.overrides]]
 module = [
