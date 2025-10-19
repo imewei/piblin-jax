@@ -45,7 +45,8 @@
 | transform/base.py | 74% | 20 | 90% | +0.8% | LOW |
 | transform/pipeline.py | 79% | 19 | 90% | +0.7% | LOW |
 
-**Total Potential Improvement:** +9.4 percentage points (81% → 90.4%)
+**Total Planned Improvement:** +11.0 percentage points (81% → 92%)
+*Note: High-impact modules alone provide +9.4%, full phased approach achieves +11%*
 
 ## Incremental Improvement Strategy
 
@@ -226,10 +227,11 @@ def test_full_data_processing_pipeline():
 ## Appendix: Module Coverage Details
 
 ### Fully Covered Modules (100%)
-- quantiq/data/datasets/two_dimensional.py
+- 13 modules have complete (100%) coverage
+- Examples: quantiq/data/datasets/two_dimensional.py
 - quantiq/transform/measurement/select.py
 - quantiq/data/collections/consistent_measurement_set.py
-- (12 more modules with 100% coverage)
+- (10 additional modules with 100% coverage)
 
 ### Needs Immediate Attention (<50%)
 - quantiq/transform/region.py (0% - tracking bug)
