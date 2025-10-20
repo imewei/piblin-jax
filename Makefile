@@ -58,9 +58,9 @@ help:
 	@echo "  $(CYAN)install-gpu-rocm$(RESET)  Install with ROCm GPU support (AMD)"
 	@echo ""
 	@echo "$(BOLD)$(GREEN)DEVELOPMENT$(RESET)"
-	@echo "  $(CYAN)format$(RESET)            Auto-format code with black and isort"
+	@echo "  $(CYAN)format$(RESET)            Auto-format code with ruff"
 	@echo "  $(CYAN)format-check$(RESET)      Check code formatting without changes"
-	@echo "  $(CYAN)lint$(RESET)              Run flake8 linter"
+	@echo "  $(CYAN)lint$(RESET)              Run ruff linter"
 	@echo "  $(CYAN)type-check$(RESET)        Run mypy type checker"
 	@echo "  $(CYAN)check$(RESET)             Run all checks (format + lint + type)"
 	@echo "  $(CYAN)quick$(RESET)             Fast iteration: format + test-fast"
@@ -193,25 +193,24 @@ install-gpu-rocm:
 # DEVELOPMENT
 # ============================================================================
 
-## format: Auto-format code with black and isort
+## format: Auto-format code with ruff
 format:
-	@echo "$(BOLD)$(BLUE)Formatting code with black...$(RESET)"
-	$(VENV_BIN)/black $(SRC_DIR) $(TEST_DIR)
-	@echo "$(BOLD)$(BLUE)Sorting imports with isort...$(RESET)"
-	$(VENV_BIN)/isort $(SRC_DIR) $(TEST_DIR)
+	@echo "$(BOLD)$(BLUE)Formatting code with ruff...$(RESET)"
+	$(VENV_BIN)/ruff check --fix $(SRC_DIR) $(TEST_DIR) examples/
+	$(VENV_BIN)/ruff format $(SRC_DIR) $(TEST_DIR) examples/
 	@echo "$(BOLD)$(GREEN)✓ Code formatted!$(RESET)"
 
 ## format-check: Check code formatting without changes
 format-check:
 	@echo "$(BOLD)$(BLUE)Checking code formatting...$(RESET)"
-	$(VENV_BIN)/black --check $(SRC_DIR) $(TEST_DIR)
-	$(VENV_BIN)/isort --check-only $(SRC_DIR) $(TEST_DIR)
+	$(VENV_BIN)/ruff check $(SRC_DIR) $(TEST_DIR) examples/
+	$(VENV_BIN)/ruff format --check $(SRC_DIR) $(TEST_DIR) examples/
 	@echo "$(BOLD)$(GREEN)✓ Code formatting is correct!$(RESET)"
 
-## lint: Run flake8 linter
+## lint: Run ruff linter
 lint:
-	@echo "$(BOLD)$(BLUE)Running flake8...$(RESET)"
-	$(VENV_BIN)/flake8 $(SRC_DIR) $(TEST_DIR)
+	@echo "$(BOLD)$(BLUE)Running ruff linter...$(RESET)"
+	$(VENV_BIN)/ruff check $(SRC_DIR) $(TEST_DIR) examples/
 	@echo "$(BOLD)$(GREEN)✓ No linting errors!$(RESET)"
 
 ## type-check: Run mypy type checker
@@ -339,8 +338,11 @@ clean:
 	rm -rf .coverage
 	rm -rf htmlcov/
 	rm -rf coverage.xml
+	rm -rf coverage.json
 	rm -rf .hypothesis
 	rm -rf .nlsq_cache/
+	rm -rf .ruff_cache/
+	rm -f test_results.log
 	@echo "$(BOLD)$(BLUE)Removing __pycache__ directories and .pyc files...$(RESET)"
 	find . -type d -name __pycache__ \
 		-not -path "./venv/*" \
