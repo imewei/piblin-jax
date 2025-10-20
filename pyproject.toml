@@ -223,3 +223,19 @@ exclude = [
 per-file-ignores = [
     "__init__.py:F401",
 ]
+
+[tool.bandit]
+# Security linting configuration
+exclude_dirs = [
+    "tests",
+    ".venv",
+    "venv",
+    "build",
+    "dist",
+]
+skips = [
+    "B101",  # assert_used - acceptable in tests and scientific code
+    "B601",  # paramiko_calls - not used in this project
+]
+# Severity levels: LOW, MEDIUM, HIGH
+# Confidence levels: LOW, MEDIUM, HIGH
