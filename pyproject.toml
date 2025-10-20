@@ -51,9 +51,7 @@ dev = [
     "pytest-benchmark>=4.0",
     "hypothesis>=6.80",
     "mypy>=1.5",
-    "black>=23.0",
-    "isort>=5.12",
-    "flake8>=6.0",
+    "ruff>=0.14.0",
     "pre-commit>=3.3",
     "build>=0.10",
 ]
@@ -98,31 +96,6 @@ Repository = "https://github.com/quantiq/quantiq"
 where = ["."]
 include = ["quantiq*"]
 exclude = ["tests*", "docs*"]
-
-[tool.black]
-line-length = 100
-target-version = ["py312", "py313"]
-include = '\.pyi?$'
-extend-exclude = '''
-/(
-  # directories
-  \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | build
-  | dist
-)/
-'''
-
-[tool.isort]
-profile = "black"
-line_length = 100
-src_paths = ["quantiq", "tests"]
-known_first_party = ["quantiq"]
-skip_gitignore = true
 
 [tool.mypy]
 python_version = "3.12"
@@ -205,23 +178,6 @@ exclude_lines = [
     "if TYPE_CHECKING:",
     "@abstractmethod",
     "@abc.abstractmethod",
-]
-
-[tool.flake8]
-max-line-length = 100
-extend-ignore = ["E203", "E501", "W503"]
-exclude = [
-    ".git",
-    "__pycache__",
-    "build",
-    "dist",
-    ".eggs",
-    "*.egg",
-    ".venv",
-    "venv",
-]
-per-file-ignores = [
-    "__init__.py:F401",
 ]
 
 [tool.bandit]
