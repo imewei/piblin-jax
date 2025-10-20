@@ -267,9 +267,7 @@ class ExperimentSet:
         1
         >>> s001_exps[0].conditions["sample"]
         'S001'
-
-        Examples
-        --------
+        >>>
         >>> # Get experiments matching multiple conditions
         >>> dated_exps = study.get_experiment_by_condition(
         ...     date="2025-10-18",

@@ -128,16 +128,12 @@ class TidyMeasurementSet(MeasurementSet):
         {20, 25, 30}
         >>> unique["sample"]
         {'A', 'B'}
-
-        Examples
-        --------
+        >>>
         >>> # Empty measurement set
         >>> tms_empty = TidyMeasurementSet([])
         >>> tms_empty.get_unique_conditions()
         {}
-
-        Examples
-        --------
+        >>>
         >>> # Measurements with different condition keys
         >>> m1 = Measurement([OneDimensionalDataset(np.array([1]), np.array([2]))],
         ...                  conditions={"temp": 25, "pressure": 1.0})
@@ -189,9 +185,7 @@ class TidyMeasurementSet(MeasurementSet):
         2
         >>> all(m.conditions["temperature"] == 25 for m in tms_25)
         True
-
-        Examples
-        --------
+        >>>
         >>> # Filter by multiple conditions
         >>> tms_25_A = tms.filter_by_conditions(temperature=25, sample="A")
         >>> len(tms_25_A)

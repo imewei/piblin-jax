@@ -40,6 +40,7 @@ class ConsistentMeasurementSet(MeasurementSet):
     Notes
     -----
     Structure is defined as the sequence of dataset types. For example:
+
     - [OneDimensionalDataset, OneDimensionalDataset] is consistent with itself
     - [OneDimensionalDataset] is NOT consistent with [ZeroDimensionalDataset]
     - [OneDimensionalDataset, ZeroDimensionalDataset] is NOT consistent with
@@ -77,9 +78,7 @@ class ConsistentMeasurementSet(MeasurementSet):
     1 OneDimensionalDataset
     1 OneDimensionalDataset
     1 OneDimensionalDataset
-
-    Examples
-    --------
+    >>>
     >>> # This will raise ValueError - inconsistent structures
     >>> from quantiq.data.datasets import ZeroDimensionalDataset
     >>> m1 = Measurement([OneDimensionalDataset(np.array([1, 2]), np.array([3, 4]))])
