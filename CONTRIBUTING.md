@@ -39,7 +39,7 @@ Before submitting a pull request, ensure:
 - ✅ Tests pass with >95% coverage
 - ✅ Type hints added to all new code
 - ✅ NumPy-style docstrings for all public APIs
-- ✅ Pre-commit hooks pass (black, isort, mypy, flake8)
+- ✅ Pre-commit hooks pass (ruff, mypy)
 - ✅ Documentation updated
 - ✅ CHANGELOG.md updated (for user-facing changes)
 
@@ -84,8 +84,8 @@ pytest
 mypy quantiq
 
 # Verify code formatting
-black --check quantiq tests
-isort --check quantiq tests
+ruff check quantiq tests
+ruff format --check quantiq tests
 ```
 
 ## Development Workflow
@@ -122,11 +122,10 @@ pytest --cov=quantiq --cov-report=html
 mypy quantiq
 
 # Format code (pre-commit hooks will do this automatically)
-black quantiq tests
-isort quantiq tests
+ruff format quantiq tests
 
 # Run linter
-flake8 quantiq tests
+ruff check quantiq tests
 ```
 
 ### 4. Commit Changes
@@ -168,9 +167,11 @@ quantiq maintains high code quality through automated tooling and manual review.
 ### Code Style
 
 **Formatting** (Enforced by pre-commit hooks):
-- **Black**: Line length 100, Python 3.12+ target
-- **isort**: Black-compatible profile, src_paths = ["quantiq", "tests"]
-- **flake8**: Max line length 100, ignores E203, E501, W503
+- **Ruff**: Unified linter and formatter (10-100x faster than black/isort/flake8)
+  - Line length: 100 characters
+  - Python 3.13+ target
+  - Auto-fixes imports, code style, and common errors
+  - Supports scientific Python conventions (Greek letters, single-letter math names)
 
 **Configuration**: See `pyproject.toml` for detailed settings.
 
@@ -212,7 +213,7 @@ Follow PEP 8:
 
 ### Import Organization
 
-Imports organized in three groups (isort enforces this):
+Imports organized in three groups (ruff enforces this):
 
 ```python
 # Standard library
@@ -495,8 +496,8 @@ When adding new features:
 - [ ] All tests pass (`pytest`)
 - [ ] Coverage remains >95% (`pytest --cov=quantiq`)
 - [ ] Type checking passes (`mypy quantiq`)
-- [ ] Code formatted (`black quantiq tests && isort quantiq tests`)
-- [ ] Linting passes (`flake8 quantiq tests`)
+- [ ] Code formatted (`ruff format quantiq tests`)
+- [ ] Linting passes (`ruff check quantiq tests`)
 - [ ] Documentation built successfully (`cd docs && make html`)
 - [ ] CHANGELOG.md updated (for user-facing changes)
 
