@@ -132,6 +132,8 @@ class ExperimentSet:
         """
         Get all experiments in this set.
 
+        :no-index:
+
         Returns
         -------
         tuple[Experiment, ...]
@@ -149,6 +151,8 @@ class ExperimentSet:
         """
         Get global conditions for the entire study.
 
+        :no-index:
+
         Returns
         -------
         dict[str, Any]
@@ -165,6 +169,8 @@ class ExperimentSet:
     def details(self) -> dict[str, Any]:
         """
         Get additional details for the study.
+
+        :no-index:
 
         Returns
         -------

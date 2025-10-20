@@ -126,6 +126,8 @@ class Experiment:
         """
         Get all measurement sets in this experiment.
 
+        :no-index:
+
         Returns
         -------
         tuple[MeasurementSet, ...]
@@ -143,6 +145,8 @@ class Experiment:
         """
         Get experimental conditions for this experiment.
 
+        :no-index:
+
         Returns
         -------
         dict[str, Any]
@@ -159,6 +163,8 @@ class Experiment:
     def details(self) -> dict[str, Any]:
         """
         Get additional details for this experiment.
+
+        :no-index:
 
         Returns
         -------

@@ -28,18 +28,16 @@ optimization, providing:
 
 ### fit_curve()
 
-Fit rheological models to experimental data using non-linear least squares:
+Fit rheological models to experimental data using non-linear least squares::
 
-```python
-from quantiq import fit_curve
-import numpy as np
+    from quantiq import fit_curve
+    import numpy as np
 
-shear_rate = np.logspace(-1, 2, 30)
-viscosity = 5.0 * shear_rate ** (0.6 - 1)
+    shear_rate = np.logspace(-1, 2, 30)
+    viscosity = 5.0 * shear_rate ** (0.6 - 1)
 
-result = fit_curve(shear_rate, viscosity, model='power_law')
-print(result['params'])  # {'K': 5.02, 'n': 0.598}
-```
+    result = fit_curve(shear_rate, viscosity, model='power_law')
+    print(result['params'])  # {'K': 5.02, 'n': 0.598}
 
 **Supported Models**:
 - `'power_law'`: η = K * γ̇^(n-1)
@@ -49,18 +47,16 @@ print(result['params'])  # {'K': 5.02, 'n': 0.598}
 
 ### estimate_initial_parameters()
 
-Automatically estimate initial parameter guesses for optimization:
+Automatically estimate initial parameter guesses for optimization::
 
-```python
-from quantiq import estimate_initial_parameters
+    from quantiq import estimate_initial_parameters
 
-initial = estimate_initial_parameters(
-    shear_rate,
-    viscosity,
-    model='power_law'
-)
-print(initial)  # {'K': 4.8, 'n': 0.55}
-```
+    initial = estimate_initial_parameters(
+        shear_rate,
+        viscosity,
+        model='power_law'
+    )
+    print(initial)  # {'K': 4.8, 'n': 0.55}
 
 **Methods**:
 - Power-law: Linear regression on log-log data
@@ -71,73 +67,73 @@ print(initial)  # {'K': 4.8, 'n': 0.55}
 
 ### Basic Fitting
 
-```python
-import numpy as np
-from quantiq import fit_curve
+Example::
 
-# Generate data
-shear_rate = np.logspace(-2, 3, 50)
-viscosity = 5.0 * shear_rate ** (0.6 - 1)
+    import numpy as np
+    from quantiq import fit_curve
 
-# Fit model
-result = fit_curve(shear_rate, viscosity, model='power_law')
+    # Generate data
+    shear_rate = np.logspace(-2, 3, 50)
+    viscosity = 5.0 * shear_rate ** (0.6 - 1)
 
-# Extract results
-params = result['params']
-K, n = params['K'], params['n']
-covariance = result['covariance']
-residuals = result['residuals']
+    # Fit model
+    result = fit_curve(shear_rate, viscosity, model='power_law')
 
-print(f"K = {K:.3f} ± {np.sqrt(covariance[0,0]):.3f}")
-print(f"n = {n:.3f} ± {np.sqrt(covariance[1,1]):.3f}")
-```
+    # Extract results
+    params = result['params']
+    K, n = params['K'], params['n']
+    covariance = result['covariance']
+    residuals = result['residuals']
+
+    print(f"K = {K:.3f} ± {np.sqrt(covariance[0,0]):.3f}")
+    print(f"n = {n:.3f} ± {np.sqrt(covariance[1,1]):.3f}")
 
 ### With Initial Guesses
 
-```python
-# Provide initial guesses
-initial = {'K': 3.0, 'n': 0.5}
-result = fit_curve(
-    shear_rate,
-    viscosity,
-    model='power_law',
-    initial_params=initial
-)
-```
+Example::
+
+    # Provide initial guesses
+    initial = {'K': 3.0, 'n': 0.5}
+    result = fit_curve(
+        shear_rate,
+        viscosity,
+        model='power_law',
+        initial_params=initial
+    )
 
 ### Multiple Models
 
-```python
-models = ['power_law', 'cross', 'carreau_yasuda']
-results = {}
+Example::
 
-for model in models:
-    try:
-        results[model] = fit_curve(shear_rate, viscosity, model=model)
-        print(f"{model}: RSS = {np.sum(results[model]['residuals']**2):.3e}")
-    except Exception as e:
-        print(f"{model} failed: {e}")
-```
+    models = ['power_law', 'cross', 'carreau_yasuda']
+    results = {}
+
+    for model in models:
+        try:
+            results[model] = fit_curve(shear_rate, viscosity, model=model)
+            print(f"{model}: RSS = {np.sum(results[model]['residuals']**2):.3e}")
+        except Exception as e:
+            print(f"{model} failed: {e}")
 
 ### NLSQ → Bayesian Workflow
 
-```python
-from quantiq import fit_curve
-from quantiq.bayesian.models import PowerLawModel
+Example::
 
-# Step 1: Quick NLSQ estimate
-nlsq_result = fit_curve(shear_rate, viscosity, model='power_law')
-print(f"NLSQ estimate: K={nlsq_result['params']['K']:.2f}")
+    from quantiq import fit_curve
+    from quantiq.bayesian.models import PowerLawModel
 
-# Step 2: Bayesian fitting with uncertainty
-model = PowerLawModel(n_samples=2000)
-model.fit(shear_rate, viscosity)
+    # Step 1: Quick NLSQ estimate
+    nlsq_result = fit_curve(shear_rate, viscosity, model='power_law')
+    print(f"NLSQ estimate: K={nlsq_result['params']['K']:.2f}")
 
-# Step 3: Compare results
-bayesian_K = np.mean(model.samples['K'])
-K_std = np.std(model.samples['K'])
-print(f"Bayesian estimate: K={bayesian_K:.2f} ± {K_std:.2f}")
-```
+    # Step 2: Bayesian fitting with uncertainty
+    model = PowerLawModel(n_samples=2000)
+    model.fit(shear_rate, viscosity)
+
+    # Step 3: Compare results
+    bayesian_K = np.mean(model.samples['K'])
+    K_std = np.std(model.samples['K'])
+    print(f"Bayesian estimate: K={bayesian_K:.2f} ± {K_std:.2f}")
 
 ## Return Values
 
@@ -151,17 +147,17 @@ print(f"Bayesian estimate: K={bayesian_K:.2f} ± {K_std:.2f}")
 
 ## Error Handling
 
-```python
-try:
-    result = fit_curve(x, y, model='power_law')
-    if not result['success']:
-        print(f"Optimization warning: {result['message']}")
-        # Still can use params, but check residuals
-except ValueError as e:
-    print(f"Invalid input: {e}")
-except RuntimeError as e:
-    print(f"Optimization failed: {e}")
-```
+Example::
+
+    try:
+        result = fit_curve(x, y, model='power_law')
+        if not result['success']:
+            print(f"Optimization warning: {result['message']}")
+            # Still can use params, but check residuals
+    except ValueError as e:
+        print(f"Invalid input: {e}")
+    except RuntimeError as e:
+        print(f"Optimization failed: {e}")
 
 ## Implementation Details
 

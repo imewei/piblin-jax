@@ -28,14 +28,12 @@ All datasets include:
 
 ### Collections Module (`quantiq.data.collections`)
 
-Hierarchical organization for experimental data:
+Hierarchical organization for experimental data::
 
-```
-ExperimentSet (top level)
-└── Experiment (single experimental condition set)
-    └── MeasurementSet (group of related measurements)
-        └── Measurement (individual measurement with datasets)
-```
+    ExperimentSet (top level)
+    └── Experiment (single experimental condition set)
+        └── MeasurementSet (group of related measurements)
+            └── Measurement (individual measurement with datasets)
 
 **Collection Types**:
 - **Measurement**: Container for related datasets from one measurement
@@ -74,57 +72,57 @@ Region of interest definitions for selective analysis:
 
 ### Basic Dataset Creation
 
-```python
-import numpy as np
-from quantiq.data.datasets import OneDimensionalDataset
+Example::
 
-# Create 1D dataset
-x = np.linspace(0, 10, 100)
-y = np.sin(x)
-dataset = OneDimensionalDataset(
-    independent_variable_data=x,
-    dependent_variable_data=y,
-    conditions={"temperature": 25.0, "sample": "A"},
-    details={"operator": "John", "date": "2025-01-15"}
-)
-```
+    import numpy as np
+    from quantiq.data.datasets import OneDimensionalDataset
+
+    # Create 1D dataset
+    x = np.linspace(0, 10, 100)
+    y = np.sin(x)
+    dataset = OneDimensionalDataset(
+        independent_variable_data=x,
+        dependent_variable_data=y,
+        conditions={"temperature": 25.0, "sample": "A"},
+        details={"operator": "John", "date": "2025-01-15"}
+    )
 
 ### Building Hierarchical Collections
 
-```python
-from quantiq.data.collections import Measurement, MeasurementSet, Experiment
+Example::
 
-# Create measurements
-m1 = Measurement({"dataset1": dataset1, "dataset2": dataset2})
-m2 = Measurement({"dataset1": dataset3, "dataset2": dataset4})
+    from quantiq.data.collections import Measurement, MeasurementSet, Experiment
 
-# Group into measurement set
-mset = MeasurementSet([m1, m2])
+    # Create measurements
+    m1 = Measurement({"dataset1": dataset1, "dataset2": dataset2})
+    m2 = Measurement({"dataset1": dataset3, "dataset2": dataset4})
 
-# Create experiment
-experiment = Experiment({"trial1": mset})
-```
+    # Group into measurement set
+    mset = MeasurementSet([m1, m2])
+
+    # Create experiment
+    experiment = Experiment({"trial1": mset})
 
 ### Metadata Operations
 
-```python
-from quantiq.data import metadata
+Example::
 
-# Merge metadata from multiple sources
-file_meta = metadata.extract_from_filename("sample_A1_25C.csv")
-path_meta = {"experiment": "viscosity"}
-combined = metadata.merge_metadata([file_meta, path_meta])
+    from quantiq.data import metadata
 
-# Validate against schema
-schema = {"temperature": float, "sample": str}
-metadata.validate_metadata(combined, schema=schema)
+    # Merge metadata from multiple sources
+    file_meta = metadata.extract_from_filename("sample_A1_25C.csv")
+    path_meta = {"experiment": "viscosity"}
+    combined = metadata.merge_metadata([file_meta, path_meta])
 
-# Separate conditions from details
-conditions, details = metadata.separate_conditions_details(
-    combined,
-    condition_keys=["temperature", "pressure"]
-)
-```
+    # Validate against schema
+    schema = {"temperature": float, "sample": str}
+    metadata.validate_metadata(combined, schema=schema)
+
+    # Separate conditions from details
+    conditions, details = metadata.separate_conditions_details(
+        combined,
+        condition_keys=["temperature", "pressure"]
+    )
 
 ## Design Principles
 

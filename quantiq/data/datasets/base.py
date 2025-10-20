@@ -139,6 +139,8 @@ class Dataset(ABC):
         """
         Check if dataset has uncertainty information.
 
+        :no-index:
+
         Returns
         -------
         bool
@@ -168,6 +170,8 @@ class Dataset(ABC):
         """
         Get uncertainty samples (if keep_samples=True was used).
 
+        :no-index:
+
         Returns
         -------
         dict | None
@@ -195,6 +199,8 @@ class Dataset(ABC):
     def credible_intervals(self) -> Any | None:
         """
         Get cached credible intervals.
+
+        :no-index:
 
         Returns
         -------

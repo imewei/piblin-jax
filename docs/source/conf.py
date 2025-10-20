@@ -66,6 +66,23 @@ nitpick_ignore = [
     ('py:class', 'jax.Array'),
     ('py:class', 'numpy.ndarray'),
     ('py:class', 'ArrayLike'),
+    # Type hint references
+    ('py:class', 'Any'),
+    ('py:class', 'dict[str, Any]'),
+    ('py:class', 'tuple[Any, Any]'),
+    ('py:class', 'tuple[float, float]'),
+    ('py:class', 'array_like'),
+    ('py:class', 'dict[str, array]'),
+    ('py:class', 'Optional'),
+    ('py:obj', 'Any'),
+    ('py:obj', 'Optional'),
+    # NumPy/JAX array types
+    ('py:class', 'jnp.ndarray'),
+    ('py:class', 'DeviceArray'),
+    # Generic types
+    ('py:class', 'T'),
+    ('py:class', 'Callable'),
+    ('py:class', 'TypeVar'),
 ]
 
 # Suppress warnings (for development builds)
