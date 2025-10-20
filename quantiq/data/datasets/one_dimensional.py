@@ -8,7 +8,7 @@ chromatograms, and other 1D data.
 from typing import Any
 import copy
 import numpy as np
-from quantiq.backend import jnp, to_numpy
+from quantiq.backend import jnp, to_numpy, is_jax_available
 from .base import Dataset
 
 
