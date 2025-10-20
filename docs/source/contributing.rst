@@ -29,9 +29,7 @@ Code Style
 
 quantiq follows these style guidelines:
 
-* **black** for code formatting (line length 100)
-* **isort** for import sorting (black-compatible)
-* **flake8** for linting
+* **ruff** for code formatting and linting (line length 100, replaces black/isort/flake8)
 * **mypy** for type checking (strict mode)
 * **NumPy-style docstrings** for documentation
 

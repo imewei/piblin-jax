@@ -97,36 +97,6 @@ where = ["."]
 include = ["quantiq*"]
 exclude = ["tests*", "docs*"]
 
-# ============================================================================
-# LEGACY TOOL CONFIGURATIONS (Replaced by Ruff)
-# ============================================================================
-# Kept for reference only - remove after verifying migration
-#
-# [tool.black]
-# line-length = 100
-# target-version = ["py312", "py313"]
-# include = '\.pyi?$'
-# extend-exclude = '''
-# /(
-#   # directories
-#   \.eggs
-#   | \.git
-#   | \.hg
-#   | \.mypy_cache
-#   | \.tox
-#   | \.venv
-#   | build
-#   | dist
-# )/
-# '''
-#
-# [tool.isort]
-# profile = "black"
-# line_length = 100
-# src_paths = ["quantiq", "tests"]
-# known_first_party = ["quantiq"]
-# skip_gitignore = true
-
 [tool.mypy]
 python_version = "3.12"
 
@@ -209,23 +179,6 @@ exclude_lines = [
     "@abstractmethod",
     "@abc.abstractmethod",
 ]
-
-# [tool.flake8]
-# max-line-length = 100
-# extend-ignore = ["E203", "E501", "W503"]
-# exclude = [
-#     ".git",
-#     "__pycache__",
-#     "build",
-#     "dist",
-#     ".eggs",
-#     "*.egg",
-#     ".venv",
-#     "venv",
-# ]
-# per-file-ignores = [
-#     "__init__.py:F401",
-# ]
 
 [tool.bandit]
 # Security linting configuration

@@ -14,7 +14,7 @@ Added
 * Project setup and development infrastructure
 * Python package structure
 * Testing framework (pytest, pytest-cov, pytest-mpl, pytest-benchmark)
-* Code quality tools (black, isort, flake8, mypy)
+* Code quality tools (ruff, mypy)
 * Pre-commit hooks
 * CI/CD pipeline (GitHub Actions)
 * Sphinx documentation framework
