@@ -114,7 +114,7 @@ Built-in Models
 ---------------
 
 Power-Law Model
-^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~
 
 **Equation:**
 
@@ -159,7 +159,7 @@ Power-Law Model
 - sigma ~ HalfNormal(1.0): Observation noise
 
 Arrhenius Model
-^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~
 
 **Equation:**
 
@@ -200,7 +200,7 @@ Arrhenius Model
 - sigma ~ HalfNormal(1.0)
 
 Cross Model
-^^^^^^^^^^^
+~~~~~~~~~~~
 
 **Equation:**
 
@@ -246,7 +246,7 @@ Cross Model
 - sigma ~ HalfNormal(scale based on data)
 
 Carreau-Yasuda Model
-^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~
 
 **Equation:**
 
@@ -680,22 +680,22 @@ References
 
 **Bayesian Statistics:**
 
-.. [1] Gelman, A., et al. (2013). Bayesian Data Analysis, 3rd Edition.
-       Chapman and Hall/CRC.
-.. [2] McElreath, R. (2020). Statistical Rethinking, 2nd Edition.
-       CRC Press.
+- Gelman, A., et al. (2013). Bayesian Data Analysis, 3rd Edition.
+  Chapman and Hall/CRC.
+- McElreath, R. (2020). Statistical Rethinking, 2nd Edition.
+  CRC Press.
 
 **MCMC Methods:**
 
-.. [3] Hoffman, M.D., & Gelman, A. (2014). "The No-U-Turn Sampler:
-       Adaptively Setting Path Lengths in Hamiltonian Monte Carlo."
-       Journal of Machine Learning Research, 15, 1593-1623.
+- Hoffman, M.D., & Gelman, A. (2014). "The No-U-Turn Sampler:
+  Adaptively Setting Path Lengths in Hamiltonian Monte Carlo."
+  Journal of Machine Learning Research, 15, 1593-1623.
 
 **NumPyro:**
 
-.. [4] Phan, D., et al. (2019). "Composable Effects for Flexible and
-       Accelerated Probabilistic Programming in NumPyro."
-       arXiv:1912.11554.
+- Phan, D., et al. (2019). "Composable Effects for Flexible and
+  Accelerated Probabilistic Programming in NumPyro."
+  arXiv:1912.11554.
 
 Next Steps
 ----------

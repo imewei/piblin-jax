@@ -527,14 +527,14 @@ Next Steps
 References
 ----------
 
-.. [1] Cross, M.M. (1965). "Rheology of non-Newtonian fluids: A new flow
-       equation for pseudoplastic systems." Journal of Colloid Science,
-       20(5), 417-437.
-.. [2] Carreau, P.J. (1972). "Rheological equations from molecular network
-       theories." Transactions of the Society of Rheology, 16(1), 99-127.
-.. [3] Yasuda, K., et al. (1981). "Shear flow properties of concentrated
-       solutions of linear and star branched polystyrenes."
-       Rheologica Acta, 20(2), 163-178.
-.. [4] Bird, R.B., Armstrong, R.C., Hassager, O. (1987). Dynamics of
-       Polymeric Liquids, Volume 1: Fluid Mechanics, 2nd Edition.
-       Wiley-Interscience.
+- Cross, M.M. (1965). "Rheology of non-Newtonian fluids: A new flow
+  equation for pseudoplastic systems." Journal of Colloid Science,
+  20(5), 417-437.
+- Carreau, P.J. (1972). "Rheological equations from molecular network
+  theories." Transactions of the Society of Rheology, 16(1), 99-127.
+- Yasuda, K., et al. (1981). "Shear flow properties of concentrated
+  solutions of linear and star branched polystyrenes."
+  Rheologica Acta, 20(2), 163-178.
+- Bird, R.B., Armstrong, R.C., Hassager, O. (1987). Dynamics of
+  Polymeric Liquids, Volume 1: Fluid Mechanics, 2nd Edition.
+  Wiley-Interscience.

@@ -366,7 +366,7 @@ Next Steps
 References
 ----------
 
-.. [1] Gelman, A., et al. (2013). Bayesian Data Analysis, 3rd Edition.
-       Chapman and Hall/CRC.
-.. [2] McElreath, R. (2020). Statistical Rethinking, 2nd Edition.
-       CRC Press.
+- Gelman, A., et al. (2013). Bayesian Data Analysis, 3rd Edition.
+  Chapman and Hall/CRC.
+- McElreath, R. (2020). Statistical Rethinking, 2nd Edition.
+  CRC Press.
