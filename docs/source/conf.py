@@ -60,71 +60,115 @@ autosummary_imported_members = False
 
 # Strict mode: Fail on warnings during build
 # Set to True for CI/CD to catch documentation issues early
+#
+# NOTE: Future improvement opportunity - Consider sphinx-autodoc-typehints extension
+# to reduce the nitpick_ignore list by ~50%. This would provide better type rendering
+# and automatic maintenance, but requires additional testing and integration work.
+# See: https://github.com/tox-dev/sphinx-autodoc-typehints
 nitpicky = True  # Warn about all missing references
 nitpick_ignore = [
-    # Ignore external type references that may not resolve
+    # External library types (NumPy, JAX)
     ('py:class', 'jax.Array'),
     ('py:class', 'numpy.ndarray'),
-    ('py:class', 'ArrayLike'),
-    # Type hint references
-    ('py:class', 'Any'),
-    ('py:class', 'dict[str, Any]'),
-    ('py:class', 'tuple[Any, Any]'),
-    ('py:class', 'tuple[float, float]'),
-    ('py:class', 'array_like'),
-    ('py:class', 'dict[str, array]'),
-    ('py:class', 'Optional'),
-    ('py:obj', 'Any'),
-    ('py:obj', 'Optional'),
-    # NumPy/JAX array types
-    ('py:class', 'jnp.ndarray'),
-    ('py:class', 'DeviceArray'),
     ('py:class', 'np.ndarray'),
-    # Generic types
-    ('py:class', 'T'),
+    ('py:class', 'jnp.ndarray'),
+    ('py:class', 'ndarray'),
+    ('py:class', 'DeviceArray'),
+    ('py:class', 'ArrayLike'),
+    ('py:class', 'array_like'),
+
+    # Python typing module types
+    ('py:class', 'Any'),
+    ('py:class', 'Optional'),
     ('py:class', 'Callable'),
     ('py:class', 'TypeVar'),
-    # Common type patterns from docstrings
-    ('py:class', 'dict[str'),
-    ('py:class', 'Any] | None'),
-    ('py:class', 'Any]'),
-    ('py:class', 'array] | None'),
+    ('py:class', 'T'),
+    ('py:obj', 'Any'),
+    ('py:obj', 'Optional'),
+
+    # Common type hint patterns from docstrings
+    # Note: These are broad patterns to catch variations in type formatting
+    ('py:class', 'dict[str, Any]'),
+    ('py:class', 'dict[str, array]'),
+    ('py:class', 'dict[str'),  # Sphinx parses dict[str, X] as separate parts
+    ('py:class', 'dict | None'),
+    ('py:class', 'tuple[Any, Any]'),
+    ('py:class', 'tuple[float, float]'),
+    ('py:class', 'tuple | None'),
     ('py:class', 'array_like | None'),
-    ('py:class', 'callable'),
-    ('py:class', 'sequence'),
-    ('py:class', 'ints'),
-    ('py:class', 'int/None'),
-    ('py:class', 'dtype'),
-    ('py:class', '..'),
-    ('py:class', '..]'),
-    ('py:class', 'str | Path'),
     ('py:class', 'type | None'),
     ('py:class', 'Type | Callable'),
-    ('py:class', 'tuple[float'),
-    ('py:class', 'tuple[Measurement'),
-    ('py:class', 'tuple[Dataset'),
+    ('py:class', 'str | Path'),
     ('py:class', 'Sequence[str | Path]'),
+
+    # Type hint fragments (how Sphinx parses complex union/generic types)
+    # When Sphinx sees "dict[str, array] | None", it splits into parts:
+    # - "dict[str" (opening bracket)
+    # - "array] | None" (closing bracket with union)
+    ('py:class', 'Any]'),  # From dict[str, Any]
+    ('py:class', 'Any] | None'),  # From dict[str, Any] | None
+    ('py:class', 'array] | None'),  # From dict[str, array] | None
+    ('py:class', 'bool]'),  # From Callable[[...], bool]
+    ('py:class', 'bool] | None'),  # From Callable[[...], bool] | None
+    ('py:class', 'float]'),  # From tuple[float, float]
+    ('py:class', 'np.ndarray]'),  # From tuple[np.ndarray, np.ndarray]
+    ('py:class', 'np.ndarray] | None'),  # From tuple[...] | None
+    ('py:class', 'tuple[float'),  # From tuple[float, ...]
+    ('py:class', 'tuple[np.ndarray'),  # From tuple[np.ndarray, ...]
+    ('py:class', 'tuple[Measurement'),  # From tuple[Measurement, ...]
+    ('py:class', 'tuple[Dataset'),  # From tuple[Dataset, ...]
+    ('py:class', 'Callable[[Measurement]'),  # From Callable[[Measurement], ...]
+    ('py:class', 'Callable[[Dataset]'),  # From Callable[[Dataset], ...]
+    ('py:class', 'dict[tuple[Any'),  # From dict[tuple[Any, ...], ...]
+    ('py:class', 'list[Measurement]]'),  # From list[Measurement] (extra bracket artifact)
+    ('py:class', '..]'),  # From Ellipsis in type hints like tuple[int, ...]
+
+    # Numeric literals from default values in docstrings
+    # When docstrings have "default=(0, 1)" or "figsize=(10, 6)", Sphinx parses the
+    # numbers as potential type references. These suppress those false positives.
+    ('py:class', '(0'),  # From default=(0, ...)
+    ('py:class', '1)'),  # From default=(..., 1)
+    ('py:class', '(10'),  # From default=(10, ...)
+    ('py:class', '6)'),  # From default=(..., 6)
+
+    # Generic descriptive type names from docstrings
+    ('py:class', 'callable'),
+    ('py:class', 'sequence'),
+    ('py:class', 'array-like'),
+    ('py:class', 'dtype'),
+    ('py:class', 'ints'),
+    ('py:class', 'int/None'),
     ('py:class', 'Reader instance'),
-    # quantiq-specific types
-    ('py:class', 'list[Transform]'),
-    ('py:class', 'list[Measurement]'),
-    ('py:class', 'list[Dataset]'),
-    ('py:class', 'list[LinearRegion]'),
+
+    # quantiq-specific types (data structures)
+    ('py:class', 'Dataset'),
+    ('py:class', 'OneDimensionalDataset'),
     ('py:class', 'Measurement'),
     ('py:class', 'MeasurementSet'),
     ('py:class', 'Experiment'),
     ('py:class', 'ExperimentSet'),
-    ('py:class', 'Dataset'),
     ('py:class', 'Transform'),
     ('py:class', 'LinearRegion | CompoundRegion'),
+    ('py:class', 'quantiq.data.datasets.base.Dataset'),
+    ('py:class', 'quantiq.data.collections.measurement.Measurement'),
+
+    # quantiq-specific types (models)
     ('py:class', 'BayesianModel'),
     ('py:class', 'PowerLawModel'),
     ('py:class', 'CrossModel'),
     ('py:class', 'CarreauYasudaModel'),
     ('py:class', 'ArrheniusModel'),
     ('py:class', 'quantiq.bayesian.base.BayesianModel'),
-    ('py:class', 'quantiq.data.datasets.base.Dataset'),
-    # Common object/attribute references
+
+    # quantiq-specific collection types
+    ('py:class', 'list[Transform]'),
+    ('py:class', 'list[Measurement]'),
+    ('py:class', 'list[Dataset]'),
+    ('py:class', 'list[LinearRegion]'),
+    ('py:class', 'list[str]'),
+    ('py:class', 'set[str]'),
+
+    # Common object/attribute references from autosummary
     ('py:obj', 'samples'),
     ('py:obj', 'details'),
     ('py:obj', 'conditions'),
@@ -132,36 +176,12 @@ nitpick_ignore = [
     ('py:obj', 'has_uncertainty'),
     ('py:obj', 'credible_intervals'),
     ('py:obj', 'value'),
-    ('py:obj', 'quantiq.transform.pipeline.T'),
-    ('py:obj', 'quantiq.transform.base.T'),
-    # Additional type patterns
-    ('py:class', 'Callable[[Measurement]'),
-    ('py:class', 'Callable[[Dataset]'),
-    ('py:class', 'bool] | None'),
-    ('py:class', 'bool]'),
-    ('py:class', 'array-like'),
-    ('py:class', 'float]'),
-    ('py:class', 'tuple[np.ndarray'),
-    ('py:class', 'tuple | None'),
-    ('py:class', 'set[str]'),
-    ('py:class', 'quantiq.data.collections.measurement.Measurement'),
-    ('py:class', 'OneDimensionalDataset'),
-    ('py:class', 'np.ndarray] | None'),
-    ('py:class', 'np.ndarray]'),
-    ('py:class', 'ndarray'),
-    ('py:class', 'list[str]'),
-    ('py:class', 'list[Measurement]]'),
-    ('py:class', 'dict[tuple[Any'),
-    ('py:class', 'dict | None'),
-    ('py:class', '1)'),
-    ('py:class', '(0'),
-    ('py:class', '6)'),
-    ('py:class', '(10'),
-    # Common autosummary obj references
     ('py:obj', 'measurements'),
     ('py:obj', 'datasets'),
     ('py:obj', 'independent_variable_data'),
     ('py:obj', 'dependent_variable_data'),
+    ('py:obj', 'quantiq.transform.pipeline.T'),
+    ('py:obj', 'quantiq.transform.base.T'),
 ]
 
 # Suppress warnings (for development builds)
