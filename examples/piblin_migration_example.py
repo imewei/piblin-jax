@@ -27,7 +27,7 @@ from quantiq import fit_curve
 # Import quantiq (successor to piblin)
 from quantiq.data.datasets import OneDimensionalDataset
 from quantiq.transform import Pipeline
-from quantiq.transform.dataset import GaussianSmooth, Normalize
+from quantiq.transform.dataset import GaussianSmooth, MinMaxNormalize
 
 print("=" * 80)
 print("piblin → quantiq Migration Example")
@@ -107,7 +107,10 @@ print(f"✓ NumPy backend: 100 iterations in {time_numpy * 1000:.2f} ms")
 
 # Note: JAX acceleration would show greater speedup with larger datasets
 # or more complex transforms (JIT compilation overhead matters less)
-print(f"✓ JAX backend available: {smooth._backend_module.__name__ == 'jax.numpy'}")
+from quantiq.backend import get_backend, is_jax_available
+
+print(f"✓ JAX backend available: {is_jax_available()}")
+print(f"✓ Current backend: {get_backend()}")
 
 # =============================================================================
 # Section 3: Pipeline Building (Enhanced in quantiq)
@@ -119,7 +122,7 @@ print(
     """
 # piblin: Manual transform chaining
 smooth = GaussianSmooth(sigma=2.0)
-normalize = Normalize(method="min-max")
+normalize = MinMaxNormalize()
 
 # Apply transforms sequentially
 result = smooth.apply_to(dataset, make_copy=True)
@@ -129,7 +132,7 @@ result = normalize.apply_to(result, make_copy=True)
 
 # piblin style: manual chaining
 smooth_step1 = GaussianSmooth(sigma=2.0)
-normalize_step2 = Normalize(method="min-max")
+normalize_step2 = MinMaxNormalize()
 result_manual = smooth_step1.apply_to(dataset_piblin_style, make_copy=True)
 result_manual = normalize_step2.apply_to(result_manual, make_copy=True)
 print("✓ Manual chaining completed")
@@ -142,7 +145,7 @@ from quantiq.transform import Pipeline
 
 pipeline = Pipeline([
     GaussianSmooth(sigma=2.0),
-    Normalize(method="min-max")
+    MinMaxNormalize()
 ])
 
 result = pipeline.apply_to(dataset, make_copy=True)
@@ -150,7 +153,7 @@ result = pipeline.apply_to(dataset, make_copy=True)
 )
 
 # quantiq style: pipeline
-pipeline = Pipeline([GaussianSmooth(sigma=2.0), Normalize(method="min-max")])
+pipeline = Pipeline([GaussianSmooth(sigma=2.0), MinMaxNormalize()])
 result_pipeline = pipeline.apply_to(dataset_quantiq_style, make_copy=True)
 print("✓ Pipeline application completed")
 
@@ -171,28 +174,38 @@ true_K, true_n = 5.0, 0.6
 viscosity = true_K * shear_rate ** (true_n - 1)
 viscosity += 0.05 * viscosity * np.random.randn(len(shear_rate))
 
+
+# Define power law model
+def power_law(x, K, n):
+    """Power law viscosity model: η = K * γ^(n-1)"""
+    return K * x ** (n - 1)
+
+
 print("\n--- piblin/quantiq unified API ---")
 print(
     """
 # Same API in both piblin and quantiq
 from quantiq import fit_curve
 
+# Define model function
+def power_law(x, K, n):
+    return K * x ** (n - 1)
+
 result = fit_curve(
+    power_law,
     shear_rate,
     viscosity,
-    model='power_law'
+    p0=np.array([5.0, 0.5])
 )
 
-K_fit = result['params']['K']
-n_fit = result['params']['n']
+K_fit, n_fit = result['params']
 """
 )
 
 # Fit using piblin-compatible API
-fit_result = fit_curve(shear_rate, viscosity, model="power_law")
+fit_result = fit_curve(power_law, shear_rate, viscosity, p0=np.array([5.0, 0.5]))
 
-K_fit = fit_result["params"]["K"]
-n_fit = fit_result["params"]["n"]
+K_fit, n_fit = fit_result["params"]
 
 print(f"✓ Fitted parameters: K={K_fit:.3f}, n={n_fit:.3f}")
 print(f"✓ True parameters: K={true_K:.3f}, n={true_n:.3f}")

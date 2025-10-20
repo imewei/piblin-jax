@@ -264,3 +264,9 @@ docs/source/_build/
 .venv/
 cleanup_package.py
 CLEANUP_*.md
+
+# ----------------------------------------------------------------------------
+# Examples Output
+# ----------------------------------------------------------------------------
+# Generated plots and outputs from example scripts
+examples/output/

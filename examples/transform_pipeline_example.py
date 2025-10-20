@@ -24,7 +24,7 @@ import numpy as np
 # Import quantiq dataset and transform classes
 from quantiq.data.datasets import OneDimensionalDataset, TwoDimensionalDataset
 from quantiq.transform import Pipeline
-from quantiq.transform.dataset import Derivative, GaussianSmooth, Normalize
+from quantiq.transform.dataset import Derivative, GaussianSmooth, MinMaxNormalize, ZScoreNormalize
 
 print("=" * 80)
 print("Transform Pipeline Example")
@@ -83,25 +83,25 @@ print(f"   ✓ Signal range: [{z_2d_noisy.min():.3f}, {z_2d_noisy.max():.3f}]")
 print("\n[2] Building transform pipelines...")
 
 # --- Simple Pipeline: Smooth → Normalize ---
-simple_pipeline = Pipeline([GaussianSmooth(sigma=2.0), Normalize(method="min-max")])
+simple_pipeline = Pipeline([GaussianSmooth(sigma=2.0), MinMaxNormalize()])
 
-print(f"   ✓ Simple pipeline: {len(simple_pipeline.transforms)} transforms")
+print(f"   ✓ Simple pipeline: {len(simple_pipeline)} transforms")
 print("      1. GaussianSmooth(sigma=2.0)")
-print("      2. Normalize(method='min-max')")
+print("      2. MinMaxNormalize()")
 
 # --- Complex Pipeline: Smooth → Derivative → Normalize ---
 complex_pipeline = Pipeline(
     [
         GaussianSmooth(sigma=3.0),  # Remove noise
         Derivative(order=1),  # Compute first derivative
-        Normalize(method="z-score"),  # Standardize to zero mean, unit variance
+        ZScoreNormalize(),  # Standardize to zero mean, unit variance
     ]
 )
 
-print(f"   ✓ Complex pipeline: {len(complex_pipeline.transforms)} transforms")
+print(f"   ✓ Complex pipeline: {len(complex_pipeline)} transforms")
 print("      1. GaussianSmooth(sigma=3.0)")
 print("      2. Derivative(order=1)")
-print("      3. Normalize(method='z-score')")
+print("      3. ZScoreNormalize()")
 
 # =============================================================================
 # Section 3: Apply Pipelines to 1D Dataset
@@ -122,19 +122,23 @@ print("   ✓ Complex pipeline applied")
 print("   ✓ Derivative computed and normalized")
 
 # =============================================================================
-# Section 4: Apply Simple Pipeline to 2D Dataset
+# Section 4: Apply Pipeline to 2D Dataset
 # =============================================================================
-print("\n[4] Applying simple pipeline to 2D dataset...")
+print("\n[4] Applying pipeline to 2D dataset...")
 
-# Same pipeline works for different dimensionalities!
-dataset_2d_processed = simple_pipeline.apply_to(dataset_2d, make_copy=True)
+# Note: Some transforms (like GaussianSmooth) only work on 1D data
+# Create a 2D-compatible pipeline using only transforms that support 2D
+pipeline_2d = Pipeline([MinMaxNormalize()])
 
-print("   ✓ Same pipeline applied to 2D data")
+dataset_2d_processed = pipeline_2d.apply_to(dataset_2d, make_copy=True)
+
+print("   ✓ Pipeline applied to 2D data")
 print(f"   ✓ Output shape: {dataset_2d_processed.dependent_variable_data.shape}")
 print(
     f"   ✓ Output range: [{dataset_2d_processed.dependent_variable_data.min():.3f}, "
     f"{dataset_2d_processed.dependent_variable_data.max():.3f}]"
 )
+print("   Note: Some transforms (like GaussianSmooth) are 1D-only")
 
 # =============================================================================
 # Section 5: Visualize Results
@@ -194,12 +198,12 @@ ax4.set_ylabel("Y")
 ax4.set_title("2D Dataset: Original", fontweight="bold")
 plt.colorbar(im4, ax=ax4)
 
-# --- Plot 5: Simple pipeline on 2D ---
+# --- Plot 5: Pipeline on 2D ---
 ax5 = fig.add_subplot(gs[1, 1])
 im5 = ax5.contourf(X, Y, dataset_2d_processed.dependent_variable_data, levels=20, cmap="viridis")
 ax5.set_xlabel("X")
 ax5.set_ylabel("Y")
-ax5.set_title("2D Dataset: Simple Pipeline", fontweight="bold")
+ax5.set_title("2D Dataset: Normalized", fontweight="bold")
 plt.colorbar(im5, ax=ax5)
 
 # --- Plot 6: Comparison (1D cross-sections of 2D data) ---
@@ -228,10 +232,10 @@ print("   ✓ Visualization created")
 print("\n[6] Demonstrating pipeline composition...")
 
 # Pipelines can be extended by adding more transforms
-extended_pipeline = Pipeline([*simple_pipeline.transforms, Derivative(order=1)])
+extended_pipeline = Pipeline([*simple_pipeline, Derivative(order=1)])
 
 print("   ✓ Extended simple pipeline with derivative")
-print(f"   ✓ New pipeline has {len(extended_pipeline.transforms)} transforms")
+print(f"   ✓ New pipeline has {len(extended_pipeline)} transforms")
 
 # Apply extended pipeline
 dataset_1d_extended = extended_pipeline.apply_to(dataset_1d, make_copy=True)
@@ -253,12 +257,13 @@ Key Takeaways:
    - Transforms are applied in the order they appear in the list
 
 2. Reusability and Modularity:
-   - Same pipeline can process different dataset types (1D, 2D)
    - Pipelines can be extended by adding more transforms
    - Original datasets preserved with make_copy=True (immutability)
+   - Composable design enables complex workflows
 
 3. Transform Compatibility:
-   - Transforms that work on 1D data also work on 2D data
+   - Many transforms work across different dimensionalities
+   - Some transforms (like GaussianSmooth) are 1D-only
    - Backend abstraction (JAX/NumPy) handles array operations transparently
    - Type system ensures valid pipeline construction
 
@@ -268,9 +273,9 @@ Key Takeaways:
    - JIT compilation available for JAX-based transforms
 
 5. Practical Applications:
-   - Data cleaning: Smooth → Normalize
-   - Feature extraction: Smooth → Derivative → Normalize
-   - Multi-dimensional processing: Same pipeline for 1D, 2D, 3D data
+   - Data cleaning: Smooth → Normalize (1D data)
+   - Feature extraction: Smooth → Derivative → Normalize (1D data)
+   - Multi-dimensional processing: Use compatible transforms for different dimensionalities
 
 6. Design Philosophy:
    - Immutability: Original data never modified

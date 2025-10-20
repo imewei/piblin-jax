@@ -23,7 +23,7 @@ import numpy as np
 # Import quantiq dataset and transform classes
 from quantiq.data.datasets import OneDimensionalDataset
 from quantiq.transform import Pipeline
-from quantiq.transform.dataset import GaussianSmooth, Normalize
+from quantiq.transform.dataset import GaussianSmooth, MinMaxNormalize
 
 print("=" * 70)
 print("quantiq Basic Usage Example")
@@ -83,14 +83,14 @@ print("\n[3] Building transform pipeline...")
 pipeline = Pipeline(
     [
         GaussianSmooth(sigma=2.0),  # Step 1: Remove noise
-        Normalize(method="min-max"),  # Step 2: Normalize to [0, 1]
+        MinMaxNormalize(),  # Step 2: Normalize to [0, 1]
     ]
 )
 
 # Apply entire pipeline
 processed_dataset = pipeline.apply_to(dataset, make_copy=True)
 
-print(f"   ✓ Pipeline created with {len(pipeline.transforms)} transforms")
+print(f"   ✓ Pipeline created with {len(pipeline)} transforms")
 print("   ✓ Pipeline applied successfully")
 print(
     f"   ✓ Processed data range: [{processed_dataset.dependent_variable_data.min():.3f}, "

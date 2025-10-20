@@ -66,12 +66,18 @@ print(
 # =============================================================================
 print("\n[2] Fitting with classical NLSQ (fast, no uncertainty)...")
 
+
+# Define power law model
+def power_law(x, K, n):
+    """Power law viscosity model: η = K * γ^(n-1)"""
+    return K * x ** (n - 1)
+
+
 # Use quantiq's NLSQ fitter for quick parameter estimates
-nlsq_result = fit_curve(shear_rate, viscosity_measured, model="power_law")
+nlsq_result = fit_curve(power_law, shear_rate, viscosity_measured, p0=np.array([5.0, 0.5]))
 
 # Extract parameter estimates
-nlsq_K = nlsq_result["params"]["K"]
-nlsq_n = nlsq_result["params"]["n"]
+nlsq_K, nlsq_n = nlsq_result["params"]
 
 # Compute fitted curve
 viscosity_nlsq = nlsq_K * shear_rate ** (nlsq_n - 1)

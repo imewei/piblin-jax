@@ -81,8 +81,8 @@ def example_power_law():
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
-    plt.savefig("power_law_example.png", dpi=150)
-    print("\nPlot saved as: power_law_example.png")
+    plt.savefig("output/power_law_example.png", dpi=150)
+    print("\nPlot saved as: output/power_law_example.png")
 
 
 def example_arrhenius():
@@ -133,8 +133,8 @@ def example_arrhenius():
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
-    plt.savefig("arrhenius_example.png", dpi=150)
-    print("\nPlot saved as: arrhenius_example.png")
+    plt.savefig("output/arrhenius_example.png", dpi=150)
+    print("\nPlot saved as: output/arrhenius_example.png")
 
 
 def example_cross():
@@ -191,8 +191,8 @@ def example_cross():
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
-    plt.savefig("cross_example.png", dpi=150)
-    print("\nPlot saved as: cross_example.png")
+    plt.savefig("output/cross_example.png", dpi=150)
+    print("\nPlot saved as: output/cross_example.png")
 
 
 def example_carreau_yasuda():
@@ -249,8 +249,8 @@ def example_carreau_yasuda():
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
-    plt.savefig("carreau_yasuda_example.png", dpi=150)
-    print("\nPlot saved as: carreau_yasuda_example.png")
+    plt.savefig("output/carreau_yasuda_example.png", dpi=150)
+    print("\nPlot saved as: output/carreau_yasuda_example.png")
 
 
 if __name__ == "__main__":

@@ -24,7 +24,7 @@ import numpy as np
 # Import quantiq dataset and transform classes
 from quantiq.data.datasets import OneDimensionalDataset
 from quantiq.transform import Pipeline
-from quantiq.transform.dataset import Derivative, GaussianSmooth, Normalize
+from quantiq.transform.dataset import Derivative, GaussianSmooth, MinMaxNormalize
 
 print("=" * 80)
 print("Uncertainty Propagation Example")
@@ -72,11 +72,11 @@ print(f"   ✓ Relative uncertainty: {(uncertainty_y.mean() / np.abs(y_measured)
 print("\n[2] Propagating uncertainty using Monte Carlo sampling...")
 
 # Define processing pipeline
-pipeline = Pipeline([GaussianSmooth(sigma=1.5), Normalize(method="min-max")])
+pipeline = Pipeline([GaussianSmooth(sigma=1.5), MinMaxNormalize()])
 
-print(f"   ✓ Pipeline: {len(pipeline.transforms)} transforms")
+print(f"   ✓ Pipeline: {len(pipeline)} transforms")
 print("      1. GaussianSmooth(sigma=1.5)")
-print("      2. Normalize(method='min-max')")
+print("      2. MinMaxNormalize()")
 
 # Monte Carlo: Generate ensemble of realizations
 n_samples = 500
