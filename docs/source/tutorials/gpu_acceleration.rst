@@ -465,21 +465,21 @@ Performance Comparison Table
 
 Expected speedups (GPU vs CPU):
 
-===============================  ===========  ===============
-Operation                        Dataset Size GPU Speedup
-===============================  ===========  ===============
-Gaussian smoothing               10K points   5-10x
-Gaussian smoothing               100K points  20-50x
-Transform pipeline (3 steps)     100K points  30-70x
-Bayesian MCMC (2K samples)       50 points    10-30x
-Bayesian MCMC (10K samples)      50 points    50-100x
-Batch processing (100 datasets)  10K each     40-80x
-===============================  ===========  ===============
+===============================  ============  ===============
+Operation                        Dataset Size  GPU Speedup
+===============================  ============  ===============
+Gaussian smoothing               10K points    5-10x
+Gaussian smoothing               100K points   20-50x
+Transform pipeline (3 steps)     100K points   30-70x
+Bayesian MCMC (2K samples)       50 points     10-30x
+Bayesian MCMC (10K samples)      50 points     50-100x
+Batch processing (100 datasets)  10K each      40-80x
+===============================  ============  ===============
 
 Next Steps
 ----------
 
-- See :doc:`../examples/gpu_acceleration_example` for complete runnable code
+- See the ``examples/gpu_acceleration_example.py`` file in the repository for complete runnable code
 - Explore :doc:`advanced_pipelines` for complex workflows
 - Read :doc:`uncertainty_quantification` for Bayesian GPU usage
 

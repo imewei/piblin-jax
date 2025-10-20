@@ -173,6 +173,23 @@ nitpick_ignore = [
     ("py:obj", "dependent_variable_data"),
     ("py:obj", "quantiq.transform.pipeline.T"),
     ("py:obj", "quantiq.transform.base.T"),
+    # Additional type hint patterns from collections module
+    ("py:class", "list[str] | None"),
+    ("py:class", "list[Experiment]"),
+    ("py:class", "list[MeasurementSet]"),
+    ("py:class", "tuple[Experiment"),
+    ("py:class", "tuple[MeasurementSet"),
+    ("py:class", "tuple[int"),
+    ("py:class", "int] | None"),
+    ("py:class", "set]"),
+    ("py:class", "str]"),
+    ("py:class", "str | None"),
+    ("py:class", "type | Callable] | None"),
+    ("py:class", "Any]]"),
+    ("py:class", "list[dict[str"),
+    ("py:class", "TidyMeasurementSet"),
+    ("py:class", "quantiq.data.collections.measurement_set.MeasurementSet"),
+    ("py:class", "quantiq.data.collections.experiment.Experiment"),
 ]
 
 # Suppress warnings (for development builds)
