@@ -352,18 +352,26 @@ class BayesianModel(ABC):
 
         samples = self._samples[param_name]
 
+        # Defensive check: ensure samples is not None and not empty
+        if samples is None:
+            raise ValueError(f"No samples available for parameter: {param_name}")
+
+        samples_array = np.asarray(samples)
+        if samples_array.size == 0:
+            raise ValueError(f"Empty samples for parameter: {param_name}")
+
         if method == "eti":
             # Equal-tailed interval using percentiles
             alpha = 1 - level
-            lower = float(np.percentile(samples, 100 * alpha / 2))
-            upper = float(np.percentile(samples, 100 * (1 - alpha / 2)))
+            lower = float(np.percentile(samples_array, 100 * alpha / 2))
+            upper = float(np.percentile(samples_array, 100 * (1 - alpha / 2)))
         elif method == "hpd":
             # Simplified HPD (highest posterior density)
             # For a proper HPD, would use arviz.hdi()
             # This is an approximation using percentiles
             alpha = 1 - level
-            lower = float(np.percentile(samples, 100 * alpha / 2))
-            upper = float(np.percentile(samples, 100 * (1 - alpha / 2)))
+            lower = float(np.percentile(samples_array, 100 * alpha / 2))
+            upper = float(np.percentile(samples_array, 100 * (1 - alpha / 2)))
         else:
             raise ValueError(f"Unknown method: {method}. Use 'eti' or 'hpd'")
 
@@ -400,12 +408,21 @@ class BayesianModel(ABC):
 
         summary_dict = {}
         for param_name, samples in self._samples.items():
+            # Defensive check: skip if samples is None or empty
+            if samples is None:
+                continue
+
+            # Convert to array to ensure proper type
+            samples_array = np.asarray(samples)
+            if samples_array.size == 0:
+                continue
+
             summary_dict[param_name] = {
-                "mean": float(np.mean(samples)),
-                "std": float(np.std(samples)),
-                "q_2.5": float(np.percentile(samples, 2.5)),
-                "q_50": float(np.percentile(samples, 50)),
-                "q_97.5": float(np.percentile(samples, 97.5)),
+                "mean": float(np.mean(samples_array)),
+                "std": float(np.std(samples_array)),
+                "q_2.5": float(np.percentile(samples_array, 2.5)),
+                "q_50": float(np.percentile(samples_array, 50)),
+                "q_97.5": float(np.percentile(samples_array, 97.5)),
             }
 
         return summary_dict
