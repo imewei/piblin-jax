@@ -3,9 +3,15 @@ name: Documentation
 
 "on":
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
+  workflow_dispatch:  # Allow manual trigger
+
+# Cancel in-progress runs for same workflow + branch/PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-docs:
@@ -13,46 +19,171 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for version detection
 
-      - name: Set up Python 3.12
+      - name: Set up Python 3.14
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
           cache: 'pip'
+          cache-dependency-path: 'pyproject.toml'
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[docs]"
 
-      - name: Build Sphinx documentation
+      - name: Cache Sphinx build
+        uses: actions/cache@v4
+        with:
+          path: docs/_build
+          key: >-
+            sphinx-${{ runner.os }}-${{ hashFiles('docs/**/*.rst',
+            'docs/**/*.md', 'quantiq/**/*.py') }}
+          restore-keys: |
+            sphinx-${{ runner.os }}-
+
+      - name: Build HTML documentation
         run: |
           cd docs
+          make clean
           make html 2>&1 | tee build.log
 
-      - name: Check for warnings
+      - name: Check for warnings and errors
         run: |
           cd docs
-          if grep -i "WARNING\|CRITICAL" build.log; then
-            echo "❌ Documentation build has warnings or critical errors!"
-            echo "Please fix the warnings above before merging."
+          if grep -i "WARNING\|CRITICAL\|ERROR" build.log; then
+            echo "❌ Documentation build has warnings or errors!"
+            echo "Please fix the issues above before merging."
+            grep -i "WARNING\|CRITICAL\|ERROR" build.log | head -20
             exit 1
           else
             echo "✅ Documentation built successfully with no warnings!"
           fi
 
-      - name: Upload documentation artifacts
-        if: success()
+      - name: Check documentation coverage
+        run: |
+          cd docs
+          sphinx-build -b coverage source _build/coverage
+          echo "📊 Documentation Coverage Report:"
+          cat _build/coverage/python.txt || echo "No coverage report generated"
+        continue-on-error: true
+
+      - name: Check for broken links
+        run: |
+          cd docs
+          sphinx-build -b linkcheck source _build/linkcheck 2>&1 | \
+            tee linkcheck.log || true
+          echo "🔗 Link Check Report:"
+          if [ -f _build/linkcheck/output.txt ]; then
+            cat _build/linkcheck/output.txt | head -50
+          fi
+        continue-on-error: true
+
+      - name: Build PDF documentation (optional)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-recommended \
+            texlive-latex-extra texlive-fonts-recommended
+          cd docs
+          make latexpdf || echo "⚠️ PDF build failed"
+        continue-on-error: true
+
+      - name: Upload HTML documentation
+        if: success() || failure()
         uses: actions/upload-artifact@v4
         with:
-          name: documentation
+          name: sphinx-html-docs
           path: docs/_build/html/
-          retention-days: 7
+          retention-days: 30
 
-      - name: Upload build log on failure
+      - name: Upload build logs
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: build-log
-          path: docs/build.log
+          name: sphinx-build-logs
+          path: |
+            docs/build.log
+            docs/linkcheck.log
+            docs/_build/coverage/
           retention-days: 7
+
+      - name: Upload PDF documentation
+        if: >-
+          success() && github.event_name == 'push' &&
+          github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: sphinx-pdf-docs
+          path: docs/_build/latex/*.pdf
+          retention-days: 90
+
+      - name: Deploy to GitHub Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/_build/html
+          publish_branch: gh-pages
+          force_orphan: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: 'docs: deploy documentation [skip ci]'
+
+      - name: Post PR comment with docs preview
+        if: github.event_name == 'pull_request' && success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const buildLog = fs.readFileSync('docs/build.log', 'utf8');
+            const warningCount = (buildLog.match(/WARNING/gi) || []).length;
+
+            let message = '📚 **Documentation Build Report**\n\n';
+            message += '✅ Documentation built successfully!\n\n';
+            message += `- Total warnings: ${warningCount}\n`;
+            message += '- [View artifact](../actions/runs/';
+            message += '${{ github.run_id }})\n\n';
+
+            if (warningCount > 0) {
+              message += '⚠️ **Warnings found** - please review build log\n';
+            }
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });
+        continue-on-error: true
+
+  # Validate docstring coverage in code
+  docstring-coverage:
+    name: Docstring coverage check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install interrogate
+        run: |
+          python -m pip install --upgrade pip
+          pip install interrogate
+
+      - name: Check docstring coverage
+        run: |
+          interrogate -v quantiq --fail-under=80 || \
+            echo "⚠️ Docstring coverage below 80%"
+        continue-on-error: true
+
+      - name: Generate docstring coverage badge
+        run: |
+          interrogate --generate-badge . quantiq
+          echo "📊 Docstring coverage badge generated"
+        continue-on-error: true
