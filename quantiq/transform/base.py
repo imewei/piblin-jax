@@ -67,7 +67,7 @@ class Transform(ABC, Generic[T]):
     >>> result = transform.apply_to(dataset, make_copy=True)
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize transform with default settings."""
         self._lazy = False  # Lazy evaluation flag
         self._compiled = False  # JIT compilation flag

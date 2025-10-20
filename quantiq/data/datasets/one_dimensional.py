@@ -365,7 +365,7 @@ class OneDimensionalDataset(Dataset):
 
     def get_credible_intervals(
         self, level: float = 0.95, method: str = "eti"
-    ) -> tuple[np.ndarray, np.ndarray]:
+    ) -> tuple[Any, Any]:
         """
         Get credible intervals for dependent variable.
 
@@ -454,8 +454,8 @@ class OneDimensionalDataset(Dataset):
         xlabel: str | None = None,
         ylabel: str | None = None,
         title: str | None = None,
-        **kwargs
-    ):
+        **kwargs: Any
+    ) -> tuple[Any, Any]:
         """
         Visualize the 1D dataset with optional uncertainty bands.
 
@@ -521,7 +521,7 @@ class OneDimensionalDataset(Dataset):
         y = self.dependent_variable_data
 
         # Plot main line
-        line_kwargs = {'label': 'Data'}
+        line_kwargs: dict[str, Any] = {'label': 'Data'}
         line_kwargs.update(kwargs)
         ax.plot(x, y, **line_kwargs)
 
@@ -531,7 +531,11 @@ class OneDimensionalDataset(Dataset):
                 # Try to get credible intervals
                 if self._uncertainty_method == 'bootstrap':
                     # For bootstrap, intervals are for the data itself
-                    lower, upper = self.credible_intervals
+                    intervals = self.credible_intervals
+                    if intervals is not None:
+                        lower, upper = intervals
+                    else:
+                        raise ValueError("Credible intervals not available")
                     ax.fill_between(
                         x,
                         lower,

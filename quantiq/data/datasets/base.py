@@ -92,9 +92,9 @@ class Dataset(ABC):
         self._details = details if details is not None else {}
 
         # Uncertainty quantification attributes (Task Group 12)
-        self._uncertainty_samples = None
-        self._credible_intervals = None
-        self._uncertainty_method = None
+        self._uncertainty_samples: dict[str, Any] | None = None
+        self._credible_intervals: tuple[Any, Any] | None = None
+        self._uncertainty_method: str | None = None
 
     @property
     def conditions(self) -> dict[str, Any]:
