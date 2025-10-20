@@ -5,15 +5,15 @@ This module implements the Carreau-Yasuda model, which generalizes the Carreau
 model for more flexible fitting of shear-thinning fluids.
 """
 
-from typing import Any, Dict
-import numpy as np
-import jax.numpy as jnp
+from typing import Any
 
+import jax.numpy as jnp
+import numpy as np
 import numpyro
 import numpyro.distributions as dist
 
-from quantiq.bayesian.base import BayesianModel
 from quantiq.backend.operations import jit
+from quantiq.bayesian.base import BayesianModel
 
 
 class CarreauYasudaModel(BayesianModel):
@@ -165,9 +165,7 @@ class CarreauYasudaModel(BayesianModel):
         sigma = numpyro.sample("sigma", dist.HalfNormal(sigma_scale))
 
         # Model: η = η∞ + (η₀ - η∞) * [1 + (λγ̇)^a]^((n-1)/a)
-        eta_pred = eta_inf + (eta0 - eta_inf) * (
-            1 + (lambda_ * x) ** a
-        ) ** ((n - 1) / a)
+        eta_pred = eta_inf + (eta0 - eta_inf) * (1 + (lambda_ * x) ** a) ** ((n - 1) / a)
 
         # Likelihood
         with numpyro.plate("data", x.shape[0]):
@@ -175,7 +173,9 @@ class CarreauYasudaModel(BayesianModel):
 
     @staticmethod
     @jit
-    def _compute_predictions(eta0_samples, eta_inf_samples, lambda_samples, a_samples, n_samples, shear_rate):
+    def _compute_predictions(
+        eta0_samples, eta_inf_samples, lambda_samples, a_samples, n_samples, shear_rate
+    ):
         """
         JIT-compiled prediction computation for 5-10x speedup.
 
@@ -207,15 +207,11 @@ class CarreauYasudaModel(BayesianModel):
 
         Model: η = η∞ + (η₀ - η∞) * [1 + (λγ̇)^a]^((n-1)/a)
         """
-        return eta_inf_samples[:, None] + (
-            eta0_samples[:, None] - eta_inf_samples[:, None]
-        ) * (1 + (lambda_samples[:, None] * shear_rate[None, :]) ** a_samples[:, None]) ** (
-            (n_samples[:, None] - 1) / a_samples[:, None]
-        )
+        return eta_inf_samples[:, None] + (eta0_samples[:, None] - eta_inf_samples[:, None]) * (
+            1 + (lambda_samples[:, None] * shear_rate[None, :]) ** a_samples[:, None]
+        ) ** ((n_samples[:, None] - 1) / a_samples[:, None])
 
-    def predict(
-        self, shear_rate: Any, credible_interval: float = 0.95
-    ) -> Dict[str, np.ndarray]:
+    def predict(self, shear_rate: Any, credible_interval: float = 0.95) -> dict[str, np.ndarray]:
         """
         Predict viscosity with uncertainty at given shear rates.
 

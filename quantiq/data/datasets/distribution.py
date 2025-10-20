@@ -6,8 +6,11 @@ distribution data where the probability density is a continuous function.
 """
 
 from typing import Any
+
 import numpy as np
+
 from quantiq.backend import jnp, to_numpy
+
 from .base import Dataset
 
 
@@ -108,7 +111,7 @@ class Distribution(Dataset):
         variable_data: Any,
         probability_density: Any,
         conditions: dict[str, Any] | None = None,
-        details: dict[str, Any] | None = None
+        details: dict[str, Any] | None = None,
     ):
         """
         Initialize distribution dataset.

@@ -10,17 +10,16 @@ This module tests:
 - Parameter recovery
 """
 
+import jax.numpy as jnp
 import numpy as np
 import pytest
 from numpy.testing import assert_allclose
 
-import jax.numpy as jnp
-
 from quantiq.bayesian.models import (
-    PowerLawModel,
     ArrheniusModel,
-    CrossModel,
     CarreauYasudaModel,
+    CrossModel,
+    PowerLawModel,
 )
 
 
@@ -45,7 +44,7 @@ class TestPowerLawModel:
 
     def test_power_law_fit(self, power_law_data):
         """Test fitting PowerLawModel to synthetic data."""
-        shear_rate, eta, true_K, true_n = power_law_data
+        shear_rate, eta, _true_K, _true_n = power_law_data
 
         model = PowerLawModel(n_samples=500, n_warmup=250, n_chains=1)
         model.fit(shear_rate, eta)
@@ -228,7 +227,7 @@ class TestCrossModel:
 
     def test_cross_parameter_recovery(self, cross_data):
         """Test CrossModel parameter recovery."""
-        shear_rate, eta, true_eta0, true_eta_inf, true_lambda, true_m = cross_data
+        shear_rate, eta, true_eta0, _true_eta_inf, _true_lambda, _true_m = cross_data
 
         model = CrossModel(n_samples=1000, n_warmup=500, n_chains=2)
         model.fit(shear_rate, eta)

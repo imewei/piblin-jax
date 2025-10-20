@@ -5,8 +5,9 @@ MeasurementSet variant with tabular access patterns (rows and columns).
 """
 
 from typing import Any
-from .measurement_set import MeasurementSet
+
 from .measurement import Measurement
+from .measurement_set import MeasurementSet
 
 
 class TabularMeasurementSet(MeasurementSet):
@@ -279,9 +280,7 @@ class TabularMeasurementSet(MeasurementSet):
         [0, 1, 2]
         """
         if self._row_labels is None or self._col_labels is None:
-            raise ValueError(
-                "get_row() requires row_labels and col_labels."
-            )
+            raise ValueError("get_row() requires row_labels and col_labels.")
 
         n_rows = len(self._row_labels)
         n_cols = len(self._col_labels)
@@ -323,9 +322,7 @@ class TabularMeasurementSet(MeasurementSet):
         [0, 1]
         """
         if self._row_labels is None or self._col_labels is None:
-            raise ValueError(
-                "get_column() requires row_labels and col_labels."
-            )
+            raise ValueError("get_column() requires row_labels and col_labels.")
 
         n_rows = len(self._row_labels)
         n_cols = len(self._col_labels)
@@ -333,7 +330,4 @@ class TabularMeasurementSet(MeasurementSet):
         if not (0 <= col < n_cols):
             raise IndexError(f"Column index {col} out of bounds [0, {n_cols})")
 
-        return [
-            self._measurements[row * n_cols + col]
-            for row in range(n_rows)
-        ]
+        return [self._measurements[row * n_cols + col] for row in range(n_rows)]

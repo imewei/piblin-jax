@@ -12,11 +12,12 @@ without defining new classes. Dynamic transforms compute parameters from the
 data itself, enabling adaptive processing.
 """
 
-from typing import Callable
-from quantiq.transform.base import DatasetTransform
-from quantiq.data.datasets import OneDimensionalDataset
+from collections.abc import Callable
+
 from quantiq.backend import jnp
 from quantiq.backend.operations import jit
+from quantiq.data.datasets import OneDimensionalDataset
+from quantiq.transform.base import DatasetTransform
 
 
 class LambdaTransform(DatasetTransform):
@@ -78,10 +79,10 @@ class LambdaTransform(DatasetTransform):
 
     def __init__(
         self,
-        func: Callable = None,
+        func: Callable | None = None,
         use_x: bool = False,
         jit_compile: bool = True,
-        lambda_func: Callable = None
+        lambda_func: Callable | None = None,
     ):
         """
         Initialize lambda transform.
@@ -356,7 +357,7 @@ class AutoScaleTransform(DynamicTransform):
             scale = (self.target_max - self.target_min) / (data_max - data_min)
             offset = self.target_min - data_min * scale
 
-        return {'scale': scale, 'offset': offset}
+        return {"scale": scale, "offset": offset}
 
     def _apply_with_parameters(self, dataset, params):
         """
@@ -376,7 +377,7 @@ class AutoScaleTransform(DynamicTransform):
         """
         y_data = dataset._dependent_variable_data
 
-        y_scaled = y_data * params['scale'] + params['offset']
+        y_scaled = y_data * params["scale"] + params["offset"]
         dataset._dependent_variable_data = y_scaled
 
         return dataset
@@ -426,7 +427,7 @@ class AutoBaselineTransform(DynamicTransform):
     - Computed parameter: 'baseline' (value to subtract)
     """
 
-    def __init__(self, n_points: int = 10, method: str = 'first'):
+    def __init__(self, n_points: int = 10, method: str = "first"):
         """
         Initialize auto-baseline transform.
 
@@ -462,16 +463,16 @@ class AutoBaselineTransform(DynamicTransform):
         """
         y_data = dataset._dependent_variable_data
 
-        if self.method == 'first':
-            baseline = jnp.mean(y_data[:self.n_points])
-        elif self.method == 'last':
-            baseline = jnp.mean(y_data[-self.n_points:])
-        elif self.method == 'min':
+        if self.method == "first":
+            baseline = jnp.mean(y_data[: self.n_points])
+        elif self.method == "last":
+            baseline = jnp.mean(y_data[-self.n_points :])
+        elif self.method == "min":
             baseline = jnp.min(y_data)
         else:
             raise ValueError(f"Unknown method: {self.method}")
 
-        return {'baseline': baseline}
+        return {"baseline": baseline}
 
     def _apply_with_parameters(self, dataset, params):
         """
@@ -490,14 +491,14 @@ class AutoBaselineTransform(DynamicTransform):
             Baseline-corrected dataset
         """
         y_data = dataset._dependent_variable_data
-        y_corrected = y_data - params['baseline']
+        y_corrected = y_data - params["baseline"]
         dataset._dependent_variable_data = y_corrected
         return dataset
 
 
 __all__ = [
-    "LambdaTransform",
-    "DynamicTransform",
-    "AutoScaleTransform",
     "AutoBaselineTransform",
+    "AutoScaleTransform",
+    "DynamicTransform",
+    "LambdaTransform",
 ]

@@ -10,13 +10,13 @@ jax.numpy or numpy depending on availability.
 """
 
 import warnings
-import numpy as np
 from typing import Any, Union
 
+import numpy as np
 
 # Backend detection
 _JAX_AVAILABLE = False
-BACKEND = 'numpy'  # Default to NumPy
+BACKEND = "numpy"  # Default to NumPy
 jnp = np  # Default to NumPy
 
 try:
@@ -24,7 +24,7 @@ try:
     import jax.numpy as jnp_jax
 
     _JAX_AVAILABLE = True
-    BACKEND = 'jax'
+    BACKEND = "jax"
     jnp = jnp_jax
 
 except ImportError:
@@ -32,10 +32,10 @@ except ImportError:
         "JAX not available, using NumPy (reduced performance). "
         "Install JAX for GPU acceleration and JIT compilation: pip install jax jaxlib",
         UserWarning,
-        stacklevel=2
+        stacklevel=2,
     )
     _JAX_AVAILABLE = False
-    BACKEND = 'numpy'
+    BACKEND = "numpy"
     jnp = np
 
 
@@ -98,33 +98,35 @@ def get_device_info() -> dict[str, Any]:
     >>> print(f"Devices: {info['devices']}")
     """
     info = {
-        'backend': BACKEND,
-        'devices': [],
-        'default_device': 'cpu',
+        "backend": BACKEND,
+        "devices": [],
+        "default_device": "cpu",
     }
 
     if _JAX_AVAILABLE:
         try:
             import jax
+
             devices = jax.devices()
-            info['devices'] = [str(d) for d in devices]
-            info['default_device'] = str(jax.devices()[0])
-            info['device_count'] = len(devices)
+            info["devices"] = [str(d) for d in devices]
+            info["default_device"] = str(jax.devices()[0])
+            info["device_count"] = len(devices)
 
             # Add platform information using updated JAX API
             try:
                 from jax.extend import backend as jax_backend
-                info['platform'] = jax_backend.get_backend().platform
+
+                info["platform"] = jax_backend.get_backend().platform
             except (ImportError, AttributeError):
                 # Fallback for older JAX versions
-                info['platform'] = str(devices[0]).split(':')[0] if devices else 'cpu'
+                info["platform"] = str(devices[0]).split(":")[0] if devices else "cpu"
 
         except Exception as e:
-            warnings.warn(f"Could not get JAX device info: {e}", UserWarning)
-            info['devices'] = ['cpu']
+            warnings.warn(f"Could not get JAX device info: {e}", UserWarning, stacklevel=2)
+            info["devices"] = ["cpu"]
     else:
-        info['devices'] = ['cpu']
-        info['platform'] = 'numpy'
+        info["devices"] = ["cpu"]
+        info["platform"] = "numpy"
 
     return info
 
@@ -227,7 +229,7 @@ def to_numpy_pytree(pytree: Any) -> Any:
     elif isinstance(pytree, (list, tuple)):
         converted = [to_numpy_pytree(item) for item in pytree]
         return type(pytree)(converted)
-    elif hasattr(pytree, '__array__'):
+    elif hasattr(pytree, "__array__"):
         # Anything that looks like an array
         return to_numpy(pytree)
     else:
@@ -270,13 +272,13 @@ def from_numpy_pytree(pytree: Any) -> Any:
 
 # Export public API
 __all__ = [
-    'BACKEND',
-    'jnp',
-    'is_jax_available',
-    'get_backend',
-    'get_device_info',
-    'to_numpy',
-    'from_numpy',
-    'to_numpy_pytree',
-    'from_numpy_pytree',
+    "BACKEND",
+    "from_numpy",
+    "from_numpy_pytree",
+    "get_backend",
+    "get_device_info",
+    "is_jax_available",
+    "jnp",
+    "to_numpy",
+    "to_numpy_pytree",
 ]

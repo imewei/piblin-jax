@@ -5,6 +5,7 @@ metadata (conditions and details) across the data hierarchy.
 """
 
 import pytest
+
 from quantiq.data import metadata
 
 
@@ -71,16 +72,10 @@ class TestConditionsDetailsSeparation:
 
     def test_separate_with_explicit_keys(self):
         """Test separation with explicitly provided condition keys."""
-        combined = {
-            "temperature": 25,
-            "pressure": 1.0,
-            "operator": "John",
-            "date": "2025-01-15"
-        }
+        combined = {"temperature": 25, "pressure": 1.0, "operator": "John", "date": "2025-01-15"}
 
         conditions, details = metadata.separate_conditions_details(
-            combined,
-            condition_keys=["temperature", "pressure"]
+            combined, condition_keys=["temperature", "pressure"]
         )
 
         assert conditions == {"temperature": 25, "pressure": 1.0}
@@ -93,7 +88,7 @@ class TestConditionsDetailsSeparation:
             "pressure": 1.0,
             "strain": 0.1,
             "operator": "John",
-            "notes": "First trial"
+            "notes": "First trial",
         }
 
         conditions, details = metadata.separate_conditions_details(combined)
@@ -130,25 +125,16 @@ class TestMetadataValidation:
         meta = {"temp": 25.0, "sample": "A1"}
 
         # Should pass
-        assert metadata.validate_metadata(
-            meta,
-            required_keys=["temp", "sample"]
-        )
+        assert metadata.validate_metadata(meta, required_keys=["temp", "sample"])
 
         # Should fail
         with pytest.raises(ValueError, match="Missing required"):
-            metadata.validate_metadata(
-                meta,
-                required_keys=["temp", "sample", "pressure"]
-            )
+            metadata.validate_metadata(meta, required_keys=["temp", "sample", "pressure"])
 
     def test_validate_custom_function(self):
         """Test validation with custom function."""
         meta = {"temp": 25.0, "ph": 7.2}
-        schema = {
-            "temp": float,
-            "ph": lambda x: 0 <= x <= 14  # pH range validator
-        }
+        schema = {"temp": float, "ph": lambda x: 0 <= x <= 14}  # pH range validator
 
         # Valid pH
         assert metadata.validate_metadata(meta, schema=schema)
@@ -172,11 +158,7 @@ class TestMetadataExtraction:
     def test_parse_key_value_custom_separators(self):
         """Test parsing with custom separators."""
         text = "temp:25;pressure:1.0;sample:A1"
-        result = metadata.parse_key_value_string(
-            text,
-            separator=":",
-            delimiter=";"
-        )
+        result = metadata.parse_key_value_string(text, separator=":", delimiter=";")
 
         assert result == {"temp": "25", "pressure": "1.0", "sample": "A1"}
 
@@ -201,15 +183,10 @@ class TestMetadataExtraction:
         """Test extraction from directory structure."""
         filepath = "/data/ProjectA/ExpB/SampleC/data.csv"
         result = metadata.extract_from_path(
-            filepath,
-            level_names=["sample", "experiment", "project"]
+            filepath, level_names=["sample", "experiment", "project"]
         )
 
-        assert result == {
-            "sample": "SampleC",
-            "experiment": "ExpB",
-            "project": "ProjectA"
-        }
+        assert result == {"sample": "SampleC", "experiment": "ExpB", "project": "ProjectA"}
 
     def test_parse_header_metadata(self):
         """Test parsing metadata from file headers."""
@@ -217,7 +194,7 @@ class TestMetadataExtraction:
             "# Temperature: 25",
             "# Pressure: 1.0",
             "# Sample: A1",
-            "# Operator: John Doe"
+            "# Operator: John Doe",
         ]
         result = metadata.parse_header_metadata(header_lines)
 
@@ -225,7 +202,7 @@ class TestMetadataExtraction:
             "Temperature": "25",
             "Pressure": "1.0",
             "Sample": "A1",
-            "Operator": "John Doe"
+            "Operator": "John Doe",
         }
 
 
@@ -250,8 +227,7 @@ class TestMetadataIntegration:
 
         # Separate into conditions and details
         conditions, details = metadata.separate_conditions_details(
-            combined,
-            condition_keys=["temp"]
+            combined, condition_keys=["temp"]
         )
 
         assert "temp" in conditions
@@ -260,7 +236,6 @@ class TestMetadataIntegration:
 
         # Validate conditions
         # Convert temp to float for validation
-        conditions_typed = {k: float(v) if k == "temp" else v
-                          for k, v in conditions.items()}
+        conditions_typed = {k: float(v) if k == "temp" else v for k, v in conditions.items()}
         schema = {"temp": float}
         assert metadata.validate_metadata(conditions_typed, schema=schema)

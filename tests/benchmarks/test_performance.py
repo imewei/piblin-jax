@@ -5,14 +5,15 @@ Benchmark tests comparing quantiq performance against baseline.
 Uses pytest-benchmark for systematic performance testing.
 """
 
-import pytest
 import numpy as np
-from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.transform.dataset.smoothing import GaussianSmooth, MovingAverageSmooth
-from quantiq.transform.dataset.normalization import MinMaxNormalize
-from quantiq.transform.pipeline import Pipeline
-from quantiq.fitting import fit_curve
+import pytest
+
 from quantiq.bayesian.models import PowerLawModel
+from quantiq.data.datasets import OneDimensionalDataset
+from quantiq.fitting import fit_curve
+from quantiq.transform.dataset.normalization import MinMaxNormalize
+from quantiq.transform.dataset.smoothing import GaussianSmooth, MovingAverageSmooth
+from quantiq.transform.pipeline import Pipeline
 
 
 class TestDatasetPerformance:
@@ -21,13 +22,11 @@ class TestDatasetPerformance:
     @pytest.mark.benchmark(group="dataset-creation")
     def test_benchmark_dataset_creation_small(self, benchmark):
         """Benchmark creating small dataset."""
+
         def create_dataset():
             x = np.linspace(0, 10, 100)
             y = np.sin(x)
-            return OneDimensionalDataset(
-                independent_variable_data=x,
-                dependent_variable_data=y
-            )
+            return OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         result = benchmark(create_dataset)
         assert result is not None
@@ -35,13 +34,11 @@ class TestDatasetPerformance:
     @pytest.mark.benchmark(group="dataset-creation")
     def test_benchmark_dataset_creation_large(self, benchmark):
         """Benchmark creating large dataset."""
+
         def create_dataset():
             x = np.linspace(0, 100, 10000)
             y = np.sin(x) + np.random.randn(10000) * 0.1
-            return OneDimensionalDataset(
-                independent_variable_data=x,
-                dependent_variable_data=y
-            )
+            return OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         result = benchmark(create_dataset)
         assert result is not None
@@ -51,10 +48,7 @@ class TestDatasetPerformance:
         """Benchmark dataset copying."""
         x = np.linspace(0, 100, 10000)
         y = np.sin(x)
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         result = benchmark(dataset.copy)
         assert result is not None
@@ -68,10 +62,7 @@ class TestTransformPerformance:
         """Benchmark Gaussian smoothing on small dataset."""
         x = np.linspace(0, 10, 100)
         y = np.sin(x) + np.random.randn(100) * 0.1
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
         transform = GaussianSmooth(sigma=1.0)
 
         result = benchmark(transform.apply_to, dataset, make_copy=True)
@@ -82,10 +73,7 @@ class TestTransformPerformance:
         """Benchmark Gaussian smoothing on large dataset."""
         x = np.linspace(0, 100, 10000)
         y = np.sin(x) + np.random.randn(10000) * 0.1
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
         transform = GaussianSmooth(sigma=2.0)
 
         result = benchmark(transform.apply_to, dataset, make_copy=True)
@@ -96,10 +84,7 @@ class TestTransformPerformance:
         """Benchmark moving average smoothing."""
         x = np.linspace(0, 100, 10000)
         y = np.sin(x) + np.random.randn(10000) * 0.1
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
         transform = MovingAverageSmooth(window_size=11)
 
         result = benchmark(transform.apply_to, dataset, make_copy=True)
@@ -110,10 +95,7 @@ class TestTransformPerformance:
         """Benchmark MinMax normalization."""
         x = np.linspace(0, 100, 10000)
         y = np.random.randn(10000) * 100 + 500
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
         transform = MinMaxNormalize()
 
         result = benchmark(transform.apply_to, dataset, make_copy=True)
@@ -128,15 +110,9 @@ class TestPipelinePerformance:
         """Benchmark simple 2-stage pipeline."""
         x = np.linspace(0, 100, 5000)
         y = np.sin(x) + np.random.randn(5000) * 0.1
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
-        pipeline = Pipeline([
-            GaussianSmooth(sigma=1.0),
-            MinMaxNormalize()
-        ])
+        pipeline = Pipeline([GaussianSmooth(sigma=1.0), MinMaxNormalize()])
 
         result = benchmark(pipeline.apply_to, dataset, make_copy=True)
         assert result is not None
@@ -146,17 +122,16 @@ class TestPipelinePerformance:
         """Benchmark complex 4-stage pipeline."""
         x = np.linspace(0, 100, 5000)
         y = np.sin(x) + np.random.randn(5000) * 0.2
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
-        pipeline = Pipeline([
-            MovingAverageSmooth(window_size=5),
-            GaussianSmooth(sigma=0.5),
-            MinMaxNormalize(),
-            GaussianSmooth(sigma=0.2)
-        ])
+        pipeline = Pipeline(
+            [
+                MovingAverageSmooth(window_size=5),
+                GaussianSmooth(sigma=0.5),
+                MinMaxNormalize(),
+                GaussianSmooth(sigma=0.2),
+            ]
+        )
 
         result = benchmark(pipeline.apply_to, dataset, make_copy=True)
         assert result is not None
@@ -182,7 +157,7 @@ class TestFittingPerformance:
 
         result = benchmark(fit_power_law)
         assert result is not None
-        assert 'params' in result
+        assert "params" in result
 
     @pytest.mark.benchmark(group="fitting")
     def test_benchmark_exponential_fitting(self, benchmark):
@@ -215,8 +190,7 @@ class TestBayesianPerformance:
         viscosity = viscosity_true + np.random.randn(30) * 5.0
 
         dataset = OneDimensionalDataset(
-            independent_variable_data=shear_rate,
-            dependent_variable_data=viscosity
+            independent_variable_data=shear_rate, dependent_variable_data=viscosity
         )
 
         def fit_bayesian():
@@ -227,7 +201,7 @@ class TestBayesianPerformance:
                 dataset.dependent_variable_data,
                 num_warmup=200,
                 num_samples=200,
-                num_chains=1
+                num_chains=1,
             )
             return model
 
@@ -243,10 +217,7 @@ class TestMemoryEfficiency:
         """Compare copy vs in-place transform performance."""
         x = np.linspace(0, 100, 10000)
         y = np.random.randn(10000)
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
         transform = MinMaxNormalize()
 
         # Benchmark in-place (should be faster)

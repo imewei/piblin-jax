@@ -9,14 +9,13 @@ This module tests:
 - with_uncertainty() API
 """
 
-import numpy as np
-import pytest
-from numpy.testing import assert_allclose
-
 import jax
 import jax.numpy as jnp
+import numpy as np
 import numpyro
 import numpyro.distributions as dist
+import pytest
+from numpy.testing import assert_allclose
 
 from quantiq.bayesian.base import BayesianModel
 from quantiq.data.datasets import OneDimensionalDataset
@@ -132,7 +131,7 @@ class TestMCMCSampling:
 
     def test_fit_simple_model(self, linear_data):
         """Test fitting a simple Bayesian linear model."""
-        x, y, true_slope, true_intercept = linear_data
+        x, y, _true_slope, _true_intercept = linear_data
 
         model = SimpleBayesianLinearModel(n_samples=500, n_warmup=250, n_chains=1)
         model.fit(x, y)
@@ -191,12 +190,8 @@ class TestCredibleIntervals:
 
     def test_get_credible_intervals_custom_level(self, fitted_model):
         """Test credible intervals with custom confidence level."""
-        lower_95, upper_95 = fitted_model.get_credible_intervals(
-            "slope", level=0.95, method="eti"
-        )
-        lower_68, upper_68 = fitted_model.get_credible_intervals(
-            "slope", level=0.68, method="eti"
-        )
+        lower_95, upper_95 = fitted_model.get_credible_intervals("slope", level=0.95, method="eti")
+        lower_68, upper_68 = fitted_model.get_credible_intervals("slope", level=0.68, method="eti")
 
         # 68% interval should be narrower than 95% interval
         assert (upper_68 - lower_68) < (upper_95 - lower_95)
@@ -267,9 +262,7 @@ class TestDatasetUncertaintyStorage:
         """Test that datasets have uncertainty attributes."""
         x = np.linspace(0, 10, 50)
         y = np.sin(x)
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x, dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Check uncertainty attributes exist
         assert hasattr(dataset, "_uncertainty_samples")
@@ -281,9 +274,7 @@ class TestDatasetUncertaintyStorage:
         """Test that datasets have no uncertainty initially."""
         x = np.linspace(0, 10, 50)
         y = np.sin(x)
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x, dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         assert dataset.has_uncertainty is False
         assert dataset.uncertainty_samples is None

@@ -7,9 +7,10 @@ This module tests Task Group 15:
 - BayesianModel integration with use_nlsq_init
 """
 
-import pytest
 import numpy as np
-from quantiq.fitting.nlsq import fit_curve, estimate_initial_parameters
+import pytest
+
+from quantiq.fitting.nlsq import estimate_initial_parameters, fit_curve
 
 
 def linear_model(x, a, b):
@@ -42,11 +43,11 @@ class TestFitCurve:
         result = fit_curve(linear_model, x, y, p0=np.array([1.0, 0.0]))
 
         # Check that fit succeeded
-        assert result['success']
-        assert result['method'] in ['nlsq', 'scipy']
+        assert result["success"]
+        assert result["method"] in ["nlsq", "scipy"]
 
         # Check parameter recovery
-        params = result['params']
+        params = result["params"]
         assert len(params) == 2
         assert np.abs(params[0] - 2.5) < 0.1  # Slope close to 2.5
         assert np.abs(params[1] - 1.0) < 0.2  # Intercept close to 1.0
@@ -62,9 +63,9 @@ class TestFitCurve:
         result = fit_curve(quadratic_model, x, y, p0=np.array([1.0, 1.0, 0.0]))
 
         # Check success
-        assert result['success']
-        assert result['params'] is not None
-        assert len(result['params']) == 3
+        assert result["success"]
+        assert result["params"] is not None
+        assert len(result["params"]) == 3
 
     def test_fit_with_weights(self):
         """Test fitting with weighted data (sigma parameter)."""
@@ -77,16 +78,11 @@ class TestFitCurve:
 
         # Fit with weights
         result = fit_curve(
-            linear_model,
-            x,
-            y,
-            p0=np.array([1.0, 0.0]),
-            sigma=sigma,
-            absolute_sigma=True
+            linear_model, x, y, p0=np.array([1.0, 0.0]), sigma=sigma, absolute_sigma=True
         )
 
-        assert result['success']
-        assert result['params'] is not None
+        assert result["success"]
+        assert result["params"] is not None
 
     def test_fit_returns_residuals(self):
         """Test that fit returns residuals."""
@@ -96,9 +92,9 @@ class TestFitCurve:
 
         result = fit_curve(linear_model, x, y, p0=np.array([1.0, 0.0]))
 
-        assert 'residuals' in result
-        assert result['residuals'] is not None
-        assert len(result['residuals']) == len(y)
+        assert "residuals" in result
+        assert result["residuals"] is not None
+        assert len(result["residuals"]) == len(y)
 
     def test_fit_returns_covariance(self):
         """Test that fit returns parameter covariance matrix."""
@@ -108,10 +104,10 @@ class TestFitCurve:
 
         result = fit_curve(linear_model, x, y, p0=np.array([1.0, 0.0]))
 
-        assert 'covariance' in result
+        assert "covariance" in result
         # Covariance might be None for some methods, but should be present
-        if result['covariance'] is not None:
-            assert result['covariance'].shape == (2, 2)
+        if result["covariance"] is not None:
+            assert result["covariance"].shape == (2, 2)
 
     def test_scipy_fallback(self):
         """Test that scipy fallback works."""
@@ -124,8 +120,8 @@ class TestFitCurve:
         result = fit_curve(linear_model, x, y, p0=np.array([1.0, 0.0]))
 
         # Should succeed regardless of whether NLSQ is available
-        assert result['success']
-        assert result['method'] in ['nlsq', 'scipy']
+        assert result["success"]
+        assert result["method"] in ["nlsq", "scipy"]
 
 
 class TestEstimateInitialParameters:
@@ -133,6 +129,7 @@ class TestEstimateInitialParameters:
 
     def test_estimate_single_parameter(self):
         """Test estimation for single parameter model."""
+
         def constant_model(x, a):
             return a * np.ones_like(x)
 
@@ -185,19 +182,20 @@ class TestBayesianModelIntegration:
 
     def test_bayesian_model_use_nlsq_init_parameter(self):
         """Test that BayesianModel accepts use_nlsq_init parameter."""
-        from quantiq.bayesian.base import BayesianModel
         import numpyro
         import numpyro.distributions as dist
 
+        from quantiq.bayesian.base import BayesianModel
+
         class SimpleLinearModel(BayesianModel):
             def model(self, x, y=None):
-                slope = numpyro.sample('slope', dist.Normal(0, 10))
-                intercept = numpyro.sample('intercept', dist.Normal(0, 10))
-                sigma = numpyro.sample('sigma', dist.HalfNormal(1))
+                slope = numpyro.sample("slope", dist.Normal(0, 10))
+                intercept = numpyro.sample("intercept", dist.Normal(0, 10))
+                sigma = numpyro.sample("sigma", dist.HalfNormal(1))
 
                 mu = slope * x + intercept
-                with numpyro.plate('data', x.shape[0]):
-                    numpyro.sample('obs', dist.Normal(mu, sigma), obs=y)
+                with numpyro.plate("data", x.shape[0]):
+                    numpyro.sample("obs", dist.Normal(mu, sigma), obs=y)
 
             def predict(self, x, credible_interval=0.95):
                 pass  # Not needed for this test
@@ -218,19 +216,20 @@ class TestBayesianModelIntegration:
 
     def test_bayesian_model_without_nlsq_init(self):
         """Test that BayesianModel still works without use_nlsq_init."""
-        from quantiq.bayesian.base import BayesianModel
         import numpyro
         import numpyro.distributions as dist
 
+        from quantiq.bayesian.base import BayesianModel
+
         class SimpleLinearModel(BayesianModel):
             def model(self, x, y=None):
-                slope = numpyro.sample('slope', dist.Normal(0, 10))
-                intercept = numpyro.sample('intercept', dist.Normal(0, 10))
-                sigma = numpyro.sample('sigma', dist.HalfNormal(1))
+                slope = numpyro.sample("slope", dist.Normal(0, 10))
+                intercept = numpyro.sample("intercept", dist.Normal(0, 10))
+                sigma = numpyro.sample("sigma", dist.HalfNormal(1))
 
                 mu = slope * x + intercept
-                with numpyro.plate('data', x.shape[0]):
-                    numpyro.sample('obs', dist.Normal(mu, sigma), obs=y)
+                with numpyro.plate("data", x.shape[0]):
+                    numpyro.sample("obs", dist.Normal(mu, sigma), obs=y)
 
             def predict(self, x, credible_interval=0.95):
                 pass

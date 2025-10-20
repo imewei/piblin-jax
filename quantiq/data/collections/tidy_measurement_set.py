@@ -5,8 +5,9 @@ MeasurementSet variant where measurements share comparable experimental conditio
 """
 
 from typing import Any
-from .measurement_set import MeasurementSet
+
 from .measurement import Measurement
+from .measurement_set import MeasurementSet
 
 
 class TidyMeasurementSet(MeasurementSet):
@@ -164,7 +165,7 @@ class TidyMeasurementSet(MeasurementSet):
 
         return unique_conditions
 
-    def filter_by_conditions(self, **condition_filters) -> 'TidyMeasurementSet':
+    def filter_by_conditions(self, **condition_filters) -> "TidyMeasurementSet":
         """
         Create a new TidyMeasurementSet with measurements matching conditions.
 
@@ -206,8 +207,7 @@ class TidyMeasurementSet(MeasurementSet):
         for measurement in self.measurements:
             # Check if all specified conditions match
             matches = all(
-                measurement.conditions.get(key) == value
-                for key, value in condition_filters.items()
+                measurement.conditions.get(key) == value for key, value in condition_filters.items()
             )
             if matches:
                 filtered.append(measurement)

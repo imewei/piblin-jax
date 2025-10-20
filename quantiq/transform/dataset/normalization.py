@@ -6,11 +6,11 @@ to standardize data for comparison and analysis.
 """
 
 from typing import Any
-import numpy as np
-from quantiq.transform.base import DatasetTransform
-from quantiq.data.datasets import OneDimensionalDataset
+
 from quantiq.backend import jnp
 from quantiq.backend.operations import jit
+from quantiq.data.datasets import OneDimensionalDataset
+from quantiq.transform.base import DatasetTransform
 
 
 class MinMaxNormalize(DatasetTransform):
@@ -322,8 +322,8 @@ class MaxNormalize(DatasetTransform):
 
 
 __all__ = [
-    'MinMaxNormalize',
-    'ZScoreNormalize',
-    'RobustNormalize',
-    'MaxNormalize',
+    "MaxNormalize",
+    "MinMaxNormalize",
+    "RobustNormalize",
+    "ZScoreNormalize",
 ]

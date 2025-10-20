@@ -6,13 +6,10 @@ Models use NumPyro for MCMC sampling and uncertainty quantification.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Tuple
-import numpy as np
-import jax.numpy as jnp
-from jax import random
+from typing import Any
 
-import numpyro
-import numpyro.distributions as dist
+import numpy as np
+from jax import random
 from numpyro.infer import MCMC, NUTS
 
 
@@ -228,9 +225,7 @@ class BayesianModel(ABC):
         return self
 
     @abstractmethod
-    def predict(
-        self, x: Any, credible_interval: float = 0.95
-    ) -> Dict[str, np.ndarray]:
+    def predict(self, x: Any, credible_interval: float = 0.95) -> dict[str, np.ndarray]:
         """
         Generate predictions with uncertainty.
 
@@ -271,7 +266,7 @@ class BayesianModel(ABC):
         raise NotImplementedError("Subclasses must implement predict()")
 
     @property
-    def samples(self) -> Dict[str, np.ndarray] | None:
+    def samples(self) -> dict[str, np.ndarray] | None:
         """
         Get posterior samples from MCMC.
 
@@ -294,7 +289,7 @@ class BayesianModel(ABC):
 
     def get_credible_intervals(
         self, param_name: str, level: float = 0.95, method: str = "eti"
-    ) -> Tuple[float, float]:
+    ) -> tuple[float, float]:
         """
         Get credible intervals for a parameter.
 
@@ -377,7 +372,7 @@ class BayesianModel(ABC):
 
         return (lower, upper)
 
-    def summary(self) -> Dict[str, Dict[str, float]]:
+    def summary(self) -> dict[str, dict[str, float]]:
         """
         Get summary statistics for all parameters.
 

@@ -5,21 +5,22 @@ Tests the complete hierarchy:
 ExperimentSet → Experiment → MeasurementSet → Measurement → Dataset
 """
 
-import pytest
 import numpy as np
-from quantiq.data.datasets import (
-    OneDimensionalDataset,
-    ZeroDimensionalDataset,
-    TwoDimensionalDataset,
-)
+import pytest
+
 from quantiq.data.collections import (
-    Measurement,
-    MeasurementSet,
     ConsistentMeasurementSet,
-    TidyMeasurementSet,
-    TabularMeasurementSet,
     Experiment,
     ExperimentSet,
+    Measurement,
+    MeasurementSet,
+    TabularMeasurementSet,
+    TidyMeasurementSet,
+)
+from quantiq.data.datasets import (
+    OneDimensionalDataset,
+    TwoDimensionalDataset,
+    ZeroDimensionalDataset,
 )
 
 
@@ -167,10 +168,12 @@ class TestConsistentMeasurementSet:
         m1 = Measurement(datasets=[OneDimensionalDataset(np.array([1]), np.array([2]))])
 
         # Second measurement: two datasets (different structure)
-        m2 = Measurement(datasets=[
-            OneDimensionalDataset(np.array([1]), np.array([2])),
-            OneDimensionalDataset(np.array([3]), np.array([4])),
-        ])
+        m2 = Measurement(
+            datasets=[
+                OneDimensionalDataset(np.array([1]), np.array([2])),
+                OneDimensionalDataset(np.array([3]), np.array([4])),
+            ]
+        )
 
         # Should fail - different number of datasets
         with pytest.raises(ValueError):
@@ -231,7 +234,7 @@ class TestTabularMeasurementSet:
     def test_tabular_measurement_set_with_labels(self):
         """Test TabularMeasurementSet with row and column labels."""
         measurements = [
-            Measurement(datasets=[OneDimensionalDataset(np.array([i]), np.array([i*2]))])
+            Measurement(datasets=[OneDimensionalDataset(np.array([i]), np.array([i * 2]))])
             for i in range(6)
         ]
 

@@ -6,8 +6,11 @@ where bin widths may vary.
 """
 
 from typing import Any
+
 import numpy as np
+
 from quantiq.backend import jnp, to_numpy
+
 from .base import Dataset
 
 
@@ -93,7 +96,7 @@ class Histogram(Dataset):
         bin_edges: Any,
         counts: Any,
         conditions: dict[str, Any] | None = None,
-        details: dict[str, Any] | None = None
+        details: dict[str, Any] | None = None,
     ):
         """
         Initialize histogram dataset.

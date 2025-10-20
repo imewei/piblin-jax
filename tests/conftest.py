@@ -2,8 +2,8 @@
 Pytest configuration and fixtures for quantiq tests.
 """
 
-import pytest
 import numpy as np
+import pytest
 
 
 # Pytest configuration hooks
@@ -15,15 +15,12 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "gpu: marks tests requiring GPU (deselect with '-m \"not gpu\"')"
     )
-    config.addinivalue_line(
-        "markers", "benchmark: marks performance benchmarks"
-    )
-    config.addinivalue_line(
-        "markers", "visual: marks visual regression tests (pytest-mpl)"
-    )
+    config.addinivalue_line("markers", "benchmark: marks performance benchmarks")
+    config.addinivalue_line("markers", "visual: marks visual regression tests (pytest-mpl)")
 
 
 # Common fixtures for testing
+
 
 @pytest.fixture
 def sample_1d_data():
@@ -66,7 +63,7 @@ def tolerance():
 
 
 # Hypothesis configuration for property-based testing
-from hypothesis import settings, Verbosity
+from hypothesis import Verbosity, settings
 
 # Register custom hypothesis profiles
 settings.register_profile("ci", max_examples=1000, deadline=None)

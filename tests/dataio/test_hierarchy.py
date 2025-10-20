@@ -7,10 +7,10 @@ This module tests:
 - Edge cases and empty inputs
 """
 
-import pytest
 import numpy as np
+import pytest
 
-from quantiq.data.collections import Measurement, MeasurementSet, Experiment, ExperimentSet
+from quantiq.data.collections import Experiment, ExperimentSet, Measurement, MeasurementSet
 from quantiq.data.datasets import OneDimensionalDataset
 from quantiq.dataio.hierarchy import (
     build_hierarchy,
@@ -27,14 +27,11 @@ class TestBuildHierarchy:
         """Create a simple measurement with dataset."""
         x = np.linspace(0, 10, 50)
         y = np.sin(x)
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
         return Measurement(
             datasets={"main": dataset},
             conditions={"temperature": 25.0, "sample": "A"},
-            details={"operator": "test"}
+            details={"operator": "test"},
         )
 
     @pytest.fixture
@@ -44,15 +41,14 @@ class TestBuildHierarchy:
         for i in range(3):
             x = np.linspace(0, 10, 50)
             y = np.sin(x) + 0.1 * np.random.randn(50)
-            dataset = OneDimensionalDataset(
-                independent_variable_data=x,
-                dependent_variable_data=y
+            dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
+            measurements.append(
+                Measurement(
+                    datasets={"main": dataset},
+                    conditions={"temperature": 25.0, "sample": "A"},
+                    details={"replicate": i},
+                )
             )
-            measurements.append(Measurement(
-                datasets={"main": dataset},
-                conditions={"temperature": 25.0, "sample": "A"},
-                details={"replicate": i}
-            ))
         return measurements
 
     @pytest.fixture
@@ -62,15 +58,14 @@ class TestBuildHierarchy:
         for temp in [20.0, 25.0, 30.0]:
             x = np.linspace(0, 10, 50)
             y = np.sin(x)
-            dataset = OneDimensionalDataset(
-                independent_variable_data=x,
-                dependent_variable_data=y
+            dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
+            measurements.append(
+                Measurement(
+                    datasets={"main": dataset},
+                    conditions={"temperature": temp, "sample": "A"},
+                    details={},
+                )
             )
-            measurements.append(Measurement(
-                datasets={"main": dataset},
-                conditions={"temperature": temp, "sample": "A"},
-                details={}
-            ))
         return measurements
 
     @pytest.fixture
@@ -80,15 +75,14 @@ class TestBuildHierarchy:
         for temp, sample in [(20.0, "A"), (25.0, "B"), (30.0, "C")]:
             x = np.linspace(0, 10, 50)
             y = np.sin(x)
-            dataset = OneDimensionalDataset(
-                independent_variable_data=x,
-                dependent_variable_data=y
+            dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
+            measurements.append(
+                Measurement(
+                    datasets={"main": dataset},
+                    conditions={"temperature": temp, "sample": sample, "pressure": 1.0},
+                    details={},
+                )
             )
-            measurements.append(Measurement(
-                datasets={"main": dataset},
-                conditions={"temperature": temp, "sample": sample, "pressure": 1.0},
-                details={}
-            ))
         return measurements
 
     def test_build_hierarchy_empty_list(self):
@@ -187,19 +181,18 @@ class TestBuildHierarchy:
         for val in [1, 2, 3]:
             x = np.linspace(0, 10, 50)
             y = np.sin(x)
-            dataset = OneDimensionalDataset(
-                independent_variable_data=x,
-                dependent_variable_data=y
+            dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
+            measurements.append(
+                Measurement(
+                    datasets={"main": dataset},
+                    conditions={
+                        "int_cond": val,
+                        "float_cond": float(val),
+                        "str_cond": f"sample_{val}",
+                    },
+                    details={},
+                )
             )
-            measurements.append(Measurement(
-                datasets={"main": dataset},
-                conditions={
-                    "int_cond": val,
-                    "float_cond": float(val),
-                    "str_cond": f"sample_{val}"
-                },
-                details={}
-            ))
 
         result = build_hierarchy(measurements)
 
@@ -225,15 +218,10 @@ class TestGroupByConditions:
         for cond in conditions_list:
             x = np.linspace(0, 10, 50)
             y = np.sin(x)
-            dataset = OneDimensionalDataset(
-                independent_variable_data=x,
-                dependent_variable_data=y
+            dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
+            measurements.append(
+                Measurement(datasets={"main": dataset}, conditions=cond, details={})
             )
-            measurements.append(Measurement(
-                datasets={"main": dataset},
-                conditions=cond,
-                details={}
-            ))
 
         return measurements
 
@@ -267,10 +255,7 @@ class TestGroupByConditions:
 
     def test_group_by_all_keys(self, varied_measurements):
         """Test grouping by all condition keys."""
-        groups = group_by_conditions(
-            varied_measurements,
-            ["temperature", "sample", "pressure"]
-        )
+        groups = group_by_conditions(varied_measurements, ["temperature", "sample", "pressure"])
 
         # Should have 5 unique combinations
         assert len(groups) == 5
@@ -290,19 +275,15 @@ class TestGroupByConditions:
 
         # Measurement with temperature
         dataset1 = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
-        measurements.append(Measurement(
-            datasets={"main": dataset1},
-            conditions={"temperature": 20.0},
-            details={}
-        ))
+        measurements.append(
+            Measurement(datasets={"main": dataset1}, conditions={"temperature": 20.0}, details={})
+        )
 
         # Measurement without temperature
         dataset2 = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
-        measurements.append(Measurement(
-            datasets={"main": dataset2},
-            conditions={"sample": "A"},
-            details={}
-        ))
+        measurements.append(
+            Measurement(datasets={"main": dataset2}, conditions={"sample": "A"}, details={})
+        )
 
         groups = group_by_conditions(measurements, ["temperature"])
 
@@ -334,14 +315,9 @@ class TestIdentifyVaryingConditions:
         """Test with single measurement (no varying conditions)."""
         x = np.linspace(0, 10, 50)
         y = np.sin(x)
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
         measurement = Measurement(
-            datasets={"main": dataset},
-            conditions={"temperature": 25.0, "sample": "A"},
-            details={}
+            datasets={"main": dataset}, conditions={"temperature": 25.0, "sample": "A"}, details={}
         )
 
         varying = identify_varying_conditions([measurement])
@@ -354,15 +330,14 @@ class TestIdentifyVaryingConditions:
         for i in range(3):
             x = np.linspace(0, 10, 50)
             y = np.sin(x)
-            dataset = OneDimensionalDataset(
-                independent_variable_data=x,
-                dependent_variable_data=y
+            dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
+            measurements.append(
+                Measurement(
+                    datasets={"main": dataset},
+                    conditions={"temperature": 25.0, "sample": "A"},
+                    details={"replicate": i},
+                )
             )
-            measurements.append(Measurement(
-                datasets={"main": dataset},
-                conditions={"temperature": 25.0, "sample": "A"},
-                details={"replicate": i}
-            ))
 
         varying = identify_varying_conditions(measurements)
 
@@ -374,15 +349,14 @@ class TestIdentifyVaryingConditions:
         for temp in [20.0, 25.0, 30.0]:
             x = np.linspace(0, 10, 50)
             y = np.sin(x)
-            dataset = OneDimensionalDataset(
-                independent_variable_data=x,
-                dependent_variable_data=y
+            dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
+            measurements.append(
+                Measurement(
+                    datasets={"main": dataset},
+                    conditions={"temperature": temp, "sample": "A"},
+                    details={},
+                )
             )
-            measurements.append(Measurement(
-                datasets={"main": dataset},
-                conditions={"temperature": temp, "sample": "A"},
-                details={}
-            ))
 
         varying = identify_varying_conditions(measurements)
 
@@ -394,15 +368,14 @@ class TestIdentifyVaryingConditions:
         for temp, sample in [(20.0, "A"), (25.0, "B"), (30.0, "C")]:
             x = np.linspace(0, 10, 50)
             y = np.sin(x)
-            dataset = OneDimensionalDataset(
-                independent_variable_data=x,
-                dependent_variable_data=y
+            dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
+            measurements.append(
+                Measurement(
+                    datasets={"main": dataset},
+                    conditions={"temperature": temp, "sample": sample, "pressure": 1.0},
+                    details={},
+                )
             )
-            measurements.append(Measurement(
-                datasets={"main": dataset},
-                conditions={"temperature": temp, "sample": sample, "pressure": 1.0},
-                details={}
-            ))
 
         varying = identify_varying_conditions(measurements)
 
@@ -421,15 +394,10 @@ class TestIdentifyVaryingConditions:
         for cond in conditions_list:
             x = np.linspace(0, 10, 50)
             y = np.sin(x)
-            dataset = OneDimensionalDataset(
-                independent_variable_data=x,
-                dependent_variable_data=y
+            dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
+            measurements.append(
+                Measurement(datasets={"main": dataset}, conditions=cond, details={})
             )
-            measurements.append(Measurement(
-                datasets={"main": dataset},
-                conditions=cond,
-                details={}
-            ))
 
         varying = identify_varying_conditions(measurements)
 
@@ -443,19 +411,15 @@ class TestIdentifyVaryingConditions:
         x = np.linspace(0, 10, 50)
         y = np.sin(x)
         dataset1 = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
-        measurements.append(Measurement(
-            datasets={"main": dataset1},
-            conditions={"value": 1},
-            details={}
-        ))
+        measurements.append(
+            Measurement(datasets={"main": dataset1}, conditions={"value": 1}, details={})
+        )
 
         # Float 1.0 (should be considered same as integer 1)
         dataset2 = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
-        measurements.append(Measurement(
-            datasets={"main": dataset2},
-            conditions={"value": 1.0},
-            details={}
-        ))
+        measurements.append(
+            Measurement(datasets={"main": dataset2}, conditions={"value": 1.0}, details={})
+        )
 
         varying = identify_varying_conditions(measurements)
 

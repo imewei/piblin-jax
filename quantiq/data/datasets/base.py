@@ -4,10 +4,9 @@ Base dataset class for quantiq.
 Provides the abstract base class for all dataset types with metadata support.
 """
 
+import copy
 from abc import ABC
 from typing import Any
-import copy
-from quantiq.backend import jnp, to_numpy, from_numpy
 
 
 class Dataset(ABC):
@@ -74,9 +73,7 @@ class Dataset(ABC):
     """
 
     def __init__(
-        self,
-        conditions: dict[str, Any] | None = None,
-        details: dict[str, Any] | None = None
+        self, conditions: dict[str, Any] | None = None, details: dict[str, Any] | None = None
     ):
         """
         Initialize Dataset with metadata.
@@ -160,10 +157,7 @@ class Dataset(ABC):
         or cached credible intervals. It does not validate the uncertainty
         quantification method or parameter values.
         """
-        return (
-            self._uncertainty_samples is not None
-            or self._credible_intervals is not None
-        )
+        return self._uncertainty_samples is not None or self._credible_intervals is not None
 
     @property
     def uncertainty_samples(self) -> Any | None:

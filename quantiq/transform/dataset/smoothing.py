@@ -5,11 +5,10 @@ This module provides various smoothing/filtering transforms to reduce
 noise in time series and spectral data.
 """
 
-import numpy as np
-from quantiq.transform.base import DatasetTransform
-from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.backend import jnp, BACKEND
+from quantiq.backend import jnp
 from quantiq.backend.operations import jit
+from quantiq.data.datasets import OneDimensionalDataset
+from quantiq.transform.base import DatasetTransform
 
 
 class MovingAverageSmooth(DatasetTransform):
@@ -88,7 +87,7 @@ class MovingAverageSmooth(DatasetTransform):
     @jit
     def _convolve(y, kernel):
         """JIT-compiled convolution for 3-5x speedup."""
-        return jnp.convolve(y, kernel, mode='same')
+        return jnp.convolve(y, kernel, mode="same")
 
     def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:
         """
@@ -177,7 +176,7 @@ class GaussianSmooth(DatasetTransform):
     @jit
     def _convolve(y, kernel):
         """JIT-compiled convolution for 3-5x speedup."""
-        return jnp.convolve(y, kernel, mode='same')
+        return jnp.convolve(y, kernel, mode="same")
 
     def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:
         """
@@ -211,4 +210,4 @@ class GaussianSmooth(DatasetTransform):
         return dataset
 
 
-__all__ = ['MovingAverageSmooth', 'GaussianSmooth']
+__all__ = ["GaussianSmooth", "MovingAverageSmooth"]

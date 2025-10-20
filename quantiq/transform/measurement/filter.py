@@ -8,12 +8,13 @@ This module provides transforms that operate on collections:
 - MergeReplicates: Merge measurements with identical conditions
 """
 
-from typing import Callable
-from quantiq.transform.base import MeasurementTransform, MeasurementSetTransform
+from collections.abc import Callable
+
+from quantiq.backend import jnp
 from quantiq.data.collections import Measurement, MeasurementSet
 from quantiq.data.datasets import Dataset, OneDimensionalDataset
 from quantiq.data.roi import LinearRegion
-from quantiq.backend import jnp
+from quantiq.transform.base import MeasurementSetTransform, MeasurementTransform
 
 
 class FilterDatasets(MeasurementTransform):
@@ -62,9 +63,7 @@ class FilterDatasets(MeasurementTransform):
     """
 
     def __init__(
-        self,
-        predicate: Callable[[Dataset], bool] | None = None,
-        dataset_type: type | None = None
+        self, predicate: Callable[[Dataset], bool] | None = None, dataset_type: type | None = None
     ):
         """
         Initialize FilterDatasets transform.
@@ -103,15 +102,12 @@ class FilterDatasets(MeasurementTransform):
         Measurement
             New measurement with filtered datasets
         """
-        filtered_datasets = [
-            ds for ds in measurement.datasets
-            if self.predicate(ds)
-        ]
+        filtered_datasets = [ds for ds in measurement.datasets if self.predicate(ds)]
 
         return Measurement(
             datasets=filtered_datasets,
             conditions=measurement.conditions,
-            details=measurement.details
+            details=measurement.details,
         )
 
 
@@ -184,15 +180,12 @@ class FilterMeasurements(MeasurementSetTransform):
         MeasurementSet
             New measurement set with filtered measurements
         """
-        filtered_measurements = [
-            m for m in measurement_set.measurements
-            if self.predicate(m)
-        ]
+        filtered_measurements = [m for m in measurement_set.measurements if self.predicate(m)]
 
         return MeasurementSet(
             measurements=filtered_measurements,
             conditions=measurement_set.conditions,
-            details=measurement_set.details
+            details=measurement_set.details,
         )
 
 
@@ -281,14 +274,12 @@ class SplitByRegion(MeasurementTransform):
                             independent_variable_data=x_region,
                             dependent_variable_data=y_region,
                             conditions=dataset.conditions,
-                            details=dataset.details
+                            details=dataset.details,
                         )
                         new_datasets.append(new_ds)
 
         return Measurement(
-            datasets=new_datasets,
-            conditions=measurement.conditions,
-            details=measurement.details
+            datasets=new_datasets, conditions=measurement.conditions, details=measurement.details
         )
 
 
@@ -331,7 +322,7 @@ class MergeReplicates(MeasurementSetTransform):
     - Single measurements (no replicates) are returned unchanged
     """
 
-    def __init__(self, strategy='average'):
+    def __init__(self, strategy="average"):
         """
         Initialize MergeReplicates transform.
 
@@ -341,7 +332,7 @@ class MergeReplicates(MeasurementSetTransform):
             Merge strategy: 'average' or 'concatenate'
         """
         super().__init__()
-        if strategy not in ['average', 'concatenate']:
+        if strategy not in ["average", "concatenate"]:
             raise ValueError("strategy must be 'average' or 'concatenate'")
         self.strategy = strategy
 
@@ -370,7 +361,7 @@ class MergeReplicates(MeasurementSetTransform):
 
         # Merge each group
         merged_measurements = []
-        for key, group in groups.items():
+        for _key, group in groups.items():
             if len(group) == 1:
                 merged_measurements.append(group[0])
             else:
@@ -380,7 +371,7 @@ class MergeReplicates(MeasurementSetTransform):
         return MeasurementSet(
             measurements=merged_measurements,
             conditions=measurement_set.conditions,
-            details=measurement_set.details
+            details=measurement_set.details,
         )
 
     def _merge_group(self, measurements: list[Measurement]) -> Measurement:
@@ -397,7 +388,7 @@ class MergeReplicates(MeasurementSetTransform):
         Measurement
             Merged measurement
         """
-        if self.strategy == 'average':
+        if self.strategy == "average":
             # Average the dependent variable data
             # Assumes all measurements have same structure
             first = measurements[0]
@@ -410,9 +401,7 @@ class MergeReplicates(MeasurementSetTransform):
                     y_values = []
                     for measurement in measurements:
                         if i < len(measurement.datasets):
-                            y_values.append(
-                                measurement.datasets[i].dependent_variable_data
-                            )
+                            y_values.append(measurement.datasets[i].dependent_variable_data)
 
                     # Average
                     y_avg = jnp.mean(jnp.stack(y_values), axis=0)
@@ -421,14 +410,12 @@ class MergeReplicates(MeasurementSetTransform):
                         independent_variable_data=dataset.independent_variable_data,
                         dependent_variable_data=y_avg,
                         conditions=dataset.conditions,
-                        details=dataset.details
+                        details=dataset.details,
                     )
                     averaged_datasets.append(averaged_ds)
 
             return Measurement(
-                datasets=averaged_datasets,
-                conditions=first.conditions,
-                details=first.details
+                datasets=averaged_datasets, conditions=first.conditions, details=first.details
             )
         else:
             # Concatenate not implemented yet
@@ -438,6 +425,6 @@ class MergeReplicates(MeasurementSetTransform):
 __all__ = [
     "FilterDatasets",
     "FilterMeasurements",
-    "SplitByRegion",
     "MergeReplicates",
+    "SplitByRegion",
 ]

@@ -13,24 +13,23 @@ The auto-detection system uses four layers:
 4. Fallback to generic readers
 """
 
+from collections.abc import Callable
 from pathlib import Path
-from typing import Type, Callable
 
 from .csv import GenericCSVReader
 from .txt import GenericTXTReader
 
-
 # Reader registry mapping file extensions to reader classes or factory functions
-_READER_REGISTRY: dict[str, Type | Callable] = {
-    '.csv': GenericCSVReader,
-    '.txt': GenericTXTReader,
-    '.tsv': lambda: GenericCSVReader(delimiter='\t'),
-    '.dat': GenericTXTReader,  # Common data file extension
-    '.data': GenericTXTReader,
+_READER_REGISTRY: dict[str, type | Callable] = {
+    ".csv": GenericCSVReader,
+    ".txt": GenericTXTReader,
+    ".tsv": lambda: GenericCSVReader(delimiter="\t"),
+    ".dat": GenericTXTReader,  # Common data file extension
+    ".data": GenericTXTReader,
 }
 
 
-def register_reader(extension: str, reader_class: Type | Callable):
+def register_reader(extension: str, reader_class: type | Callable):
     """Register a custom reader for a file extension.
 
     This allows users to add support for custom file formats without modifying
@@ -126,7 +125,7 @@ def detect_reader(filepath: str | Path):
 
     # Layer 4: Fallback to generic readers
     # Try to make an educated guess based on extension
-    if ext in ['.dat', '.data', '']:
+    if ext in [".dat", ".data", ""]:
         return GenericTXTReader()
     else:
         # Default to CSV reader for unknown extensions
@@ -183,9 +182,9 @@ def read_file(filepath: str | Path):
 
 # Export public API
 __all__ = [
-    'GenericCSVReader',
-    'GenericTXTReader',
-    'register_reader',
-    'detect_reader',
-    'read_file',
+    "GenericCSVReader",
+    "GenericTXTReader",
+    "detect_reader",
+    "read_file",
+    "register_reader",
 ]

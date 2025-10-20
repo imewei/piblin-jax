@@ -186,9 +186,9 @@ Example::
        Estimation of Nonlinear Parameters", SIAM Journal on Applied Mathematics.
 """
 
-from .nlsq import fit_curve, estimate_initial_parameters
+from .nlsq import estimate_initial_parameters, fit_curve
 
 __all__ = [
-    'fit_curve',
-    'estimate_initial_parameters',
+    "estimate_initial_parameters",
+    "fit_curve",
 ]

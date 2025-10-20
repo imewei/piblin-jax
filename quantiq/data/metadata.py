@@ -15,14 +15,14 @@ The module supports:
 - Extracting metadata from filenames, paths, and file headers
 """
 
-from typing import Any, Callable
 import re
+from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 
 def merge_metadata(
-    metadata_list: list[dict[str, Any]],
-    strategy: str = "override"
+    metadata_list: list[dict[str, Any]], strategy: str = "override"
 ) -> dict[str, Any]:
     """Merge multiple metadata dictionaries.
 
@@ -84,8 +84,7 @@ def merge_metadata(
                 elif strategy == "raise":
                     if result[key] != value:
                         raise ValueError(
-                            f"Metadata conflict for key '{key}': "
-                            f"{result[key]} vs {value}"
+                            f"Metadata conflict for key '{key}': {result[key]} vs {value}"
                         )
                 elif strategy == "list":
                     if isinstance(result[key], list):
@@ -101,8 +100,7 @@ def merge_metadata(
 
 
 def separate_conditions_details(
-    metadata: dict[str, Any],
-    condition_keys: list[str] | None = None
+    metadata: dict[str, Any], condition_keys: list[str] | None = None
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     """Separate metadata into conditions and details.
 
@@ -151,12 +149,24 @@ def separate_conditions_details(
         # Use heuristics to identify conditions
         # Conditions typically: temperature, pressure, concentration, etc.
         condition_key_patterns = [
-            'temp', 'temperature', 'pressure', 'concentration',
-            'frequency', 'strain', 'stress', 'time', 'wavelength',
-            'ph', 'humidity', 'voltage', 'current', 'power'
+            "temp",
+            "temperature",
+            "pressure",
+            "concentration",
+            "frequency",
+            "strain",
+            "stress",
+            "time",
+            "wavelength",
+            "ph",
+            "humidity",
+            "voltage",
+            "current",
+            "power",
         ]
         condition_keys = [
-            key for key in metadata.keys()
+            key
+            for key in metadata
             if any(pattern in key.lower() for pattern in condition_key_patterns)
         ]
 
@@ -169,7 +179,7 @@ def separate_conditions_details(
 def validate_metadata(
     metadata: dict[str, Any],
     schema: dict[str, type | Callable] | None = None,
-    required_keys: list[str] | None = None
+    required_keys: list[str] | None = None,
 ) -> bool:
     """Validate metadata against a schema.
 
@@ -243,18 +253,12 @@ def validate_metadata(
                 elif callable(expected_type):
                     # Custom validation function
                     if not expected_type(value):
-                        raise ValueError(
-                            f"Metadata '{key}' failed validation"
-                        )
+                        raise ValueError(f"Metadata '{key}' failed validation")
 
     return True
 
 
-def parse_key_value_string(
-    text: str,
-    separator: str = "=",
-    delimiter: str = ","
-) -> dict[str, str]:
+def parse_key_value_string(text: str, separator: str = "=", delimiter: str = ",") -> dict[str, str]:
     """Parse key-value pairs from a string.
 
     Extracts metadata from delimited key-value strings commonly found in
@@ -293,10 +297,7 @@ def parse_key_value_string(
     return metadata
 
 
-def extract_from_filename(
-    filename: str | Path,
-    pattern: str | None = None
-) -> dict[str, str]:
+def extract_from_filename(filename: str | Path, pattern: str | None = None) -> dict[str, str]:
     """Extract metadata from filename using regex pattern.
 
     Parses filenames to extract metadata using either custom regex patterns
@@ -356,10 +357,7 @@ def extract_from_filename(
     return metadata
 
 
-def extract_from_path(
-    filepath: str | Path,
-    level_names: list[str] | None = None
-) -> dict[str, str]:
+def extract_from_path(filepath: str | Path, level_names: list[str] | None = None) -> dict[str, str]:
     """Extract metadata from directory structure.
 
     Parses directory hierarchy to extract metadata based on directory names
@@ -395,15 +393,13 @@ def extract_from_path(
     if level_names and parts:
         for i, name in enumerate(level_names):
             if i < len(parts):
-                metadata[name] = parts[-(i+1)]
+                metadata[name] = parts[-(i + 1)]
 
     return metadata
 
 
 def parse_header_metadata(
-    header_lines: list[str],
-    comment_char: str = "#",
-    separator: str = ":"
+    header_lines: list[str], comment_char: str = "#", separator: str = ":"
 ) -> dict[str, str]:
     """Parse metadata from file header comment lines.
 
@@ -444,7 +440,7 @@ def parse_header_metadata(
     for line in header_lines:
         line = line.strip()
         if line.startswith(comment_char):
-            line = line[len(comment_char):].strip()
+            line = line[len(comment_char) :].strip()
             if separator in line:
                 key, value = line.split(separator, 1)
                 metadata[key.strip()] = value.strip()

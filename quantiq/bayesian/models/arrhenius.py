@@ -5,15 +5,15 @@ This module implements the Arrhenius equation for modeling temperature-dependent
 viscosity using Bayesian inference.
 """
 
-from typing import Any, Dict
-import numpy as np
-import jax.numpy as jnp
+from typing import Any
 
+import jax.numpy as jnp
+import numpy as np
 import numpyro
 import numpyro.distributions as dist
 
-from quantiq.bayesian.base import BayesianModel
 from quantiq.backend.operations import jit
+from quantiq.bayesian.base import BayesianModel
 
 
 class ArrheniusModel(BayesianModel):
@@ -184,9 +184,7 @@ class ArrheniusModel(BayesianModel):
         """
         return A_samples[:, None] * jnp.exp(Ea_samples[:, None] / (R * temperature[None, :]))
 
-    def predict(
-        self, temperature: Any, credible_interval: float = 0.95
-    ) -> Dict[str, np.ndarray]:
+    def predict(self, temperature: Any, credible_interval: float = 0.95) -> dict[str, np.ndarray]:
         """
         Predict viscosity with uncertainty at given temperatures.
 

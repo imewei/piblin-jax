@@ -16,14 +16,14 @@ Each model uses NumPyro for MCMC sampling and provides:
 - Full posterior samples
 """
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 from quantiq.bayesian import (
-    PowerLawModel,
     ArrheniusModel,
-    CrossModel,
     CarreauYasudaModel,
+    CrossModel,
+    PowerLawModel,
 )
 
 
@@ -56,7 +56,7 @@ def example_power_law():
     # Get credible intervals
     K_lower, K_upper = model.get_credible_intervals("K", level=0.95)
     n_lower, n_upper = model.get_credible_intervals("n", level=0.95)
-    print(f"\n95% Credible Intervals:")
+    print("\n95% Credible Intervals:")
     print(f"  K: [{K_lower:.2f}, {K_upper:.2f}]")
     print(f"  n: [{n_lower:.3f}, {n_upper:.3f}]")
 
@@ -109,8 +109,8 @@ def example_arrhenius():
     summary = model.summary()
     print("\nParameter Estimates:")
     print(f"  A = {summary['A']['mean']:.2e} Pa·s")
-    print(f"  Ea = {summary['Ea']['mean']/1000:.1f} kJ/mol")
-    print(f"  (True values: A={true_A:.2e}, Ea={true_Ea/1000:.1f} kJ/mol)")
+    print(f"  Ea = {summary['Ea']['mean'] / 1000:.1f} kJ/mol")
+    print(f"  (True values: A={true_A:.2e}, Ea={true_Ea / 1000:.1f} kJ/mol)")
 
     # Predict with uncertainty
     temp_pred = np.linspace(280, 400, 100)
@@ -183,12 +183,8 @@ def example_cross():
         alpha=0.3,
         label="95% CI",
     )
-    plt.axhline(
-        y=summary["eta0"]["mean"], color="r", linestyle="--", alpha=0.5, label="η₀"
-    )
-    plt.axhline(
-        y=summary["eta_inf"]["mean"], color="b", linestyle="--", alpha=0.5, label="η∞"
-    )
+    plt.axhline(y=summary["eta0"]["mean"], color="r", linestyle="--", alpha=0.5, label="η₀")
+    plt.axhline(y=summary["eta_inf"]["mean"], color="b", linestyle="--", alpha=0.5, label="η∞")
     plt.xlabel("Shear rate (s⁻¹)")
     plt.ylabel("Viscosity (Pa·s)")
     plt.title("Cross Model: Flow Curve with Plateaus")

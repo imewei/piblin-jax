@@ -9,15 +9,16 @@ This module tests:
 - JIT compilation effectiveness
 """
 
-import pytest
 import numpy as np
-from quantiq.backend import jnp, is_jax_available
+import pytest
+
+from quantiq.backend import is_jax_available, jnp
 from quantiq.data.datasets import OneDimensionalDataset
 from quantiq.transform.lambda_transform import (
-    LambdaTransform,
-    DynamicTransform,
-    AutoScaleTransform,
     AutoBaselineTransform,
+    AutoScaleTransform,
+    DynamicTransform,
+    LambdaTransform,
 )
 
 
@@ -29,10 +30,7 @@ class TestLambdaTransform:
         # Create test dataset
         x = jnp.array([1.0, 2.0, 3.0, 4.0, 5.0])
         y = jnp.array([2.0, 4.0, 6.0, 8.0, 10.0])
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Apply lambda transform: multiply by 2
         transform = LambdaTransform(lambda y: y * 2.0)
@@ -47,16 +45,10 @@ class TestLambdaTransform:
         # Create test dataset
         x = jnp.array([1.0, 2.0, 3.0, 4.0, 5.0])
         y = jnp.array([2.0, 4.0, 6.0, 8.0, 10.0])
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Apply lambda transform: divide y by max(x)
-        transform = LambdaTransform(
-            lambda x, y: y / jnp.max(x),
-            use_x=True
-        )
+        transform = LambdaTransform(lambda x, y: y / jnp.max(x), use_x=True)
         result = transform.apply_to(dataset, make_copy=True)
 
         # Check result
@@ -68,16 +60,10 @@ class TestLambdaTransform:
         # Create test dataset
         x = jnp.array([0.0, 0.5, 1.0, 1.5, 2.0])
         y = jnp.array([1.0, 2.0, 3.0, 4.0, 5.0])
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Apply JAX-compatible function: exp(y) * sin(y)
-        transform = LambdaTransform(
-            lambda y: jnp.exp(y) * jnp.sin(y),
-            jit_compile=True
-        )
+        transform = LambdaTransform(lambda y: jnp.exp(y) * jnp.sin(y), jit_compile=True)
         result = transform.apply_to(dataset, make_copy=True)
 
         # Check result
@@ -89,16 +75,10 @@ class TestLambdaTransform:
         # Create test dataset
         x = jnp.array([1.0, 2.0, 3.0])
         y = jnp.array([2.0, 4.0, 6.0])
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Apply without JIT
-        transform = LambdaTransform(
-            lambda y: y + 1.0,
-            jit_compile=False
-        )
+        transform = LambdaTransform(lambda y: y + 1.0, jit_compile=False)
         result = transform.apply_to(dataset, make_copy=True)
 
         # Check result
@@ -115,10 +95,7 @@ class TestLambdaTransform:
         # Create test dataset
         x = jnp.array([1.0, 2.0, 3.0])
         y = jnp.array([2.0, 4.0, 6.0])
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Apply transform
         transform = LambdaTransform(lambda y: y * 2.0)
@@ -136,10 +113,7 @@ class TestAutoScaleTransform:
         # Create test dataset
         x = jnp.array([1.0, 2.0, 3.0, 4.0, 5.0])
         y = jnp.array([10.0, 20.0, 30.0, 40.0, 50.0])
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Apply autoscale
         transform = AutoScaleTransform(target_min=0.0, target_max=1.0)
@@ -155,10 +129,7 @@ class TestAutoScaleTransform:
         # Create test dataset
         x = jnp.array([1.0, 2.0, 3.0])
         y = jnp.array([5.0, 10.0, 15.0])
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Apply autoscale
         transform = AutoScaleTransform(target_min=-1.0, target_max=1.0)
@@ -174,10 +145,7 @@ class TestAutoScaleTransform:
         # Create dataset with constant values
         x = jnp.array([1.0, 2.0, 3.0])
         y = jnp.array([5.0, 5.0, 5.0])
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Apply autoscale
         transform = AutoScaleTransform(target_min=0.0, target_max=1.0)
@@ -196,13 +164,10 @@ class TestAutoBaselineTransform:
         # Create test dataset with baseline offset
         x = jnp.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0])
         y = jnp.array([5.0, 5.1, 4.9, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0])
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Apply baseline correction (first 4 points)
-        transform = AutoBaselineTransform(n_points=4, method='first')
+        transform = AutoBaselineTransform(n_points=4, method="first")
         result = transform.apply_to(dataset, make_copy=True)
 
         # Baseline should be ~5.0, so first points should be ~0
@@ -214,13 +179,10 @@ class TestAutoBaselineTransform:
         # Create test dataset
         x = jnp.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0])
         y = jnp.array([10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 5.0, 5.1, 4.9, 5.0])
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Apply baseline correction (last 4 points)
-        transform = AutoBaselineTransform(n_points=4, method='last')
+        transform = AutoBaselineTransform(n_points=4, method="last")
         result = transform.apply_to(dataset, make_copy=True)
 
         # Baseline should be ~5.0, so last points should be ~0
@@ -232,13 +194,10 @@ class TestAutoBaselineTransform:
         # Create test dataset
         x = jnp.array([1.0, 2.0, 3.0, 4.0, 5.0])
         y = jnp.array([10.0, 5.0, 15.0, 8.0, 12.0])
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Apply baseline correction (min)
-        transform = AutoBaselineTransform(method='min')
+        transform = AutoBaselineTransform(method="min")
         result = transform.apply_to(dataset, make_copy=True)
 
         # Minimum should be 0
@@ -249,12 +208,9 @@ class TestAutoBaselineTransform:
         """AutoBaselineTransform raises ValueError for invalid method."""
         x = jnp.array([1.0, 2.0, 3.0])
         y = jnp.array([2.0, 4.0, 6.0])
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
-        transform = AutoBaselineTransform(method='invalid')
+        transform = AutoBaselineTransform(method="invalid")
         with pytest.raises(ValueError, match="Unknown method"):
             transform.apply_to(dataset, make_copy=True)
 
@@ -269,17 +225,16 @@ class TestDynamicTransformCombinations:
         # Create test dataset
         x = jnp.array([1.0, 2.0, 3.0, 4.0, 5.0])
         y = jnp.array([15.0, 15.1, 14.9, 20.0, 25.0])
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Create pipeline: baseline correction -> scale -> multiply by 2
-        pipeline = Pipeline([
-            AutoBaselineTransform(n_points=3, method='first'),
-            AutoScaleTransform(target_min=0.0, target_max=1.0),
-            LambdaTransform(lambda y: y * 2.0),
-        ])
+        pipeline = Pipeline(
+            [
+                AutoBaselineTransform(n_points=3, method="first"),
+                AutoScaleTransform(target_min=0.0, target_max=1.0),
+                LambdaTransform(lambda y: y * 2.0),
+            ]
+        )
 
         # Apply pipeline
         result = pipeline.apply_to(dataset, make_copy=True)

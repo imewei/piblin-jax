@@ -25,96 +25,92 @@ Usage:
 __version__ = "0.1.0"
 
 # Import submodules
-from . import bayesian
-from . import data
-from . import dataio
-from . import transform
-from . import backend
-
-# Core dataset classes
-from .data.datasets import (
-    OneDimensionalDataset,
-    TwoDimensionalDataset,
-    ThreeDimensionalDataset,
-    ZeroDimensionalDataset,
-    OneDimensionalCompositeDataset,
-    Histogram,
-    Distribution,
-)
-
-# Collection classes
-from .data.collections import (
-    Measurement,
-    MeasurementSet,
-    Experiment,
-    ExperimentSet,
-    ConsistentMeasurementSet,
-    TabularMeasurementSet,
-    TidyMeasurementSet,
-)
-
-# Transform classes
-from .transform.pipeline import Pipeline
-from .transform.lambda_transform import LambdaTransform
-from .transform.base import Transform, DatasetTransform
+from . import backend, bayesian, data, dataio, transform
 
 # Bayesian classes
 from .bayesian.base import BayesianModel
 from .bayesian.models import (
-    PowerLawModel,
     ArrheniusModel,
-    CrossModel,
     CarreauYasudaModel,
+    CrossModel,
+    PowerLawModel,
+)
+
+# Collection classes
+from .data.collections import (
+    ConsistentMeasurementSet,
+    Experiment,
+    ExperimentSet,
+    Measurement,
+    MeasurementSet,
+    TabularMeasurementSet,
+    TidyMeasurementSet,
+)
+
+# Core dataset classes
+from .data.datasets import (
+    Distribution,
+    Histogram,
+    OneDimensionalCompositeDataset,
+    OneDimensionalDataset,
+    ThreeDimensionalDataset,
+    TwoDimensionalDataset,
+    ZeroDimensionalDataset,
 )
 
 # Data I/O
-from .dataio import read_files, read_directory, read_directories
+from .dataio import read_directories, read_directory, read_files
 from .dataio.readers.csv import GenericCSVReader
 
 # Fitting
-from .fitting import fit_curve, estimate_initial_parameters
+from .fitting import estimate_initial_parameters, fit_curve
+from .transform.base import DatasetTransform, Transform
+from .transform.lambda_transform import LambdaTransform
+
+# Transform classes
+from .transform.pipeline import Pipeline
 
 __all__ = [
+    "ArrheniusModel",
+    # Bayesian classes
+    "BayesianModel",
+    "CarreauYasudaModel",
+    "ConsistentMeasurementSet",
+    "CrossModel",
+    "DatasetTransform",
+    "Distribution",
+    "Experiment",
+    "ExperimentSet",
+    "GenericCSVReader",
+    "Histogram",
+    "LambdaTransform",
+    # Collection classes
+    "Measurement",
+    "MeasurementSet",
+    "OneDimensionalCompositeDataset",
+    # Dataset classes
+    "OneDimensionalDataset",
+    # Transform classes
+    "Pipeline",
+    "PowerLawModel",
+    "TabularMeasurementSet",
+    "ThreeDimensionalDataset",
+    "TidyMeasurementSet",
+    "Transform",
+    "TwoDimensionalDataset",
+    "ZeroDimensionalDataset",
     "__version__",
+    "backend",
     # Submodules
     "bayesian",
     "data",
     "dataio",
-    "transform",
-    "backend",
-    # Dataset classes
-    "OneDimensionalDataset",
-    "TwoDimensionalDataset",
-    "ThreeDimensionalDataset",
-    "ZeroDimensionalDataset",
-    "OneDimensionalCompositeDataset",
-    "Histogram",
-    "Distribution",
-    # Collection classes
-    "Measurement",
-    "MeasurementSet",
-    "Experiment",
-    "ExperimentSet",
-    "ConsistentMeasurementSet",
-    "TabularMeasurementSet",
-    "TidyMeasurementSet",
-    # Transform classes
-    "Pipeline",
-    "LambdaTransform",
-    "Transform",
-    "DatasetTransform",
-    # Bayesian classes
-    "BayesianModel",
-    "PowerLawModel",
-    "ArrheniusModel",
-    "CrossModel",
-    "CarreauYasudaModel",
-    # Data I/O
-    "read_files",
-    "read_directory",
-    "read_directories",
-    "GenericCSVReader",
+    "estimate_initial_parameters",
     # Fitting
     "fit_curve",
-    "estimate_initial_parameters",
+    "read_directories",
+    "read_directory",
+    # Data I/O
+    "read_files",
+    "transform",
 ]

@@ -5,8 +5,11 @@ Used for volumetric data, 3D imaging, or data varying with three parameters.
 """
 
 from typing import Any
+
 import numpy as np
+
 from quantiq.backend import jnp, to_numpy
+
 from .base import Dataset
 
 
@@ -105,7 +108,7 @@ class ThreeDimensionalDataset(Dataset):
         independent_variable_data_3: Any,
         dependent_variable_data: Any,
         conditions: dict[str, Any] | None = None,
-        details: dict[str, Any] | None = None
+        details: dict[str, Any] | None = None,
     ):
         """
         Initialize three-dimensional dataset.
@@ -142,7 +145,7 @@ class ThreeDimensionalDataset(Dataset):
         expected_shape = (
             self._independent_variable_data_1.shape[0],
             self._independent_variable_data_2.shape[0],
-            self._independent_variable_data_3.shape[0]
+            self._independent_variable_data_3.shape[0],
         )
 
         if self._dependent_variable_data.shape != expected_shape:

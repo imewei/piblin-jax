@@ -5,8 +5,9 @@ MeasurementSet variant where all measurements have the same dataset structure.
 """
 
 from typing import Any
-from .measurement_set import MeasurementSet
+
 from .measurement import Measurement
+from .measurement_set import MeasurementSet
 
 
 class ConsistentMeasurementSet(MeasurementSet):

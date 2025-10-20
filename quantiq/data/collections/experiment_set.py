@@ -5,6 +5,7 @@ Top-level container for multiple Experiment objects representing a study or proj
 """
 
 from typing import Any
+
 from .experiment import Experiment
 
 
@@ -280,8 +281,7 @@ class ExperimentSet:
         for experiment in self.experiments:
             # Check if all specified conditions match
             matches = all(
-                experiment.conditions.get(key) == value
-                for key, value in condition_filters.items()
+                experiment.conditions.get(key) == value for key, value in condition_filters.items()
             )
             if matches:
                 matching.append(experiment)

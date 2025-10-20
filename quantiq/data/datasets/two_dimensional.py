@@ -6,8 +6,11 @@ spatial imaging data, or parameter sweeps.
 """
 
 from typing import Any
+
 import numpy as np
+
 from quantiq.backend import jnp, to_numpy
+
 from .base import Dataset
 
 
@@ -97,7 +100,7 @@ class TwoDimensionalDataset(Dataset):
         independent_variable_data_2: Any,
         dependent_variable_data: Any,
         conditions: dict[str, Any] | None = None,
-        details: dict[str, Any] | None = None
+        details: dict[str, Any] | None = None,
     ):
         """
         Initialize two-dimensional dataset.
@@ -130,7 +133,7 @@ class TwoDimensionalDataset(Dataset):
         # Validation: check dimension compatibility
         expected_shape = (
             self._independent_variable_data_1.shape[0],
-            self._independent_variable_data_2.shape[0]
+            self._independent_variable_data_2.shape[0],
         )
 
         if self._dependent_variable_data.shape != expected_shape:

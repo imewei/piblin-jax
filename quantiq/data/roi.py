@@ -10,7 +10,6 @@ within specified regions while preserving data outside those regions.
 """
 
 import numpy as np
-from quantiq.backend import jnp
 
 
 class LinearRegion:
@@ -72,9 +71,7 @@ class LinearRegion:
             If x_min >= x_max
         """
         if x_min >= x_max:
-            raise ValueError(
-                f"x_min ({x_min}) must be less than x_max ({x_max})"
-            )
+            raise ValueError(f"x_min ({x_min}) must be less than x_max ({x_max})")
 
         self.x_min = x_min
         self.x_max = x_max
@@ -223,4 +220,4 @@ class CompoundRegion:
         return f"CompoundRegion({len(self.regions)} regions)"
 
 
-__all__ = ["LinearRegion", "CompoundRegion"]
+__all__ = ["CompoundRegion", "LinearRegion"]

@@ -5,12 +5,8 @@ from flat lists of measurements by analyzing conditions and grouping data.
 """
 
 from typing import Any
-from quantiq.data.collections import (
-    Measurement,
-    MeasurementSet,
-    Experiment,
-    ExperimentSet
-)
+
+from quantiq.data.collections import Experiment, ExperimentSet, Measurement, MeasurementSet
 
 
 def build_hierarchy(measurements: list[Measurement]) -> ExperimentSet:
@@ -98,27 +94,17 @@ def build_hierarchy(measurements: list[Measurement]) -> ExperimentSet:
     # For simplicity, create one Experiment with one MeasurementSet
     # containing all measurements
     # More sophisticated grouping can be added in future versions
-    measurement_set = MeasurementSet(
-        measurements=measurements,
-        conditions=constant_conditions
-    )
+    measurement_set = MeasurementSet(measurements=measurements, conditions=constant_conditions)
 
-    experiment = Experiment(
-        measurement_sets=[measurement_set],
-        conditions=constant_conditions
-    )
+    experiment = Experiment(measurement_sets=[measurement_set], conditions=constant_conditions)
 
-    experiment_set = ExperimentSet(
-        experiments=[experiment],
-        conditions=constant_conditions
-    )
+    experiment_set = ExperimentSet(experiments=[experiment], conditions=constant_conditions)
 
     return experiment_set
 
 
 def group_by_conditions(
-    measurements: list[Measurement],
-    grouping_keys: list[str]
+    measurements: list[Measurement], grouping_keys: list[str]
 ) -> dict[tuple[Any, ...], list[Measurement]]:
     """Group measurements by specific condition keys.
 
@@ -162,10 +148,7 @@ def group_by_conditions(
 
     for measurement in measurements:
         # Extract values for grouping keys
-        key_values = tuple(
-            measurement.conditions.get(key, None)
-            for key in grouping_keys
-        )
+        key_values = tuple(measurement.conditions.get(key, None) for key in grouping_keys)
 
         if key_values not in groups:
             groups[key_values] = []
@@ -175,9 +158,7 @@ def group_by_conditions(
     return groups
 
 
-def identify_varying_conditions(
-    measurements: list[Measurement]
-) -> set[str]:
+def identify_varying_conditions(measurements: list[Measurement]) -> set[str]:
     """Identify which conditions vary across measurements.
 
     Parameters

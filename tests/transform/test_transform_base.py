@@ -9,18 +9,19 @@ This module tests the foundation of the transform system including:
 - Lazy evaluation
 """
 
-import pytest
 import numpy as np
+import pytest
+
 from quantiq.backend import jnp
+from quantiq.data.collections import Experiment, ExperimentSet, Measurement, MeasurementSet
 from quantiq.data.datasets import Dataset, OneDimensionalDataset
-from quantiq.data.collections import Measurement, MeasurementSet, Experiment, ExperimentSet
 from quantiq.transform.base import (
-    Transform,
     DatasetTransform,
-    MeasurementTransform,
-    MeasurementSetTransform,
-    ExperimentTransform,
     ExperimentSetTransform,
+    ExperimentTransform,
+    MeasurementSetTransform,
+    MeasurementTransform,
+    Transform,
 )
 from quantiq.transform.pipeline import Pipeline
 
@@ -35,7 +36,7 @@ class ConcreteDatasetTransform(DatasetTransform):
     def _apply(self, target: Dataset) -> Dataset:
         """Multiply dataset values by a factor."""
         # Simple transform: multiply dependent variable values
-        if hasattr(target, '_dependent_variable_data'):
+        if hasattr(target, "_dependent_variable_data"):
             target._dependent_variable_data = target._dependent_variable_data * self.multiplier
         return target
 
@@ -50,7 +51,7 @@ class ConcreteMeasurementTransform(MeasurementTransform):
     def _apply(self, target: Measurement) -> Measurement:
         """Add offset to all datasets in measurement."""
         for dataset in target.datasets.values():
-            if hasattr(dataset, '_dependent_variable_data'):
+            if hasattr(dataset, "_dependent_variable_data"):
                 dataset._dependent_variable_data = dataset._dependent_variable_data + self.offset
         return target
 
@@ -78,10 +79,7 @@ class TestTransformApplication:
         # Create test dataset
         x = jnp.array([1.0, 2.0, 3.0])
         y = jnp.array([2.0, 4.0, 6.0])
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Apply transform
         transform = ConcreteDatasetTransform(multiplier=3.0)
@@ -109,10 +107,7 @@ class TestTransformApplication:
         """Transform can be called directly as shorthand for apply_to."""
         x = jnp.array([1.0, 2.0, 3.0])
         y = jnp.array([2.0, 4.0, 6.0])
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         transform = ConcreteDatasetTransform(multiplier=2.0)
 
@@ -130,10 +125,7 @@ class TestMakeCopyParameter:
         """make_copy=True creates a new object, leaving original unchanged."""
         x = jnp.array([1.0, 2.0, 3.0])
         y = jnp.array([2.0, 4.0, 6.0])
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         original_y = dataset.dependent_variable_data.copy()
 
@@ -153,10 +145,7 @@ class TestMakeCopyParameter:
         """make_copy=False modifies the original object."""
         x = jnp.array([1.0, 2.0, 3.0])
         y = jnp.array([2.0, 4.0, 6.0])
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         original_y = y.copy()
 
@@ -203,10 +192,7 @@ class TestPipelineComposition:
         """Pipeline applies transforms sequentially."""
         x = jnp.array([1.0, 2.0, 3.0])
         y = jnp.array([2.0, 4.0, 6.0])
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Create pipeline: multiply by 2, then by 3 (net: 6x)
         t1 = ConcreteDatasetTransform(multiplier=2.0)
@@ -223,10 +209,7 @@ class TestPipelineComposition:
         """Pipeline makes only one copy at entry, then transforms in-place."""
         x = jnp.array([1.0, 2.0, 3.0])
         y = jnp.array([2.0, 4.0, 6.0])
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         original_y = dataset.dependent_variable_data.copy()
 

@@ -12,37 +12,37 @@ All transforms are JAX-compatible with JIT compilation support
 and graceful fallback to NumPy when JAX is unavailable.
 """
 
-from .interpolate import Interpolate1D
-from .smoothing import MovingAverageSmooth, GaussianSmooth
-from .baseline import PolynomialBaseline, AsymmetricLeastSquaresBaseline
-from .normalization import (
-    MinMaxNormalize,
-    ZScoreNormalize,
-    RobustNormalize,
-    MaxNormalize,
-)
+from .baseline import AsymmetricLeastSquaresBaseline, PolynomialBaseline
 from .calculus import (
-    Derivative,
     CumulativeIntegral,
     DefiniteIntegral,
+    Derivative,
 )
+from .interpolate import Interpolate1D
+from .normalization import (
+    MaxNormalize,
+    MinMaxNormalize,
+    RobustNormalize,
+    ZScoreNormalize,
+)
+from .smoothing import GaussianSmooth, MovingAverageSmooth
 
 __all__ = [
-    # Interpolation
-    "Interpolate1D",
-    # Smoothing
-    "MovingAverageSmooth",
-    "GaussianSmooth",
-    # Baseline correction
-    "PolynomialBaseline",
     "AsymmetricLeastSquaresBaseline",
-    # Normalization
-    "MinMaxNormalize",
-    "ZScoreNormalize",
-    "RobustNormalize",
-    "MaxNormalize",
-    # Calculus
-    "Derivative",
     "CumulativeIntegral",
     "DefiniteIntegral",
+    # Calculus
+    "Derivative",
+    "GaussianSmooth",
+    # Interpolation
+    "Interpolate1D",
+    "MaxNormalize",
+    # Normalization
+    "MinMaxNormalize",
+    # Smoothing
+    "MovingAverageSmooth",
+    # Baseline correction
+    "PolynomialBaseline",
+    "RobustNormalize",
+    "ZScoreNormalize",
 ]

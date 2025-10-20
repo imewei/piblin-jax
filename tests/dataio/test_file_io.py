@@ -1,13 +1,13 @@
 """Tests for file I/O system including readers, auto-detection, and hierarchy building."""
 
-import pytest
 from pathlib import Path
+
 import numpy as np
+import pytest
 
-from quantiq.dataio.readers import GenericCSVReader, GenericTXTReader, read_file, detect_reader
-from quantiq.dataio import read_files, read_directory
-from quantiq.data.collections import Measurement, ExperimentSet
-
+from quantiq.data.collections import ExperimentSet, Measurement
+from quantiq.dataio import read_directory, read_files
+from quantiq.dataio.readers import GenericCSVReader, GenericTXTReader, detect_reader, read_file
 
 # Test data directory
 TEST_DATA_DIR = Path(__file__).parent / "test_data"
@@ -37,12 +37,10 @@ class TestGenericCSVReader:
 
         # Verify data values
         np.testing.assert_array_equal(
-            dataset.independent_variable_data,
-            np.array([0.0, 1.0, 2.0, 3.0, 4.0])
+            dataset.independent_variable_data, np.array([0.0, 1.0, 2.0, 3.0, 4.0])
         )
         np.testing.assert_array_equal(
-            dataset.dependent_variable_data,
-            np.array([0.0, 1.0, 4.0, 9.0, 16.0])
+            dataset.dependent_variable_data, np.array([0.0, 1.0, 4.0, 9.0, 16.0])
         )
 
     def test_csv_reader_multicolumn(self):
@@ -56,10 +54,7 @@ class TestGenericCSVReader:
         # All should share the same independent variable
         x_expected = np.array([0.0, 1.0, 2.0, 3.0])
         for dataset in measurement.datasets:
-            np.testing.assert_array_equal(
-                dataset.independent_variable_data,
-                x_expected
-            )
+            np.testing.assert_array_equal(dataset.independent_variable_data, x_expected)
 
     def test_csv_reader_different_delimiter(self):
         """Test CSV reader with different delimiters."""
@@ -93,12 +88,10 @@ class TestGenericTXTReader:
 
         # Verify data values
         np.testing.assert_array_equal(
-            dataset.independent_variable_data,
-            np.array([0.0, 1.0, 2.0, 3.0])
+            dataset.independent_variable_data, np.array([0.0, 1.0, 2.0, 3.0])
         )
         np.testing.assert_array_equal(
-            dataset.dependent_variable_data,
-            np.array([0.0, 3.0, 6.0, 9.0])
+            dataset.dependent_variable_data, np.array([0.0, 3.0, 6.0, 9.0])
         )
 
 

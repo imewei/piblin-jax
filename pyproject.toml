@@ -239,3 +239,103 @@ skips = [
 ]
 # Severity levels: LOW, MEDIUM, HIGH
 # Confidence levels: LOW, MEDIUM, HIGH
+
+[tool.ruff]
+# Ruff configuration - replaces black, isort, flake8, pyupgrade
+# Optimized for scientific Python with JAX/NumPy
+
+# Target Python 3.13+ (compatible with 3.14)
+target-version = "py313"
+
+# Line length to match black
+line-length = 100
+
+# Enable auto-fixing where possible
+fix = true
+show-fixes = true
+
+# File patterns to include
+include = ["*.py", "*.pyi"]
+
+# Exclude generated and vendored files
+extend-exclude = [
+    "__pycache__",
+    ".venv",
+    "venv",
+    ".eggs",
+    "*.egg",
+    "build",
+    "dist",
+    ".git",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    "docs/_build",
+]
+
+[tool.ruff.lint]
+# Enable these rule sets
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "N",    # pep8-naming
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "SIM",  # flake8-simplify
+    "RUF",  # ruff-specific rules
+]
+
+# Disable overly strict rules for scientific code
+ignore = [
+    "E501",   # line-too-long (handled by formatter)
+    "N802",   # function-name-should-be-lowercase (allow single-letter math names)
+    "N803",   # argument-name-should-be-lowercase (allow single-letter math names)
+    "N806",   # variable-in-function-should-be-lowercase (allow math notation)
+    "N816",   # mixedCase variable in global scope (allow scientific notation like true_K)
+    "RUF001", # ambiguous unicode character (allow Greek letters: σ, γ, η, etc.)
+    "RUF002", # ambiguous unicode in docstring (allow Greek letters in scientific docs)
+    "RUF003", # ambiguous unicode in comment (allow Greek letters in scientific comments)
+    "SIM102", # use single if with and (sometimes less readable)
+    "SIM108", # use-ternary-instead-of-if-else (sometimes less readable)
+    "B008",   # do-not-perform-function-call-in-argument-defaults (needed for JAX)
+]
+
+# Allow unused variables prefixed with underscore
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.per-file-ignores]
+# Allow unused imports in __init__.py
+"__init__.py" = ["F401", "F403"]
+# Allow function calls in arguments for conftest.py (fixtures) and late imports
+"conftest.py" = ["F401", "E402"]
+"tests/conftest.py" = ["E402"]
+# Allow all in tests, plus unescaped regex metacharacters (intentional patterns)
+"tests/**/*.py" = ["F841", "F401", "RUF043"]
+# Allow late imports in examples (for demonstration purposes)
+"examples/**/*.py" = ["E402"]
+# Allow abstract classes without abstract methods (valid design choice)
+"quantiq/data/datasets/base.py" = ["B024"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["quantiq"]
+section-order = [
+    "future",
+    "standard-library",
+    "third-party",
+    "first-party",
+    "local-folder",
+]
+
+[tool.ruff.lint.mccabe]
+# Maximum complexity (matching flake8 config)
+max-complexity = 10
+
+[tool.ruff.format]
+# Use black-compatible formatting
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"

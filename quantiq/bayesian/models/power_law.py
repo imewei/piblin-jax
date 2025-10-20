@@ -5,15 +5,15 @@ This module implements the power-law (Ostwald-de Waele) model for shear-thinning
 and shear-thickening fluids using Bayesian inference.
 """
 
-from typing import Any, Dict
-import numpy as np
-import jax.numpy as jnp
+from typing import Any
 
+import jax.numpy as jnp
+import numpy as np
 import numpyro
 import numpyro.distributions as dist
 
-from quantiq.bayesian.base import BayesianModel
 from quantiq.backend.operations import jit
+from quantiq.bayesian.base import BayesianModel
 
 
 class PowerLawModel(BayesianModel):
@@ -169,9 +169,7 @@ class PowerLawModel(BayesianModel):
         """
         return K_samples[:, None] * shear_rate[None, :] ** (n_samples[:, None] - 1)
 
-    def predict(
-        self, shear_rate: Any, credible_interval: float = 0.95
-    ) -> Dict[str, np.ndarray]:
+    def predict(self, shear_rate: Any, credible_interval: float = 0.95) -> dict[str, np.ndarray]:
         """
         Predict viscosity with uncertainty at given shear rates.
 

@@ -9,19 +9,19 @@ Tests cover all 7 dataset types with focus on:
 - Validation and error handling
 """
 
-import pytest
 import numpy as np
-from quantiq.backend import jnp, is_jax_available, get_backend
+import pytest
 
+from quantiq.backend import get_backend, is_jax_available, jnp
 from quantiq.data.datasets import (
     Dataset,
-    ZeroDimensionalDataset,
-    OneDimensionalDataset,
-    TwoDimensionalDataset,
-    ThreeDimensionalDataset,
-    Histogram,
     Distribution,
+    Histogram,
     OneDimensionalCompositeDataset,
+    OneDimensionalDataset,
+    ThreeDimensionalDataset,
+    TwoDimensionalDataset,
+    ZeroDimensionalDataset,
 )
 
 
@@ -31,15 +31,13 @@ class TestDatasetABC:
     def test_dataset_is_abc(self):
         """Dataset is an ABC and can be instantiated with metadata."""
         from abc import ABC
+
         # Dataset is an ABC
         assert issubclass(Dataset, ABC)
 
         # Dataset can be instantiated since it has no abstract methods
         # (it's a concrete ABC that provides metadata functionality)
-        dataset = Dataset(
-            conditions={"temp": 25.0},
-            details={"operator": "test"}
-        )
+        dataset = Dataset(conditions={"temp": 25.0}, details={"operator": "test"})
         assert dataset.conditions == {"temp": 25.0}
         assert dataset.details == {"operator": "test"}
 
@@ -57,11 +55,7 @@ class TestZeroDimensionalDataset:
     def test_with_metadata(self, sample_metadata):
         """Test 0D dataset with conditions and details."""
         conditions, details = sample_metadata
-        dataset = ZeroDimensionalDataset(
-            value=100.0,
-            conditions=conditions,
-            details=details
-        )
+        dataset = ZeroDimensionalDataset(value=100.0, conditions=conditions, details=details)
 
         assert dataset.value == 100.0
         assert dataset.conditions == conditions
@@ -76,10 +70,7 @@ class TestOneDimensionalDataset:
     def test_creation_from_numpy(self, sample_1d_data):
         """Test creating 1D dataset from NumPy arrays."""
         x, y = sample_1d_data
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Properties should return NumPy arrays
         assert isinstance(dataset.independent_variable_data, np.ndarray)
@@ -94,16 +85,14 @@ class TestOneDimensionalDataset:
         x = np.array([1.0, 2.0, 3.0])
         y = np.array([4.0, 5.0, 6.0])
 
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Internal arrays should be backend type
         backend = get_backend()
-        if backend == 'jax':
+        if backend == "jax":
             # Check internal storage is JAX array
             import jax.numpy as jnp_jax
+
             assert isinstance(dataset._independent_variable_data, jnp_jax.ndarray)
             assert isinstance(dataset._dependent_variable_data, jnp_jax.ndarray)
         else:
@@ -117,10 +106,7 @@ class TestOneDimensionalDataset:
         y = np.array([4.0, 5.0])  # Wrong length
 
         with pytest.raises(ValueError, match="same shape"):
-            OneDimensionalDataset(
-                independent_variable_data=x,
-                dependent_variable_data=y
-            )
+            OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
 
 class TestTwoDimensionalDataset:
@@ -131,9 +117,7 @@ class TestTwoDimensionalDataset:
         x, y, Z = sample_2d_data
 
         dataset = TwoDimensionalDataset(
-            independent_variable_data_1=x,
-            independent_variable_data_2=y,
-            dependent_variable_data=Z
+            independent_variable_data_1=x, independent_variable_data_2=y, dependent_variable_data=Z
         )
 
         # All should return NumPy arrays
@@ -156,7 +140,7 @@ class TestTwoDimensionalDataset:
             TwoDimensionalDataset(
                 independent_variable_data_1=x,
                 independent_variable_data_2=y,
-                dependent_variable_data=Z
+                dependent_variable_data=Z,
             )
 
 
@@ -174,7 +158,7 @@ class TestThreeDimensionalDataset:
             independent_variable_data_1=x,
             independent_variable_data_2=y,
             independent_variable_data_3=z,
-            dependent_variable_data=data
+            dependent_variable_data=data,
         )
 
         # Check all properties return NumPy
@@ -222,10 +206,7 @@ class TestDistribution:
         pdf = np.exp(-((molecular_weights - 5000) ** 2) / 1000000)
         pdf = pdf / np.trapezoid(pdf, molecular_weights)  # Normalize
 
-        dist = Distribution(
-            variable_data=molecular_weights,
-            probability_density=pdf
-        )
+        dist = Distribution(variable_data=molecular_weights, probability_density=pdf)
 
         assert isinstance(dist.variable_data, np.ndarray)
         assert isinstance(dist.probability_density, np.ndarray)
@@ -253,7 +234,7 @@ class TestOneDimensionalCompositeDataset:
 
         dataset = OneDimensionalCompositeDataset(
             independent_variable_data=time,
-            dependent_variable_data_list=[channel1, channel2, channel3]
+            dependent_variable_data_list=[channel1, channel2, channel3],
         )
 
         assert isinstance(dataset.independent_variable_data, np.ndarray)
@@ -273,8 +254,7 @@ class TestOneDimensionalCompositeDataset:
 
         with pytest.raises(ValueError, match="same length"):
             OneDimensionalCompositeDataset(
-                independent_variable_data=time,
-                dependent_variable_data_list=[channel1, channel2]
+                independent_variable_data=time, dependent_variable_data_list=[channel1, channel2]
             )
 
     def test_empty_channels_validation(self):
@@ -283,6 +263,5 @@ class TestOneDimensionalCompositeDataset:
 
         with pytest.raises(ValueError, match="at least one"):
             OneDimensionalCompositeDataset(
-                independent_variable_data=time,
-                dependent_variable_data_list=[]
+                independent_variable_data=time, dependent_variable_data_list=[]
             )

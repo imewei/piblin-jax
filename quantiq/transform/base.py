@@ -16,18 +16,18 @@ Transforms support:
 - Pipeline composition (via Pipeline class)
 """
 
-from abc import ABC, abstractmethod
-from typing import TypeVar, Generic, Any
 import copy
+from abc import ABC, abstractmethod
+from typing import Any, TypeVar
 
-from quantiq.backend import jnp, is_jax_available
+from quantiq.backend import is_jax_available
 from quantiq.backend.operations import jit
 
 # Type variables for generic transforms
-T = TypeVar('T')
+T = TypeVar("T")
 
 
-class Transform(ABC, Generic[T]):
+class Transform[T](ABC):
     """
     Abstract base class for all transforms.
 
@@ -182,6 +182,7 @@ class Transform(ABC, Generic[T]):
             # For JAX, use tree mapping to copy pytrees
             try:
                 import jax
+
                 return jax.tree_map(lambda x: x, obj)
             except Exception:
                 # Fallback to deep copy if tree mapping fails
@@ -214,12 +215,11 @@ class Transform(ABC, Generic[T]):
         Monte Carlo uncertainty propagation.
         """
         # Check if target has uncertainty samples
-        if hasattr(target, 'has_uncertainty') and target.has_uncertainty:
-            if hasattr(target, 'uncertainty_samples') and target.uncertainty_samples is not None:
+        if hasattr(target, "has_uncertainty") and target.has_uncertainty:
+            if hasattr(target, "uncertainty_samples") and target.uncertainty_samples is not None:
                 # For datasets, propagate through uncertainty samples
                 # This is a Monte Carlo approach where we apply the transform
                 # to each sample from the posterior
-                samples = target.uncertainty_samples
 
                 # The samples dict contains parameter samples (e.g., 'sigma')
                 # We need to create synthetic datasets from these samples
@@ -255,7 +255,9 @@ class Transform(ABC, Generic[T]):
         T
             Transformed data structure
         """
-        return self.apply_to(target, make_copy=make_copy, propagate_uncertainty=propagate_uncertainty)
+        return self.apply_to(
+            target, make_copy=make_copy, propagate_uncertainty=propagate_uncertainty
+        )
 
 
 def jit_transform(func):
@@ -309,13 +311,14 @@ def jit_transform(func):
 # These are imported here to avoid circular imports
 def _get_collection_types():
     """Lazy import of collection types to avoid circular imports."""
-    from quantiq.data.datasets import Dataset
     from quantiq.data.collections import (
-        Measurement,
-        MeasurementSet,
         Experiment,
         ExperimentSet,
+        Measurement,
+        MeasurementSet,
     )
+    from quantiq.data.datasets import Dataset
+
     return Dataset, Measurement, MeasurementSet, Experiment, ExperimentSet
 
 
@@ -377,9 +380,7 @@ class DatasetTransform(Transform):
         from quantiq.data.datasets import Dataset
 
         if not isinstance(target, Dataset):
-            raise TypeError(
-                f"DatasetTransform requires Dataset, got {type(target).__name__}"
-            )
+            raise TypeError(f"DatasetTransform requires Dataset, got {type(target).__name__}")
         return super().apply_to(target, make_copy, propagate_uncertainty)
 
 
@@ -545,9 +546,7 @@ class ExperimentTransform(Transform):
         from quantiq.data.collections import Experiment
 
         if not isinstance(target, Experiment):
-            raise TypeError(
-                f"ExperimentTransform requires Experiment, got {type(target).__name__}"
-            )
+            raise TypeError(f"ExperimentTransform requires Experiment, got {type(target).__name__}")
         return super().apply_to(target, make_copy)
 
 
@@ -614,11 +613,11 @@ class ExperimentSetTransform(Transform):
 
 
 __all__ = [
-    "Transform",
     "DatasetTransform",
-    "MeasurementTransform",
-    "MeasurementSetTransform",
-    "ExperimentTransform",
     "ExperimentSetTransform",
+    "ExperimentTransform",
+    "MeasurementSetTransform",
+    "MeasurementTransform",
+    "Transform",
     "jit_transform",
 ]

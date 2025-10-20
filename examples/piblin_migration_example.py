@@ -17,15 +17,17 @@ Key concepts:
 Expected output: Side-by-side comparison showing equivalent operations
 """
 
-import numpy as np
 import time
+
 import matplotlib.pyplot as plt
+import numpy as np
+
+from quantiq import fit_curve
 
 # Import quantiq (successor to piblin)
 from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.transform.dataset import GaussianSmooth, Normalize
 from quantiq.transform import Pipeline
-from quantiq import fit_curve
+from quantiq.transform.dataset import GaussianSmooth, Normalize
 
 print("=" * 80)
 print("piblin → quantiq Migration Example")
@@ -43,7 +45,8 @@ y_clean = np.sin(x) * np.exp(-x / 10)
 y_noisy = y_clean + 0.1 * np.random.randn(len(x))
 
 print("\n--- piblin style (still works in quantiq) ---")
-print("""
+print(
+    """
 # Legacy piblin pattern (compatible)
 from quantiq.data.datasets import OneDimensionalDataset
 
@@ -51,17 +54,18 @@ dataset = OneDimensionalDataset(
     independent_variable_data=x,
     dependent_variable_data=y_noisy
 )
-""")
+"""
+)
 
 # Create dataset using piblin-compatible API
 dataset_piblin_style = OneDimensionalDataset(
-    independent_variable_data=x,
-    dependent_variable_data=y_noisy
+    independent_variable_data=x, dependent_variable_data=y_noisy
 )
 print(f"✓ piblin-style dataset created: {len(x)} points")
 
 print("\n--- quantiq enhanced style (recommended) ---")
-print("""
+print(
+    """
 # quantiq enhanced pattern (with metadata)
 from quantiq.data.datasets import OneDimensionalDataset
 
@@ -71,16 +75,17 @@ dataset = OneDimensionalDataset(
     conditions={"temperature": 25.0, "sample": "A"},
     details={"instrument": "Rheometer", "operator": "User"}
 )
-""")
+"""
+)
 
 # Create dataset with quantiq enhancements
 dataset_quantiq_style = OneDimensionalDataset(
     independent_variable_data=x,
     dependent_variable_data=y_noisy,
     conditions={"temperature": 25.0, "sample": "A"},
-    details={"instrument": "Rheometer", "operator": "User"}
+    details={"instrument": "Rheometer", "operator": "User"},
 )
-print(f"✓ quantiq-style dataset created with metadata")
+print("✓ quantiq-style dataset created with metadata")
 
 # =============================================================================
 # Section 2: Transform Application (Performance Comparison)
@@ -98,7 +103,7 @@ for _ in range(100):
     result_numpy = smooth.apply_to(dataset_piblin_style, make_copy=True)
 time_numpy = time.time() - start_numpy
 
-print(f"✓ NumPy backend: 100 iterations in {time_numpy*1000:.2f} ms")
+print(f"✓ NumPy backend: 100 iterations in {time_numpy * 1000:.2f} ms")
 
 # Note: JAX acceleration would show greater speedup with larger datasets
 # or more complex transforms (JIT compilation overhead matters less)
@@ -110,7 +115,8 @@ print(f"✓ JAX backend available: {smooth._backend_module.__name__ == 'jax.nump
 print("\n[3] Pipeline Building - quantiq Enhancement")
 
 print("\n--- piblin style (manual chaining) ---")
-print("""
+print(
+    """
 # piblin: Manual transform chaining
 smooth = GaussianSmooth(sigma=2.0)
 normalize = Normalize(method="min-max")
@@ -118,17 +124,19 @@ normalize = Normalize(method="min-max")
 # Apply transforms sequentially
 result = smooth.apply_to(dataset, make_copy=True)
 result = normalize.apply_to(result, make_copy=True)
-""")
+"""
+)
 
 # piblin style: manual chaining
 smooth_step1 = GaussianSmooth(sigma=2.0)
 normalize_step2 = Normalize(method="min-max")
 result_manual = smooth_step1.apply_to(dataset_piblin_style, make_copy=True)
 result_manual = normalize_step2.apply_to(result_manual, make_copy=True)
-print(f"✓ Manual chaining completed")
+print("✓ Manual chaining completed")
 
 print("\n--- quantiq style (Pipeline) ---")
-print("""
+print(
+    """
 # quantiq: Pipeline composition (cleaner)
 from quantiq.transform import Pipeline
 
@@ -138,22 +146,19 @@ pipeline = Pipeline([
 ])
 
 result = pipeline.apply_to(dataset, make_copy=True)
-""")
+"""
+)
 
 # quantiq style: pipeline
-pipeline = Pipeline([
-    GaussianSmooth(sigma=2.0),
-    Normalize(method="min-max")
-])
+pipeline = Pipeline([GaussianSmooth(sigma=2.0), Normalize(method="min-max")])
 result_pipeline = pipeline.apply_to(dataset_quantiq_style, make_copy=True)
-print(f"✓ Pipeline application completed")
+print("✓ Pipeline application completed")
 
 # Verify results are identical
 assert np.allclose(
-    result_manual.dependent_variable_data,
-    result_pipeline.dependent_variable_data
+    result_manual.dependent_variable_data, result_pipeline.dependent_variable_data
 ), "Results should be identical"
-print(f"✓ Verified: Manual chaining ≡ Pipeline (identical results)")
+print("✓ Verified: Manual chaining ≡ Pipeline (identical results)")
 
 # =============================================================================
 # Section 4: Curve Fitting (API Consistency)
@@ -167,7 +172,8 @@ viscosity = true_K * shear_rate ** (true_n - 1)
 viscosity += 0.05 * viscosity * np.random.randn(len(shear_rate))
 
 print("\n--- piblin/quantiq unified API ---")
-print("""
+print(
+    """
 # Same API in both piblin and quantiq
 from quantiq import fit_curve
 
@@ -179,21 +185,20 @@ result = fit_curve(
 
 K_fit = result['params']['K']
 n_fit = result['params']['n']
-""")
-
-# Fit using piblin-compatible API
-fit_result = fit_curve(
-    shear_rate,
-    viscosity,
-    model='power_law'
+"""
 )
 
-K_fit = fit_result['params']['K']
-n_fit = fit_result['params']['n']
+# Fit using piblin-compatible API
+fit_result = fit_curve(shear_rate, viscosity, model="power_law")
+
+K_fit = fit_result["params"]["K"]
+n_fit = fit_result["params"]["n"]
 
 print(f"✓ Fitted parameters: K={K_fit:.3f}, n={n_fit:.3f}")
 print(f"✓ True parameters: K={true_K:.3f}, n={true_n:.3f}")
-print(f"✓ Relative errors: K={abs(K_fit-true_K)/true_K*100:.1f}%, n={abs(n_fit-true_n)/true_n*100:.1f}%")
+print(
+    f"✓ Relative errors: K={abs(K_fit - true_K) / true_K * 100:.1f}%, n={abs(n_fit - true_n) / true_n * 100:.1f}%"
+)
 
 # =============================================================================
 # Section 5: NEW in quantiq - Bayesian Uncertainty Quantification
@@ -201,7 +206,8 @@ print(f"✓ Relative errors: K={abs(K_fit-true_K)/true_K*100:.1f}%, n={abs(n_fit
 print("\n[5] NEW Features in quantiq - Bayesian Fitting")
 
 print("\n--- Not available in piblin ---")
-print("""
+print(
+    """
 # NEW in quantiq: Bayesian parameter estimation
 from quantiq.bayesian.models import PowerLawModel
 
@@ -216,7 +222,8 @@ K_credible_interval = [summary['K']['q_2.5'], summary['K']['q_97.5']]
 
 # Make predictions with uncertainty bands
 predictions = model.predict(shear_rate_pred, credible_interval=0.95)
-""")
+"""
+)
 
 print("✓ Bayesian models provide full uncertainty quantification")
 print("✓ Not available in piblin - major enhancement in quantiq")
@@ -227,41 +234,46 @@ print("✓ Not available in piblin - major enhancement in quantiq")
 print("\n[6] Creating comparison visualization...")
 
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))
-fig.suptitle('piblin → quantiq Migration Example', fontsize=16, fontweight='bold')
+fig.suptitle("piblin → quantiq Migration Example", fontsize=16, fontweight="bold")
 
 # Plot 1: Dataset creation comparison
-axes[0, 0].plot(x, y_noisy, 'o', markersize=3, alpha=0.5, label='Data')
-axes[0, 0].plot(x, y_clean, 'r--', linewidth=2, label='True signal')
-axes[0, 0].set_xlabel('X')
-axes[0, 0].set_ylabel('Y')
-axes[0, 0].set_title('Dataset Creation\n(piblin-compatible API)', fontweight='bold')
+axes[0, 0].plot(x, y_noisy, "o", markersize=3, alpha=0.5, label="Data")
+axes[0, 0].plot(x, y_clean, "r--", linewidth=2, label="True signal")
+axes[0, 0].set_xlabel("X")
+axes[0, 0].set_ylabel("Y")
+axes[0, 0].set_title("Dataset Creation\n(piblin-compatible API)", fontweight="bold")
 axes[0, 0].legend()
 axes[0, 0].grid(True, alpha=0.3)
 
 # Plot 2: Transform pipeline comparison
-axes[0, 1].plot(x, y_noisy, 'gray', alpha=0.3, linewidth=1, label='Original')
-axes[0, 1].plot(result_pipeline.independent_variable_data,
-                result_pipeline.dependent_variable_data,
-                'b-', linewidth=2, label='Processed (Pipeline)')
-axes[0, 1].set_xlabel('X')
-axes[0, 1].set_ylabel('Y (normalized)')
-axes[0, 1].set_title('Transform Pipeline\n(Enhanced in quantiq)', fontweight='bold')
+axes[0, 1].plot(x, y_noisy, "gray", alpha=0.3, linewidth=1, label="Original")
+axes[0, 1].plot(
+    result_pipeline.independent_variable_data,
+    result_pipeline.dependent_variable_data,
+    "b-",
+    linewidth=2,
+    label="Processed (Pipeline)",
+)
+axes[0, 1].set_xlabel("X")
+axes[0, 1].set_ylabel("Y (normalized)")
+axes[0, 1].set_title("Transform Pipeline\n(Enhanced in quantiq)", fontweight="bold")
 axes[0, 1].legend()
 axes[0, 1].grid(True, alpha=0.3)
 
 # Plot 3: Curve fitting comparison
 viscosity_fit = K_fit * shear_rate ** (n_fit - 1)
-axes[1, 0].loglog(shear_rate, viscosity, 'ko', markersize=6, alpha=0.6, label='Data')
-axes[1, 0].loglog(shear_rate, viscosity_fit, 'b-', linewidth=2,
-                  label=f'NLSQ fit (K={K_fit:.2f}, n={n_fit:.2f})')
-axes[1, 0].set_xlabel('Shear Rate (s⁻¹)')
-axes[1, 0].set_ylabel('Viscosity (Pa·s)')
-axes[1, 0].set_title('Curve Fitting\n(piblin-compatible API)', fontweight='bold')
+axes[1, 0].loglog(shear_rate, viscosity, "ko", markersize=6, alpha=0.6, label="Data")
+axes[1, 0].loglog(
+    shear_rate, viscosity_fit, "b-", linewidth=2, label=f"NLSQ fit (K={K_fit:.2f}, n={n_fit:.2f})"
+)
+axes[1, 0].set_xlabel("Shear Rate (s⁻¹)")
+axes[1, 0].set_ylabel("Viscosity (Pa·s)")
+axes[1, 0].set_title("Curve Fitting\n(piblin-compatible API)", fontweight="bold")
 axes[1, 0].legend()
-axes[1, 0].grid(True, alpha=0.3, which='both')
+axes[1, 0].grid(True, alpha=0.3, which="both")
 
 # Plot 4: Feature comparison table
-axes[1, 1].axis('off')
+axes[1, 1].axis("off")
 comparison_text = """
 Feature Comparison: piblin vs quantiq
 
@@ -292,9 +304,16 @@ Migration Path:
 4. Enable JAX for performance boost
 """
 
-axes[1, 1].text(0.1, 0.5, comparison_text, transform=axes[1, 1].transAxes,
-                fontsize=9, verticalalignment='center', fontfamily='monospace',
-                bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.3))
+axes[1, 1].text(
+    0.1,
+    0.5,
+    comparison_text,
+    transform=axes[1, 1].transAxes,
+    fontsize=9,
+    verticalalignment="center",
+    fontfamily="monospace",
+    bbox={"boxstyle": "round", "facecolor": "wheat", "alpha": 0.3},
+)
 
 plt.tight_layout()
 print("   ✓ Visualization created")
@@ -305,7 +324,8 @@ print("   ✓ Visualization created")
 print("\n" + "=" * 80)
 print("Migration Summary")
 print("=" * 80)
-print("""
+print(
+    """
 Key Points:
 
 1. Backward Compatibility:
@@ -342,7 +362,8 @@ Next Steps:
 - Review basic_usage_example.py for quantiq fundamentals
 - Explore bayesian_parameter_estimation.py for new Bayesian features
 - See transform_pipeline_example.py for advanced pipeline usage
-""")
+"""
+)
 
 plt.show()
 print("\n✓ Migration example completed successfully!")

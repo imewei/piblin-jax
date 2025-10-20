@@ -5,10 +5,13 @@ This is the most common dataset type, used for time series, spectra,
 chromatograms, and other 1D data.
 """
 
-from typing import Any
 import copy
+from typing import Any
+
 import numpy as np
-from quantiq.backend import jnp, to_numpy, is_jax_available
+
+from quantiq.backend import is_jax_available, jnp, to_numpy
+
 from .base import Dataset
 
 
@@ -90,7 +93,7 @@ class OneDimensionalDataset(Dataset):
         independent_variable_data: Any,
         dependent_variable_data: Any,
         conditions: dict[str, Any] | None = None,
-        details: dict[str, Any] | None = None
+        details: dict[str, Any] | None = None,
     ):
         """
         Initialize one-dimensional dataset.
@@ -238,9 +241,10 @@ class OneDimensionalDataset(Dataset):
         """
         if method == "bayesian":
             # Import here to avoid circular dependencies
-            from quantiq.bayesian.base import BayesianModel
             import numpyro
             import numpyro.distributions as dist
+
+            from quantiq.bayesian.base import BayesianModel
 
             # Simple Gaussian noise model for estimating measurement uncertainty
             class SimpleNoiseModel(BayesianModel):
@@ -266,12 +270,8 @@ class OneDimensionalDataset(Dataset):
                     raise NotImplementedError()
 
             # Fit the noise model
-            model = SimpleNoiseModel(
-                n_samples=n_samples, n_warmup=n_samples // 2, n_chains=1
-            )
-            model.fit(
-                self.independent_variable_data, self.dependent_variable_data
-            )
+            model = SimpleNoiseModel(n_samples=n_samples, n_warmup=n_samples // 2, n_chains=1)
+            model.fit(self.independent_variable_data, self.dependent_variable_data)
 
             # Create new dataset with uncertainty
             new_dataset = copy.copy(self)
@@ -302,6 +302,7 @@ class OneDimensionalDataset(Dataset):
             # Use JAX vmap for massive speedup when available
             if is_jax_available():
                 from jax import random
+
                 from quantiq.backend.operations import vmap
 
                 y_data = jnp.asarray(self.dependent_variable_data)
@@ -336,9 +337,7 @@ class OneDimensionalDataset(Dataset):
             # Store samples if requested
             if keep_samples:
                 # Store as dict for consistency with bayesian method
-                new_dataset._uncertainty_samples = {
-                    'bootstrap_samples': bootstrap_samples
-                }
+                new_dataset._uncertainty_samples = {"bootstrap_samples": bootstrap_samples}
 
             # Compute credible intervals (percentile method)
             alpha = 1 - level
@@ -363,9 +362,7 @@ class OneDimensionalDataset(Dataset):
                 "Supported methods: 'bayesian', 'bootstrap', 'analytical'"
             )
 
-    def get_credible_intervals(
-        self, level: float = 0.95, method: str = "eti"
-    ) -> tuple[Any, Any]:
+    def get_credible_intervals(self, level: float = 0.95, method: str = "eti") -> tuple[Any, Any]:
         """
         Get credible intervals for dependent variable.
 
@@ -409,8 +406,7 @@ class OneDimensionalDataset(Dataset):
         """
         if not self.has_uncertainty:
             raise RuntimeError(
-                "Dataset has no uncertainty information. "
-                "Call with_uncertainty() first."
+                "Dataset has no uncertainty information. Call with_uncertainty() first."
             )
 
         # Return cached intervals if available and matching parameters
@@ -420,8 +416,7 @@ class OneDimensionalDataset(Dataset):
         # Compute from samples if available
         if self._uncertainty_samples is None:
             raise RuntimeError(
-                "No uncertainty samples available. "
-                "Use keep_samples=True in with_uncertainty()."
+                "No uncertainty samples available. Use keep_samples=True in with_uncertainty()."
             )
 
         if method == "eti":
@@ -429,14 +424,8 @@ class OneDimensionalDataset(Dataset):
             # For more complex models, this would handle array outputs
             alpha = 1 - level
             # This is simplified - full implementation would depend on model
-            lower = float(
-                np.percentile(self._uncertainty_samples["sigma"], 100 * alpha / 2)
-            )
-            upper = float(
-                np.percentile(
-                    self._uncertainty_samples["sigma"], 100 * (1 - alpha / 2)
-                )
-            )
+            lower = float(np.percentile(self._uncertainty_samples["sigma"], 100 * alpha / 2))
+            upper = float(np.percentile(self._uncertainty_samples["sigma"], 100 * (1 - alpha / 2)))
         elif method == "hpd":
             raise NotImplementedError("HPD method not yet implemented")
         else:
@@ -454,7 +443,7 @@ class OneDimensionalDataset(Dataset):
         xlabel: str | None = None,
         ylabel: str | None = None,
         title: str | None = None,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> tuple[Any, Any]:
         """
         Visualize the 1D dataset with optional uncertainty bands.
@@ -521,7 +510,7 @@ class OneDimensionalDataset(Dataset):
         y = self.dependent_variable_data
 
         # Plot main line
-        line_kwargs: dict[str, Any] = {'label': 'Data'}
+        line_kwargs: dict[str, Any] = {"label": "Data"}
         line_kwargs.update(kwargs)
         ax.plot(x, y, **line_kwargs)
 
@@ -529,20 +518,14 @@ class OneDimensionalDataset(Dataset):
         if show_uncertainty and self.has_uncertainty:
             try:
                 # Try to get credible intervals
-                if self._uncertainty_method == 'bootstrap':
+                if self._uncertainty_method == "bootstrap":
                     # For bootstrap, intervals are for the data itself
                     intervals = self.credible_intervals
                     if intervals is not None:
                         lower, upper = intervals
                     else:
                         raise ValueError("Credible intervals not available")
-                    ax.fill_between(
-                        x,
-                        lower,
-                        upper,
-                        alpha=0.3,
-                        label=f'{level*100:.0f}% CI'
-                    )
+                    ax.fill_between(x, lower, upper, alpha=0.3, label=f"{level * 100:.0f}% CI")
                 else:
                     # For Bayesian noise model, we can approximate uncertainty bands
                     # using the sigma estimates
@@ -551,26 +534,22 @@ class OneDimensionalDataset(Dataset):
                         # Use mean sigma for visualization
                         sigma = (sigma_lower + sigma_upper) / 2.0
                         ax.fill_between(
-                            x,
-                            y - sigma,
-                            y + sigma,
-                            alpha=0.3,
-                            label=f'Uncertainty (±σ)'
+                            x, y - sigma, y + sigma, alpha=0.3, label="Uncertainty (±σ)"
                         )
             except Exception:
                 # If getting intervals fails, just skip uncertainty visualization
                 pass
 
         # Set labels
-        ax.set_xlabel(xlabel if xlabel is not None else 'Independent Variable')
-        ax.set_ylabel(ylabel if ylabel is not None else 'Dependent Variable')
+        ax.set_xlabel(xlabel if xlabel is not None else "Independent Variable")
+        ax.set_ylabel(ylabel if ylabel is not None else "Dependent Variable")
 
         # Set title if provided
         if title is not None:
             ax.set_title(title)
 
         # Add legend if we have uncertainty bands or custom label
-        if (show_uncertainty and self.has_uncertainty) or 'label' in kwargs:
+        if (show_uncertainty and self.has_uncertainty) or "label" in kwargs:
             ax.legend()
 
         # Add grid for better readability

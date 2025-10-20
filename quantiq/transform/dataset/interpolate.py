@@ -6,11 +6,12 @@ to new x-values using various interpolation methods.
 """
 
 from typing import Any
+
 import numpy as np
 
-from quantiq.transform.base import DatasetTransform
+from quantiq.backend import BACKEND, jnp
 from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.backend import jnp, BACKEND, is_jax_available
+from quantiq.transform.base import DatasetTransform
 
 
 class Interpolate1D(DatasetTransform):
@@ -68,7 +69,7 @@ class Interpolate1D(DatasetTransform):
     - Metadata (conditions, details) is preserved from original dataset
     """
 
-    def __init__(self, new_x: Any, method: str = 'linear'):
+    def __init__(self, new_x: Any, method: str = "linear"):
         """
         Initialize interpolation transform.
 
@@ -83,7 +84,7 @@ class Interpolate1D(DatasetTransform):
         self.new_x = jnp.asarray(new_x)
         self.method = method
 
-        if method not in ['linear']:
+        if method not in ["linear"]:
             raise ValueError(
                 f"Interpolation method '{method}' not supported. "
                 "Currently only 'linear' is implemented."
@@ -117,7 +118,7 @@ class Interpolate1D(DatasetTransform):
         y = jnp.asarray(y)
 
         # Perform interpolation
-        if BACKEND == 'jax':
+        if BACKEND == "jax":
             # JAX interpolation (JIT-compiled)
             new_y = jnp.interp(self.new_x, x, y)
         else:
@@ -130,8 +131,8 @@ class Interpolate1D(DatasetTransform):
             independent_variable_data=self.new_x,
             dependent_variable_data=new_y,
             conditions=dataset.conditions,
-            details=dataset.details
+            details=dataset.details,
         )
 
 
-__all__ = ['Interpolate1D']
+__all__ = ["Interpolate1D"]

@@ -141,9 +141,6 @@ Example::
 - `quantiq.backend` - Backend abstraction layer (JAX/NumPy)
 """
 
-from . import datasets
-from . import collections
-from . import metadata
-from . import roi
+from . import collections, datasets, metadata, roi
 
-__all__ = ["datasets", "collections", "metadata", "roi"]
+__all__ = ["collections", "datasets", "metadata", "roi"]

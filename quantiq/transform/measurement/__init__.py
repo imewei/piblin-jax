@@ -11,13 +11,13 @@ This module provides transforms that operate on Measurement and MeasurementSet o
 from .filter import (
     FilterDatasets,
     FilterMeasurements,
-    SplitByRegion,
     MergeReplicates,
+    SplitByRegion,
 )
 
 __all__ = [
     "FilterDatasets",
     "FilterMeasurements",
-    "SplitByRegion",
     "MergeReplicates",
+    "SplitByRegion",
 ]

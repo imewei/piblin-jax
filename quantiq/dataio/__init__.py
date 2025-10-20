@@ -36,12 +36,13 @@ Read multiple directories:
 >>> experiment_set = read_directories(paths)
 """
 
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 from quantiq.data.collections import ExperimentSet
-from .readers import read_file, register_reader, detect_reader
+
 from .hierarchy import build_hierarchy
+from .readers import detect_reader, read_file, register_reader
 
 
 def read_files(file_list: Sequence[str | Path]) -> ExperimentSet:
@@ -100,9 +101,7 @@ def read_files(file_list: Sequence[str | Path]) -> ExperimentSet:
 
 
 def read_directory(
-    path: str | Path,
-    pattern: str = "*.csv",
-    recursive: bool = False
+    path: str | Path, pattern: str = "*.csv", recursive: bool = False
 ) -> ExperimentSet:
     """Read all matching files in a directory.
 
@@ -183,9 +182,7 @@ def read_directory(
 
 
 def read_directories(
-    path_list: Sequence[str | Path],
-    pattern: str = "*.csv",
-    recursive: bool = False
+    path_list: Sequence[str | Path], pattern: str = "*.csv", recursive: bool = False
 ) -> ExperimentSet:
     """Read multiple directories and combine into single hierarchy.
 
@@ -273,11 +270,11 @@ def read_directories(
 
 # Re-export main functions from readers
 __all__ = [
-    'read_file',
-    'read_files',
-    'read_directory',
-    'read_directories',
-    'register_reader',
-    'detect_reader',
-    'build_hierarchy',
+    "build_hierarchy",
+    "detect_reader",
+    "read_directories",
+    "read_directory",
+    "read_file",
+    "read_files",
+    "register_reader",
 ]

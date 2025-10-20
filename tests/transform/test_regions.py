@@ -9,11 +9,12 @@ This module tests:
 - Preservation of untransformed regions
 """
 
-import pytest
 import numpy as np
-from quantiq.data.roi import LinearRegion, CompoundRegion
-from quantiq.transform.region import RegionTransform, RegionMultiplyTransform
+import pytest
+
 from quantiq.data.datasets import OneDimensionalDataset
+from quantiq.data.roi import CompoundRegion, LinearRegion
+from quantiq.transform.region import RegionMultiplyTransform, RegionTransform
 
 
 class TestLinearRegion:
@@ -109,8 +110,7 @@ class TestRegionTransform:
         x_data = np.linspace(0, 10, 11)
         y_data = np.ones(11)
         dataset = OneDimensionalDataset(
-            independent_variable_data=x_data,
-            dependent_variable_data=y_data
+            independent_variable_data=x_data, dependent_variable_data=y_data
         )
 
         # Define region [3, 7] and multiply by 2.0
@@ -133,8 +133,7 @@ class TestRegionTransform:
         x_data = np.array([0.0, 1.0, 2.0, 3.0, 4.0, 5.0])
         y_data = np.array([10.0, 20.0, 30.0, 40.0, 50.0, 60.0])
         dataset = OneDimensionalDataset(
-            independent_variable_data=x_data,
-            dependent_variable_data=y_data
+            independent_variable_data=x_data, dependent_variable_data=y_data
         )
 
         # Transform only region [2.0, 4.0] by multiplying by 0.5
@@ -153,8 +152,7 @@ class TestRegionTransform:
         x_data = np.linspace(0, 10, 21)  # 0, 0.5, 1.0, ..., 10.0
         y_data = np.ones(21)
         dataset = OneDimensionalDataset(
-            independent_variable_data=x_data,
-            dependent_variable_data=y_data
+            independent_variable_data=x_data, dependent_variable_data=y_data
         )
 
         # Define two disjoint regions: [1, 2] and [7, 8]
@@ -180,7 +178,7 @@ class TestRegionTransform:
         assert result_y[16] == 3.0  # x=8.0
 
         # Points outside regions should remain 1.0
-        assert result_y[0] == 1.0   # x=0.0
+        assert result_y[0] == 1.0  # x=0.0
         assert result_y[10] == 1.0  # x=5.0
         assert result_y[20] == 1.0  # x=10.0
 
@@ -198,8 +196,7 @@ class TestRegionTransform:
         x_data = np.array([0.0, 1.0, 2.0, 3.0, 4.0])
         y_data = np.array([1.0, 1.0, 1.0, 1.0, 1.0])
         dataset = OneDimensionalDataset(
-            independent_variable_data=x_data,
-            dependent_variable_data=y_data
+            independent_variable_data=x_data, dependent_variable_data=y_data
         )
 
         region = LinearRegion(x_min=1.0, x_max=3.0)

@@ -11,12 +11,13 @@ such as background subtraction in specific spectral ranges or local smoothing.
 """
 
 from typing import Union
+
 import numpy as np
 
-from quantiq.transform.base import DatasetTransform
+from quantiq.backend import from_numpy, jnp, to_numpy
 from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.data.roi import LinearRegion, CompoundRegion
-from quantiq.backend import jnp, to_numpy, from_numpy
+from quantiq.data.roi import CompoundRegion, LinearRegion
+from quantiq.transform.base import DatasetTransform
 
 
 class RegionTransform(DatasetTransform):
@@ -64,7 +65,7 @@ class RegionTransform(DatasetTransform):
     - Region masks are generated from the independent variable
     """
 
-    def __init__(self, region: Union[LinearRegion, CompoundRegion]):
+    def __init__(self, region: LinearRegion | CompoundRegion):
         """
         Initialize RegionTransform.
 
@@ -100,9 +101,7 @@ class RegionTransform(DatasetTransform):
             If dataset is not OneDimensionalDataset
         """
         if not isinstance(dataset, OneDimensionalDataset):
-            raise TypeError(
-                "RegionTransform only works with OneDimensionalDataset"
-            )
+            raise TypeError("RegionTransform only works with OneDimensionalDataset")
 
         # Get data as NumPy for mask generation
         x_data = dataset.independent_variable_data
@@ -127,11 +126,7 @@ class RegionTransform(DatasetTransform):
 
         return dataset
 
-    def _apply_to_region(
-        self,
-        x_region: np.ndarray,
-        y_region: np.ndarray
-    ) -> np.ndarray:
+    def _apply_to_region(self, x_region: np.ndarray, y_region: np.ndarray) -> np.ndarray:
         """
         Apply transformation to region data.
 
@@ -156,9 +151,7 @@ class RegionTransform(DatasetTransform):
         NotImplementedError
             If subclass doesn't implement this method
         """
-        raise NotImplementedError(
-            "Subclasses must implement _apply_to_region()"
-        )
+        raise NotImplementedError("Subclasses must implement _apply_to_region()")
 
 
 class RegionMultiplyTransform(RegionTransform):
@@ -206,11 +199,7 @@ class RegionMultiplyTransform(RegionTransform):
     More complex transforms can be implemented following the same pattern.
     """
 
-    def __init__(
-        self,
-        region: Union[LinearRegion, CompoundRegion],
-        factor: float
-    ):
+    def __init__(self, region: LinearRegion | CompoundRegion, factor: float):
         """
         Initialize RegionMultiplyTransform.
 
@@ -224,11 +213,7 @@ class RegionMultiplyTransform(RegionTransform):
         super().__init__(region)
         self.factor = factor
 
-    def _apply_to_region(
-        self,
-        x_region: np.ndarray,
-        y_region: np.ndarray
-    ) -> np.ndarray:
+    def _apply_to_region(self, x_region: np.ndarray, y_region: np.ndarray) -> np.ndarray:
         """
         Multiply region data by factor.
 
@@ -247,4 +232,4 @@ class RegionMultiplyTransform(RegionTransform):
         return y_region * self.factor
 
 
-__all__ = ["RegionTransform", "RegionMultiplyTransform"]
+__all__ = ["RegionMultiplyTransform", "RegionTransform"]

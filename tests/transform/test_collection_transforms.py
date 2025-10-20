@@ -8,16 +8,17 @@ Tests for:
 - MergeReplicates: Merge measurements with identical conditions
 """
 
-import pytest
 import numpy as np
-from quantiq.data.datasets import OneDimensionalDataset, ZeroDimensionalDataset
+import pytest
+
 from quantiq.data.collections import Measurement, MeasurementSet
+from quantiq.data.datasets import OneDimensionalDataset, ZeroDimensionalDataset
 from quantiq.data.roi import LinearRegion
 from quantiq.transform.measurement import (
     FilterDatasets,
     FilterMeasurements,
-    SplitByRegion,
     MergeReplicates,
+    SplitByRegion,
 )
 
 
@@ -34,10 +35,7 @@ class TestFilterDatasets:
         ds2 = ZeroDimensionalDataset(42.0, conditions={"channel": "B"})
         ds3 = OneDimensionalDataset(x, y * 2, conditions={"channel": "C"})
 
-        measurement = Measurement(
-            datasets=[ds1, ds2, ds3],
-            conditions={"temp": 25.0}
-        )
+        measurement = Measurement(datasets=[ds1, ds2, ds3], conditions={"temp": 25.0})
 
         # Filter for only OneDimensionalDataset
         transform = FilterDatasets(dataset_type=OneDimensionalDataset)
@@ -60,9 +58,7 @@ class TestFilterDatasets:
         measurement = Measurement(datasets=[ds1, ds2, ds3])
 
         # Filter for datasets with temp > 25
-        transform = FilterDatasets(
-            predicate=lambda ds: ds.conditions.get("temp", 0) > 25.0
-        )
+        transform = FilterDatasets(predicate=lambda ds: ds.conditions.get("temp", 0) > 25.0)
         result = transform.apply_to(measurement)
 
         # Should have 2 datasets (ds2, ds3)
@@ -75,10 +71,7 @@ class TestFilterDatasets:
             FilterDatasets()
 
         with pytest.raises(ValueError, match="Provide only one"):
-            FilterDatasets(
-                predicate=lambda ds: True,
-                dataset_type=OneDimensionalDataset
-            )
+            FilterDatasets(predicate=lambda ds: True, dataset_type=OneDimensionalDataset)
 
 
 class TestFilterMeasurements:
@@ -91,23 +84,21 @@ class TestFilterMeasurements:
         # Create measurements with different temperatures
         m1 = Measurement(
             datasets=[OneDimensionalDataset(x, np.sin(x))],
-            conditions={"temp": 20.0, "replicate": 1}
+            conditions={"temp": 20.0, "replicate": 1},
         )
         m2 = Measurement(
             datasets=[OneDimensionalDataset(x, np.cos(x))],
-            conditions={"temp": 30.0, "replicate": 2}
+            conditions={"temp": 30.0, "replicate": 2},
         )
         m3 = Measurement(
             datasets=[OneDimensionalDataset(x, np.tan(x))],
-            conditions={"temp": 40.0, "replicate": 3}
+            conditions={"temp": 40.0, "replicate": 3},
         )
 
         measurement_set = MeasurementSet(measurements=[m1, m2, m3])
 
         # Filter for temp > 25
-        transform = FilterMeasurements(
-            predicate=lambda m: m.conditions.get("temp", 0) > 25.0
-        )
+        transform = FilterMeasurements(predicate=lambda m: m.conditions.get("temp", 0) > 25.0)
         result = transform.apply_to(measurement_set)
 
         # Should have 2 measurements (m2, m3)
@@ -129,16 +120,10 @@ class TestSplitByRegion:
         y = np.sin(x)
 
         ds = OneDimensionalDataset(x, y, conditions={"channel": "A"})
-        measurement = Measurement(
-            datasets=[ds],
-            conditions={"temp": 25.0}
-        )
+        measurement = Measurement(datasets=[ds], conditions={"temp": 25.0})
 
         # Define two regions
-        regions = [
-            LinearRegion(0, 5),
-            LinearRegion(5, 10)
-        ]
+        regions = [LinearRegion(0, 5), LinearRegion(5, 10)]
 
         transform = SplitByRegion(regions)
         result = transform.apply_to(measurement)
@@ -173,27 +158,27 @@ class TestMergeReplicates:
         # Create replicate measurements with identical conditions
         m1 = Measurement(
             datasets=[OneDimensionalDataset(x, np.ones_like(x) * 1.0)],
-            conditions={"temp": 25.0, "sample": "A"}
+            conditions={"temp": 25.0, "sample": "A"},
         )
         m2 = Measurement(
             datasets=[OneDimensionalDataset(x, np.ones_like(x) * 2.0)],
-            conditions={"temp": 25.0, "sample": "A"}
+            conditions={"temp": 25.0, "sample": "A"},
         )
         m3 = Measurement(
             datasets=[OneDimensionalDataset(x, np.ones_like(x) * 3.0)],
-            conditions={"temp": 25.0, "sample": "A"}
+            conditions={"temp": 25.0, "sample": "A"},
         )
 
         # Different condition - should not merge
         m4 = Measurement(
             datasets=[OneDimensionalDataset(x, np.ones_like(x) * 10.0)],
-            conditions={"temp": 30.0, "sample": "B"}
+            conditions={"temp": 30.0, "sample": "B"},
         )
 
         measurement_set = MeasurementSet(measurements=[m1, m2, m3, m4])
 
         # Merge with averaging
-        transform = MergeReplicates(strategy='average')
+        transform = MergeReplicates(strategy="average")
         result = transform.apply_to(measurement_set)
 
         # Should have 2 measurements (one merged, one standalone)
@@ -214,4 +199,4 @@ class TestMergeReplicates:
     def test_merge_invalid_strategy(self):
         """Test that invalid strategy raises error."""
         with pytest.raises(ValueError, match="strategy must be"):
-            MergeReplicates(strategy='invalid')
+            MergeReplicates(strategy="invalid")

@@ -7,16 +7,16 @@ including MCMC sampling and uncertainty quantification.
 
 from .base import BayesianModel
 from .models import (
-    PowerLawModel,
     ArrheniusModel,
-    CrossModel,
     CarreauYasudaModel,
+    CrossModel,
+    PowerLawModel,
 )
 
 __all__ = [
-    "BayesianModel",
-    "PowerLawModel",
     "ArrheniusModel",
-    "CrossModel",
+    "BayesianModel",
     "CarreauYasudaModel",
+    "CrossModel",
+    "PowerLawModel",
 ]

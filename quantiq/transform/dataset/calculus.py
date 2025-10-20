@@ -6,11 +6,11 @@ numerical differentiation and integration of experimental data.
 """
 
 from typing import Any
-import numpy as np
-from quantiq.transform.base import DatasetTransform
-from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.backend import jnp, BACKEND
+
+from quantiq.backend import jnp
 from quantiq.backend.operations import jit
+from quantiq.data.datasets import OneDimensionalDataset
+from quantiq.transform.base import DatasetTransform
 
 
 class Derivative(DatasetTransform):
@@ -78,7 +78,7 @@ class Derivative(DatasetTransform):
     - For noisy data, consider smoothing before differentiation
     """
 
-    def __init__(self, order: int = 1, method: str = 'gradient') -> None:
+    def __init__(self, order: int = 1, method: str = "gradient") -> None:
         """
         Initialize derivative transform.
 
@@ -143,13 +143,13 @@ class Derivative(DatasetTransform):
         y = jnp.asarray(dataset.dependent_variable_data)
 
         # Compute first derivative using JIT-compiled methods
-        if self.method == 'gradient':
+        if self.method == "gradient":
             # Central differences (2nd order accurate)
             dy = self._compute_gradient(y, x)
-        elif self.method == 'forward':
+        elif self.method == "forward":
             # Forward differences
             dy = self._compute_forward_diff(y, x)
-        elif self.method == 'backward':
+        elif self.method == "backward":
             # Backward differences
             dy = self._compute_backward_diff(y, x)
         else:
@@ -215,7 +215,7 @@ class CumulativeIntegral(DatasetTransform):
     - For smoother results on noisy data, consider smoothing first
     """
 
-    def __init__(self, method: str = 'trapezoid') -> None:
+    def __init__(self, method: str = "trapezoid") -> None:
         """
         Initialize cumulative integral transform.
 
@@ -257,7 +257,7 @@ class CumulativeIntegral(DatasetTransform):
         x = jnp.asarray(dataset.independent_variable_data)
         y = jnp.asarray(dataset.dependent_variable_data)
 
-        if self.method == 'trapezoid':
+        if self.method == "trapezoid":
             # Use JIT-compiled trapezoidal rule
             cumsum = self._compute_trapezoid_cumsum(x, y)
         else:
@@ -317,7 +317,9 @@ class DefiniteIntegral(DatasetTransform):
     - For cumulative integral, use CumulativeIntegral instead
     """
 
-    def __init__(self, x_min: float | None = None, x_max: float | None = None, method: str = 'trapezoid') -> None:
+    def __init__(
+        self, x_min: float | None = None, x_max: float | None = None, method: str = "trapezoid"
+    ) -> None:
         """
         Initialize definite integral transform.
 
@@ -370,7 +372,7 @@ class DefiniteIntegral(DatasetTransform):
         y_region = y[mask]
 
         # Compute integral
-        if self.method == 'trapezoid':
+        if self.method == "trapezoid":
             # Trapezoidal rule
             if len(x_region) < 2:
                 integral_value = 0.0
@@ -383,15 +385,15 @@ class DefiniteIntegral(DatasetTransform):
         # Store result in details
         if dataset.details is None:
             dataset.details = {}
-        dataset.details['integral_value'] = integral_value
-        dataset.details['integral_x_min'] = x_min
-        dataset.details['integral_x_max'] = x_max
+        dataset.details["integral_value"] = integral_value
+        dataset.details["integral_x_min"] = x_min
+        dataset.details["integral_x_max"] = x_max
 
         return dataset
 
 
 __all__ = [
-    'Derivative',
-    'CumulativeIntegral',
-    'DefiniteIntegral',
+    "CumulativeIntegral",
+    "DefiniteIntegral",
+    "Derivative",
 ]

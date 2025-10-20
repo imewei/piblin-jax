@@ -6,9 +6,10 @@ offsets and drifts from spectroscopic and chromatographic data.
 """
 
 import numpy as np
-from quantiq.transform.base import DatasetTransform
+
+from quantiq.backend import jnp
 from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.backend import jnp, BACKEND
+from quantiq.transform.base import DatasetTransform
 
 
 class PolynomialBaseline(DatasetTransform):
@@ -233,4 +234,4 @@ class AsymmetricLeastSquaresBaseline(DatasetTransform):
         return dataset
 
 
-__all__ = ['PolynomialBaseline', 'AsymmetricLeastSquaresBaseline']
+__all__ = ["AsymmetricLeastSquaresBaseline", "PolynomialBaseline"]

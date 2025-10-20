@@ -14,12 +14,11 @@ Pipelines support:
 """
 
 from collections.abc import MutableSequence
-from typing import TypeVar, Optional, Union, Any
-from functools import wraps
+from typing import Any, TypeVar
 
 from .base import Transform
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class Pipeline(Transform[T], MutableSequence):
@@ -76,7 +75,7 @@ class Pipeline(Transform[T], MutableSequence):
     - Use lazy evaluation for even better performance with JAX
     """
 
-    def __init__(self, transforms: Optional[list[Transform]] = None):
+    def __init__(self, transforms: list[Transform] | None = None):
         """
         Initialize pipeline.
 
@@ -117,7 +116,9 @@ class Pipeline(Transform[T], MutableSequence):
         result = target
         for transform in self._transforms:
             # Apply each transform in-place (no copy)
-            result = transform.apply_to(result, make_copy=False, propagate_uncertainty=propagate_uncertainty)
+            result = transform.apply_to(
+                result, make_copy=False, propagate_uncertainty=propagate_uncertainty
+            )
         return result
 
     def apply_to(self, target: T, make_copy: bool = True, propagate_uncertainty: bool = False) -> T:
@@ -160,7 +161,7 @@ class Pipeline(Transform[T], MutableSequence):
     # MutableSequence interface implementation
     # This allows Pipeline to be used like a list
 
-    def __getitem__(self, index: Union[int, slice]) -> Union[Transform, list[Transform]]:
+    def __getitem__(self, index: int | slice) -> Transform | list[Transform]:
         """
         Get transform(s) at index.
 
@@ -182,7 +183,7 @@ class Pipeline(Transform[T], MutableSequence):
         """
         return self._transforms[index]
 
-    def __setitem__(self, index: Union[int, slice], value: Union[Transform, list[Transform]]) -> None:
+    def __setitem__(self, index: int | slice, value: Transform | list[Transform]) -> None:
         """
         Set transform(s) at index.
 
@@ -213,7 +214,7 @@ class Pipeline(Transform[T], MutableSequence):
                 raise TypeError("Pipeline can only contain Transform objects")
         self._transforms[index] = value
 
-    def __delitem__(self, index: Union[int, slice]) -> None:
+    def __delitem__(self, index: int | slice) -> None:
         """
         Delete transform(s) at index.
 
@@ -372,7 +373,7 @@ class LazyPipeline(Pipeline):
     - More efficient than eager evaluation for complex pipelines
     """
 
-    def __init__(self, transforms: Optional[list[Transform]] = None):
+    def __init__(self, transforms: list[Transform] | None = None):
         """
         Initialize lazy pipeline.
 
@@ -383,8 +384,8 @@ class LazyPipeline(Pipeline):
         """
         super().__init__(transforms)
         self._lazy = True  # Lazy pipelines defer computation
-        self._target: Optional[T] = None
-        self._result_cache: Optional[T] = None
+        self._target: T | None = None
+        self._result_cache: T | None = None
         self._dirty = True  # Flag indicating computation needed
         self._propagate_uncertainty = False  # Store uncertainty propagation flag
 
@@ -445,7 +446,9 @@ class LazyPipeline(Pipeline):
         """
         if self._dirty and self._target is not None:
             # Perform computation with uncertainty propagation if requested
-            self._result_cache = self._apply(self._target, propagate_uncertainty=self._propagate_uncertainty)
+            self._result_cache = self._apply(
+                self._target, propagate_uncertainty=self._propagate_uncertainty
+            )
             self._dirty = False
 
         return self._result_cache
@@ -508,8 +511,8 @@ class LazyResult:
             Pipeline that will compute the result
         """
         # Store in __dict__ to avoid triggering __getattr__
-        object.__setattr__(self, '_pipeline', pipeline)
-        object.__setattr__(self, '_computed', None)
+        object.__setattr__(self, "_pipeline", pipeline)
+        object.__setattr__(self, "_computed", None)
 
     def __getattr__(self, name: str) -> Any:
         """
@@ -528,13 +531,13 @@ class LazyResult:
             Attribute value from computed result
         """
         # Trigger computation if not already done
-        if object.__getattribute__(self, '_computed') is None:
-            pipeline = object.__getattribute__(self, '_pipeline')
+        if object.__getattribute__(self, "_computed") is None:
+            pipeline = object.__getattribute__(self, "_pipeline")
             computed = pipeline._compute()
-            object.__setattr__(self, '_computed', computed)
+            object.__setattr__(self, "_computed", computed)
 
         # Get attribute from computed result
-        computed = object.__getattribute__(self, '_computed')
+        computed = object.__getattribute__(self, "_computed")
         return getattr(computed, name)
 
     def __setattr__(self, name: str, value: Any) -> None:
@@ -550,18 +553,18 @@ class LazyResult:
         value : Any
             Attribute value
         """
-        if name in ('_pipeline', '_computed'):
+        if name in ("_pipeline", "_computed"):
             # Internal attributes
             object.__setattr__(self, name, value)
         else:
             # Trigger computation if needed
-            if object.__getattribute__(self, '_computed') is None:
-                pipeline = object.__getattribute__(self, '_pipeline')
+            if object.__getattribute__(self, "_computed") is None:
+                pipeline = object.__getattribute__(self, "_pipeline")
                 computed = pipeline._compute()
-                object.__setattr__(self, '_computed', computed)
+                object.__setattr__(self, "_computed", computed)
 
             # Set attribute on computed result
-            computed = object.__getattribute__(self, '_computed')
+            computed = object.__getattribute__(self, "_computed")
             setattr(computed, name, value)
 
     def __repr__(self) -> str:
@@ -570,7 +573,7 @@ class LazyResult:
 
 
 __all__ = [
-    "Pipeline",
     "LazyPipeline",
     "LazyResult",
+    "Pipeline",
 ]

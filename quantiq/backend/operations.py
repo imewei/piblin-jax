@@ -7,14 +7,16 @@ and device placement utilities that gracefully degrade to no-ops when using
 the NumPy backend.
 """
 
-from typing import Any, Callable, Optional, Sequence, Union
+from collections.abc import Callable, Sequence
 from functools import wraps
+from typing import Any
+
 import numpy as np
 
-from . import jnp, _JAX_AVAILABLE
-
+from . import _JAX_AVAILABLE, jnp
 
 # Array Operations
+
 
 def copy(arr: Any) -> Any:
     """
@@ -101,7 +103,7 @@ def stack(arrays: Sequence[Any], axis: int = 0) -> Any:
     return jnp.stack(arrays, axis=axis)
 
 
-def reshape(arr: Any, shape: Union[int, Sequence[int]]) -> Any:
+def reshape(arr: Any, shape: int | Sequence[int]) -> Any:
     """
     Reshape an array.
 
@@ -131,7 +133,8 @@ def reshape(arr: Any, shape: Union[int, Sequence[int]]) -> Any:
 
 # JIT Compilation
 
-def jit(func: Optional[Callable] = None, **kwargs) -> Callable:
+
+def jit(func: Callable | None = None, **kwargs) -> Callable:
     """
     Just-in-time compilation decorator.
 
@@ -161,15 +164,18 @@ def jit(func: Optional[Callable] = None, **kwargs) -> Callable:
     >>>
     >>> result = compute(jnp.array([1.0, 2.0, 3.0]))
     """
+
     def decorator(f: Callable) -> Callable:
         if _JAX_AVAILABLE:
             import jax
+
             return jax.jit(f, **kwargs)
         else:
             # No-op for NumPy backend
             @wraps(f)
             def wrapper(*args, **kwargs):
                 return f(*args, **kwargs)
+
             return wrapper
 
     # Support both @jit and @jit(static_argnums=0) syntax
@@ -180,10 +186,7 @@ def jit(func: Optional[Callable] = None, **kwargs) -> Callable:
 
 
 def vmap(
-    func: Callable,
-    in_axes: Union[int, Sequence[Optional[int]]] = 0,
-    out_axes: int = 0,
-    **kwargs
+    func: Callable, in_axes: int | Sequence[int | None] = 0, out_axes: int = 0, **kwargs
 ) -> Callable:
     """
     Vectorizing map decorator.
@@ -220,6 +223,7 @@ def vmap(
     """
     if _JAX_AVAILABLE:
         import jax
+
         return jax.vmap(func, in_axes=in_axes, out_axes=out_axes, **kwargs)
     else:
         # Simple NumPy implementation
@@ -245,7 +249,7 @@ def vmap(
         return wrapper
 
 
-def grad(func: Callable, argnums: Union[int, Sequence[int]] = 0, **kwargs) -> Callable:
+def grad(func: Callable, argnums: int | Sequence[int] = 0, **kwargs) -> Callable:
     """
     Gradient computation decorator.
 
@@ -279,19 +283,23 @@ def grad(func: Callable, argnums: Union[int, Sequence[int]] = 0, **kwargs) -> Ca
     """
     if _JAX_AVAILABLE:
         import jax
+
         return jax.grad(func, argnums=argnums, **kwargs)
     else:
+
         def not_implemented(*args, **kwargs):
             raise NotImplementedError(
                 "Automatic differentiation requires JAX backend. "
                 "Install JAX or use numerical differentiation."
             )
+
         return not_implemented
 
 
 # Device Management
 
-def device_put(arr: Any, device: Optional[Any] = None) -> Any:
+
+def device_put(arr: Any, device: Any | None = None) -> Any:
     """
     Transfer array to a specific device.
 
@@ -319,6 +327,7 @@ def device_put(arr: Any, device: Optional[Any] = None) -> Any:
     """
     if _JAX_AVAILABLE:
         import jax
+
         if device is None:
             return jax.device_put(arr)
         else:
@@ -356,7 +365,8 @@ def device_get(arr: Any) -> np.ndarray:
 
 # Type Conversions
 
-def ensure_array(arr: Any, dtype: Optional[Any] = None) -> Any:
+
+def ensure_array(arr: Any, dtype: Any | None = None) -> Any:
     """
     Ensure input is a backend array with optional dtype conversion.
 
@@ -411,19 +421,19 @@ def astype(arr: Any, dtype: Any) -> Any:
 
 # Export public API
 __all__ = [
+    "astype",
+    "concatenate",
     # Array operations
-    'copy',
-    'concatenate',
-    'stack',
-    'reshape',
-    # JIT and vectorization
-    'jit',
-    'vmap',
-    'grad',
+    "copy",
+    "device_get",
     # Device management
-    'device_put',
-    'device_get',
+    "device_put",
     # Type conversions
-    'ensure_array',
-    'astype',
+    "ensure_array",
+    "grad",
+    # JIT and vectorization
+    "jit",
+    "reshape",
+    "stack",
+    "vmap",
 ]

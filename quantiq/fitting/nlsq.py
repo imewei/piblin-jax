@@ -9,7 +9,9 @@ The NLSQ library (if available) provides enhanced nonlinear least squares fittin
 with better convergence properties than scipy for many problems.
 """
 
-from typing import Callable, Optional, Any
+from collections.abc import Callable
+from typing import Any
+
 import numpy as np
 
 
@@ -17,10 +19,10 @@ def fit_curve(
     func: Callable,
     x: np.ndarray,
     y: np.ndarray,
-    p0: Optional[np.ndarray] = None,
-    sigma: Optional[np.ndarray] = None,
+    p0: np.ndarray | None = None,
+    sigma: np.ndarray | None = None,
     absolute_sigma: bool = False,
-    **kwargs
+    **kwargs,
 ) -> dict[str, Any]:
     """
     Fit a curve using NLSQ or scipy fallback.
@@ -87,28 +89,28 @@ def fit_curve(
         # Prepare arguments for NLSQ
         nlsq_kwargs = {}
         if p0 is not None:
-            nlsq_kwargs['p0'] = p0
+            nlsq_kwargs["p0"] = p0
         if sigma is not None:
-            nlsq_kwargs['sigma'] = sigma
+            nlsq_kwargs["sigma"] = sigma
 
         # Fit using NLSQ
         result = nlsq.optimize(func, x, y, **nlsq_kwargs, **kwargs)
 
         # Extract results
         params = result.params
-        covariance = result.covariance if hasattr(result, 'covariance') else None
-        success = result.success if hasattr(result, 'success') else True
+        covariance = result.covariance if hasattr(result, "covariance") else None
+        success = result.success if hasattr(result, "success") else True
 
         # Compute residuals
         residuals = y - func(x, *params)
 
         return {
-            'params': params,
-            'covariance': covariance,
-            'method': 'nlsq',
-            'success': success,
-            'residuals': residuals,
-            'result_object': result,
+            "params": params,
+            "covariance": covariance,
+            "method": "nlsq",
+            "success": success,
+            "residuals": residuals,
+            "result_object": result,
         }
 
     except (ImportError, AttributeError):
@@ -118,8 +120,8 @@ def fit_curve(
         # Prepare arguments for scipy
         scipy_kwargs = {}
         if sigma is not None:
-            scipy_kwargs['sigma'] = sigma
-            scipy_kwargs['absolute_sigma'] = absolute_sigma
+            scipy_kwargs["sigma"] = sigma
+            scipy_kwargs["absolute_sigma"] = absolute_sigma
 
         # Fit using scipy
         try:
@@ -128,31 +130,28 @@ def fit_curve(
         except Exception as e:
             # If fit fails, return failure result
             return {
-                'params': p0 if p0 is not None else None,
-                'covariance': None,
-                'method': 'scipy',
-                'success': False,
-                'residuals': None,
-                'error': str(e),
+                "params": p0 if p0 is not None else None,
+                "covariance": None,
+                "method": "scipy",
+                "success": False,
+                "residuals": None,
+                "error": str(e),
             }
 
         # Compute residuals
         residuals = y - func(x, *params)
 
         return {
-            'params': params,
-            'covariance': covariance,
-            'method': 'scipy',
-            'success': success,
-            'residuals': residuals,
+            "params": params,
+            "covariance": covariance,
+            "method": "scipy",
+            "success": success,
+            "residuals": residuals,
         }
 
 
 def estimate_initial_parameters(
-    func: Callable,
-    x: np.ndarray,
-    y: np.ndarray,
-    bounds: Optional[tuple] = None
+    func: Callable, x: np.ndarray, y: np.ndarray, bounds: tuple | None = None
 ) -> np.ndarray:
     """
     Estimate initial parameters for curve fitting.
@@ -183,6 +182,7 @@ def estimate_initial_parameters(
     """
     # Get number of parameters from function signature
     import inspect
+
     sig = inspect.signature(func)
     n_params = len(sig.parameters) - 1  # Exclude x parameter
 
@@ -217,6 +217,6 @@ def estimate_initial_parameters(
 
 
 __all__ = [
-    'fit_curve',
-    'estimate_initial_parameters',
+    "estimate_initial_parameters",
+    "fit_curve",
 ]

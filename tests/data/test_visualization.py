@@ -7,11 +7,13 @@ This module tests Task Group 16:
 - Multiple confidence levels
 """
 
-import pytest
-import numpy as np
 import matplotlib
-matplotlib.use('Agg')  # Use non-interactive backend for testing
+import numpy as np
+import pytest
+
+matplotlib.use("Agg")  # Use non-interactive backend for testing
 import matplotlib.pyplot as plt
+
 from quantiq.data.datasets import OneDimensionalDataset
 
 
@@ -23,10 +25,7 @@ class TestOneDimensionalVisualization:
         # Create dataset
         x = np.linspace(0, 10, 50)
         y = 2.0 * x + 1.0
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Visualize
         fig, ax = dataset.visualize()
@@ -46,22 +45,15 @@ class TestOneDimensionalVisualization:
         """Test visualization with custom labels."""
         x = np.linspace(0, 10, 50)
         y = 2.0 * x + 1.0
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Visualize with custom labels
-        fig, ax = dataset.visualize(
-            xlabel='Time (s)',
-            ylabel='Signal (V)',
-            title='Test Plot'
-        )
+        fig, ax = dataset.visualize(xlabel="Time (s)", ylabel="Signal (V)", title="Test Plot")
 
         # Check labels
-        assert ax.get_xlabel() == 'Time (s)'
-        assert ax.get_ylabel() == 'Signal (V)'
-        assert ax.get_title() == 'Test Plot'
+        assert ax.get_xlabel() == "Time (s)"
+        assert ax.get_ylabel() == "Signal (V)"
+        assert ax.get_title() == "Test Plot"
 
         plt.close(fig)
 
@@ -69,10 +61,7 @@ class TestOneDimensionalVisualization:
         """Test that show_uncertainty=False works (default)."""
         x = np.linspace(0, 10, 50)
         y = 2.0 * x + 1.0
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Visualize without uncertainty
         fig, ax = dataset.visualize(show_uncertainty=False)
@@ -90,16 +79,11 @@ class TestOneDimensionalVisualization:
         np.random.seed(42)
         x = np.linspace(0, 10, 50)
         y = 2.0 * x + 1.0 + 0.5 * np.random.randn(len(x))
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Add bootstrap uncertainty
         dataset_with_unc = dataset.with_uncertainty(
-            n_samples=100,
-            method='bootstrap',
-            keep_samples=True
+            n_samples=100, method="bootstrap", keep_samples=True
         )
 
         # Visualize with uncertainty
@@ -122,16 +106,11 @@ class TestOneDimensionalVisualization:
         np.random.seed(42)
         x = np.linspace(0, 10, 30)
         y = 2.0 * x + 1.0 + 0.2 * np.random.randn(len(x))
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Add Bayesian uncertainty
         dataset_with_unc = dataset.with_uncertainty(
-            n_samples=100,
-            method='bayesian',
-            keep_samples=True
+            n_samples=100, method="bayesian", keep_samples=True
         )
 
         # Visualize with uncertainty
@@ -150,14 +129,11 @@ class TestOneDimensionalVisualization:
         """Test visualization with custom figure size."""
         x = np.linspace(0, 10, 50)
         y = 2.0 * x + 1.0
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Visualize with custom figsize
         custom_figsize = (12, 8)
-        fig, ax = dataset.visualize(figsize=custom_figsize)
+        fig, _ax = dataset.visualize(figsize=custom_figsize)
 
         # Check figure size
         assert fig.get_size_inches()[0] == custom_figsize[0]
@@ -169,24 +145,17 @@ class TestOneDimensionalVisualization:
         """Test that additional kwargs are passed to plot."""
         x = np.linspace(0, 10, 50)
         y = 2.0 * x + 1.0
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Visualize with custom plot kwargs
         fig, ax = dataset.visualize(
-            color='red',
-            linestyle='--',
-            linewidth=2,
-            marker='o',
-            markersize=4
+            color="red", linestyle="--", linewidth=2, marker="o", markersize=4
         )
 
         # Check that line has custom properties
         line = ax.get_lines()[0]
-        assert line.get_color() == 'red'
-        assert line.get_linestyle() == '--'
+        assert line.get_color() == "red"
+        assert line.get_linestyle() == "--"
         assert line.get_linewidth() == 2
 
         plt.close(fig)
@@ -196,24 +165,19 @@ class TestOneDimensionalVisualization:
         np.random.seed(42)
         x = np.linspace(0, 10, 50)
         y = 2.0 * x + 1.0 + 0.5 * np.random.randn(len(x))
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Add bootstrap uncertainty
         dataset_with_unc = dataset.with_uncertainty(
-            n_samples=100,
-            method='bootstrap',
-            keep_samples=True
+            n_samples=100, method="bootstrap", keep_samples=True
         )
 
         # Visualize with 95% CI
-        fig1, ax1 = dataset_with_unc.visualize(show_uncertainty=True, level=0.95)
+        fig1, _ax1 = dataset_with_unc.visualize(show_uncertainty=True, level=0.95)
         plt.close(fig1)
 
         # Visualize with 68% CI (should be narrower)
-        fig2, ax2 = dataset_with_unc.visualize(show_uncertainty=True, level=0.68)
+        fig2, _ax2 = dataset_with_unc.visualize(show_uncertainty=True, level=0.68)
         plt.close(fig2)
 
         # Both should work without error

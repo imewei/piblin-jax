@@ -11,20 +11,20 @@ This module tests:
 - JIT compilation effectiveness
 """
 
-import pytest
 import numpy as np
+import pytest
 from numpy.testing import assert_allclose
 
+from quantiq.backend import BACKEND, is_jax_available
 from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.backend import is_jax_available, BACKEND
 from quantiq.transform.dataset import (
+    CumulativeIntegral,
+    Derivative,
     Interpolate1D,
+    MinMaxNormalize,
     MovingAverageSmooth,
     PolynomialBaseline,
-    MinMaxNormalize,
     ZScoreNormalize,
-    Derivative,
-    CumulativeIntegral,
 )
 
 
@@ -41,7 +41,7 @@ def create_test_dataset(x=None, y=None):
         independent_variable_data=x,
         dependent_variable_data=y,
         conditions={"temperature": 25.0},
-        details={"units": "arbitrary"}
+        details={"units": "arbitrary"},
     )
 
 
@@ -57,7 +57,7 @@ class TestInterpolate1D:
 
         # Interpolate to finer grid
         new_x = np.array([0.5, 1.5, 2.5, 3.5])
-        transform = Interpolate1D(new_x, method='linear')
+        transform = Interpolate1D(new_x, method="linear")
         result = transform.apply_to(dataset)
 
         # Check results
@@ -130,10 +130,7 @@ class TestBaselineSubtraction:
         baseline = 2.0 * x + 1.0
         signal = 0.1 * np.sin(x)  # Small oscillation
         y = signal + baseline
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Remove linear baseline
         transform = PolynomialBaseline(degree=1)
@@ -150,10 +147,7 @@ class TestBaselineSubtraction:
         baseline = 0.1 * x**2 + 2.0 * x + 1.0
         signal = 0.05 * np.sin(x)  # Small oscillation
         y = signal + baseline
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Remove quadratic baseline
         transform = PolynomialBaseline(degree=2)
@@ -229,10 +223,7 @@ class TestDerivative:
         # Create data with known second derivative
         x = np.linspace(0, 10, 100)
         y = x**3  # d²y/dx² = 6x
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         transform = Derivative(order=2)
         result = transform.apply_to(dataset)
@@ -306,4 +297,4 @@ class TestJITCompilation:
         for transform in transforms:
             result = transform.apply_to(dataset)
             assert result is not None
-            assert hasattr(result, 'dependent_variable_data')
+            assert hasattr(result, "dependent_variable_data")

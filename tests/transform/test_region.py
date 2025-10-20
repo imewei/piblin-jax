@@ -4,11 +4,12 @@ Tests for region-based transforms.
 This module tests RegionTransform and RegionMultiplyTransform classes.
 """
 
-import pytest
 import numpy as np
+import pytest
+
 from quantiq.data.datasets import OneDimensionalDataset, TwoDimensionalDataset
-from quantiq.data.roi import LinearRegion, CompoundRegion
-from quantiq.transform.region import RegionTransform, RegionMultiplyTransform
+from quantiq.data.roi import CompoundRegion, LinearRegion
+from quantiq.transform.region import RegionMultiplyTransform, RegionTransform
 
 
 class TestRegionTransform:
@@ -27,8 +28,7 @@ class TestRegionTransform:
         x_data = np.array([0.0, 1.0, 2.0, 3.0, 4.0, 5.0])
         y_data = np.ones(6)
         dataset = OneDimensionalDataset(
-            independent_variable_data=x_data,
-            dependent_variable_data=y_data
+            independent_variable_data=x_data, dependent_variable_data=y_data
         )
 
         # Create transform
@@ -40,9 +40,7 @@ class TestRegionTransform:
 
         # Check result
         expected = np.array([1.0, 1.0, 2.0, 2.0, 2.0, 1.0])
-        np.testing.assert_array_almost_equal(
-            result.dependent_variable_data, expected
-        )
+        np.testing.assert_array_almost_equal(result.dependent_variable_data, expected)
 
     def test_apply_with_compound_region(self):
         """Test applying transform with CompoundRegion."""
@@ -50,8 +48,7 @@ class TestRegionTransform:
         x_data = np.linspace(0, 10, 11)
         y_data = np.ones(11)
         dataset = OneDimensionalDataset(
-            independent_variable_data=x_data,
-            dependent_variable_data=y_data
+            independent_variable_data=x_data, dependent_variable_data=y_data
         )
 
         # Create compound region (two disjoint regions)
@@ -67,17 +64,14 @@ class TestRegionTransform:
         expected = np.ones(11)
         expected[1:3] = 0.5  # indices 1, 2
         expected[8:10] = 0.5  # indices 8, 9
-        np.testing.assert_array_almost_equal(
-            result.dependent_variable_data, expected
-        )
+        np.testing.assert_array_almost_equal(result.dependent_variable_data, expected)
 
     def test_apply_preserves_outside_region(self):
         """Test that data outside region is preserved."""
         x_data = np.linspace(0, 10, 101)
         y_data = np.sin(x_data)
         dataset = OneDimensionalDataset(
-            independent_variable_data=x_data,
-            dependent_variable_data=y_data
+            independent_variable_data=x_data, dependent_variable_data=y_data
         )
 
         # Transform only middle region
@@ -90,7 +84,7 @@ class TestRegionTransform:
         outside_mask = ~mask
         np.testing.assert_array_almost_equal(
             result.dependent_variable_data[outside_mask],
-            dataset.dependent_variable_data[outside_mask]
+            dataset.dependent_variable_data[outside_mask],
         )
 
     def test_apply_to_wrong_dataset_type(self):
@@ -98,7 +92,7 @@ class TestRegionTransform:
         dataset = TwoDimensionalDataset(
             independent_variable_data_1=np.array([1, 2]),
             independent_variable_data_2=np.array([3, 4]),
-            dependent_variable_data=np.array([[1, 2], [3, 4]])
+            dependent_variable_data=np.array([[1, 2], [3, 4]]),
         )
         region = LinearRegion(x_min=1.0, x_max=5.0)
         transform = RegionMultiplyTransform(region, factor=2.0)
@@ -126,8 +120,7 @@ class TestRegionMultiplyTransform:
         x_data = np.array([0.0, 1.0, 2.0, 3.0, 4.0])
         y_data = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
         dataset = OneDimensionalDataset(
-            independent_variable_data=x_data,
-            dependent_variable_data=y_data
+            independent_variable_data=x_data, dependent_variable_data=y_data
         )
 
         region = LinearRegion(x_min=1.0, x_max=3.0)
@@ -135,17 +128,14 @@ class TestRegionMultiplyTransform:
         result = transform.apply_to(dataset, make_copy=True)
 
         expected = np.array([1.0, 20.0, 30.0, 40.0, 5.0])
-        np.testing.assert_array_almost_equal(
-            result.dependent_variable_data, expected
-        )
+        np.testing.assert_array_almost_equal(result.dependent_variable_data, expected)
 
     def test_multiply_factor_negative(self):
         """Test multiplication with negative factor."""
         x_data = np.array([0.0, 1.0, 2.0, 3.0, 4.0])
         y_data = np.ones(5)
         dataset = OneDimensionalDataset(
-            independent_variable_data=x_data,
-            dependent_variable_data=y_data
+            independent_variable_data=x_data, dependent_variable_data=y_data
         )
 
         region = LinearRegion(x_min=1.0, x_max=3.0)
@@ -153,17 +143,14 @@ class TestRegionMultiplyTransform:
         result = transform.apply_to(dataset, make_copy=True)
 
         expected = np.array([1.0, -1.0, -1.0, -1.0, 1.0])
-        np.testing.assert_array_almost_equal(
-            result.dependent_variable_data, expected
-        )
+        np.testing.assert_array_almost_equal(result.dependent_variable_data, expected)
 
     def test_multiply_factor_zero(self):
         """Test multiplication with zero factor."""
         x_data = np.array([0.0, 1.0, 2.0, 3.0, 4.0])
         y_data = np.array([5.0, 5.0, 5.0, 5.0, 5.0])
         dataset = OneDimensionalDataset(
-            independent_variable_data=x_data,
-            dependent_variable_data=y_data
+            independent_variable_data=x_data, dependent_variable_data=y_data
         )
 
         region = LinearRegion(x_min=1.0, x_max=3.0)
@@ -171,17 +158,14 @@ class TestRegionMultiplyTransform:
         result = transform.apply_to(dataset, make_copy=True)
 
         expected = np.array([5.0, 0.0, 0.0, 0.0, 5.0])
-        np.testing.assert_array_almost_equal(
-            result.dependent_variable_data, expected
-        )
+        np.testing.assert_array_almost_equal(result.dependent_variable_data, expected)
 
     def test_multiply_empty_region(self):
         """Test multiplication when region is empty."""
         x_data = np.array([0.0, 1.0, 2.0, 3.0, 4.0])
         y_data = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
         dataset = OneDimensionalDataset(
-            independent_variable_data=x_data,
-            dependent_variable_data=y_data
+            independent_variable_data=x_data, dependent_variable_data=y_data
         )
 
         # Region outside data range
@@ -191,8 +175,7 @@ class TestRegionMultiplyTransform:
 
         # Nothing should change
         np.testing.assert_array_almost_equal(
-            result.dependent_variable_data,
-            dataset.dependent_variable_data
+            result.dependent_variable_data, dataset.dependent_variable_data
         )
 
     def test_multiply_make_copy_false(self):
@@ -200,8 +183,7 @@ class TestRegionMultiplyTransform:
         x_data = np.array([0.0, 1.0, 2.0, 3.0, 4.0])
         y_data = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
         dataset = OneDimensionalDataset(
-            independent_variable_data=x_data,
-            dependent_variable_data=y_data
+            independent_variable_data=x_data, dependent_variable_data=y_data
         )
 
         region = LinearRegion(x_min=1.0, x_max=3.0)
@@ -212,6 +194,4 @@ class TestRegionMultiplyTransform:
         assert result is dataset
 
         expected = np.array([1.0, 4.0, 6.0, 8.0, 5.0])
-        np.testing.assert_array_almost_equal(
-            result.dependent_variable_data, expected
-        )
+        np.testing.assert_array_almost_equal(result.dependent_variable_data, expected)

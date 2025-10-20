@@ -11,7 +11,7 @@ import numpy as np
 import pytest
 from numpy.testing import assert_array_equal
 
-from quantiq.data.roi import LinearRegion, CompoundRegion
+from quantiq.data.roi import CompoundRegion, LinearRegion
 
 
 class TestLinearRegion:
@@ -54,8 +54,8 @@ class TestLinearRegion:
 
         assert_array_equal(mask, expected)
         # Verify boundary values are included
-        assert mask[1] == True  # x_min = 2.0
-        assert mask[4] == True  # x_max = 5.0
+        assert mask[1]  # x_min = 2.0
+        assert mask[4]  # x_max = 5.0
 
     def test_get_mask_no_overlap(self):
         """Test mask when no data falls within region."""

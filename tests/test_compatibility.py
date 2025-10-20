@@ -5,8 +5,8 @@ Tests to ensure quantiq can be used as a drop-in replacement for piblin.
 This verifies that `import quantiq as piblin` works correctly.
 """
 
-import pytest
 import numpy as np
+import pytest
 
 
 class TestPiblinCompatibility:
@@ -15,6 +15,7 @@ class TestPiblinCompatibility:
     def test_import_as_piblin(self):
         """Test that quantiq can be imported as piblin."""
         import quantiq as piblin
+
         assert piblin is not None
 
     def test_core_classes_available(self):
@@ -22,46 +23,46 @@ class TestPiblinCompatibility:
         import quantiq as piblin
 
         # Core dataset classes
-        assert hasattr(piblin, 'OneDimensionalDataset')
-        assert hasattr(piblin, 'TwoDimensionalDataset')
-        assert hasattr(piblin, 'ThreeDimensionalDataset')
+        assert hasattr(piblin, "OneDimensionalDataset")
+        assert hasattr(piblin, "TwoDimensionalDataset")
+        assert hasattr(piblin, "ThreeDimensionalDataset")
 
     def test_measurement_classes_available(self):
         """Test that measurement/collection classes are available."""
         import quantiq as piblin
 
         # Collection classes
-        assert hasattr(piblin, 'Measurement')
-        assert hasattr(piblin, 'MeasurementSet')
-        assert hasattr(piblin, 'Experiment')
-        assert hasattr(piblin, 'ExperimentSet')
+        assert hasattr(piblin, "Measurement")
+        assert hasattr(piblin, "MeasurementSet")
+        assert hasattr(piblin, "Experiment")
+        assert hasattr(piblin, "ExperimentSet")
 
     def test_transform_classes_available(self):
         """Test that transform classes are available."""
         import quantiq as piblin
 
         # Transform classes
-        assert hasattr(piblin, 'Pipeline')
-        assert hasattr(piblin, 'LambdaTransform')
+        assert hasattr(piblin, "Pipeline")
+        assert hasattr(piblin, "LambdaTransform")
 
     def test_bayesian_classes_available(self):
         """Test that Bayesian classes are available."""
         import quantiq as piblin
 
         # Bayesian classes
-        assert hasattr(piblin, 'BayesianModel')
-        assert hasattr(piblin, 'PowerLawModel')
-        assert hasattr(piblin, 'ArrheniusModel')
-        assert hasattr(piblin, 'CrossModel')
-        assert hasattr(piblin, 'CarreauYasudaModel')
+        assert hasattr(piblin, "BayesianModel")
+        assert hasattr(piblin, "PowerLawModel")
+        assert hasattr(piblin, "ArrheniusModel")
+        assert hasattr(piblin, "CrossModel")
+        assert hasattr(piblin, "CarreauYasudaModel")
 
     def test_dataio_available(self):
         """Test that dataio functions are available."""
         import quantiq as piblin
 
         # Data IO
-        assert hasattr(piblin, 'read_files')
-        assert hasattr(piblin, 'GenericCSVReader')
+        assert hasattr(piblin, "read_files")
+        assert hasattr(piblin, "GenericCSVReader")
 
     def test_basic_workflow_as_piblin(self):
         """Test a basic workflow using piblin name."""
@@ -72,8 +73,7 @@ class TestPiblinCompatibility:
         y = 2.0 * x + 1.0 + np.random.randn(50) * 0.1
 
         dataset = piblin.OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
+            independent_variable_data=x, dependent_variable_data=y
         )
 
         assert dataset is not None
@@ -88,20 +88,17 @@ class TestPiblinCompatibility:
         y = 2.0 * x + 1.0
 
         dataset = piblin.OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
+            independent_variable_data=x, dependent_variable_data=y
         )
 
         # Create lambda transform (function works on arrays, not datasets)
-        transform = piblin.LambdaTransform(
-            lambda_func=lambda y_arr: y_arr * 2.0
-        )
+        transform = piblin.LambdaTransform(lambda_func=lambda y_arr: y_arr * 2.0)
 
         result = transform.apply_to(dataset, make_copy=True)
         np.testing.assert_array_almost_equal(
             result.dependent_variable_data,
             y * 2.0,
-            decimal=5  # JAX may have slightly different floating point precision
+            decimal=5,  # JAX may have slightly different floating point precision
         )
 
     def test_pipeline_workflow_as_piblin(self):
@@ -112,8 +109,7 @@ class TestPiblinCompatibility:
         y = np.sin(x)
 
         dataset = piblin.OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
+            independent_variable_data=x, dependent_variable_data=y
         )
 
         # Create pipeline (functions work on arrays)
@@ -127,7 +123,7 @@ class TestPiblinCompatibility:
         np.testing.assert_array_almost_equal(
             result.dependent_variable_data,
             expected,
-            decimal=5  # JAX may have slightly different floating point precision
+            decimal=5,  # JAX may have slightly different floating point precision
         )
 
     def test_measurement_workflow_as_piblin(self):
@@ -138,15 +134,11 @@ class TestPiblinCompatibility:
         y = np.random.randn(20)
 
         dataset = piblin.OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
+            independent_variable_data=x, dependent_variable_data=y
         )
 
         # Measurement takes a list of datasets
-        measurement = piblin.Measurement(
-            [dataset],
-            conditions={"temperature": 298.15}
-        )
+        measurement = piblin.Measurement([dataset], conditions={"temperature": 298.15})
 
         assert len(measurement.datasets) == 1
         assert measurement.conditions["temperature"] == 298.15
@@ -160,16 +152,16 @@ class TestBackwardCompatibility:
         import quantiq
 
         # Check __all__ is defined
-        assert hasattr(quantiq, '__all__')
+        assert hasattr(quantiq, "__all__")
         assert isinstance(quantiq.__all__, list)
 
         # Check key classes are in __all__
         key_classes = [
-            'OneDimensionalDataset',
-            'TwoDimensionalDataset',
-            'BayesianModel',
-            'Pipeline',
-            'LambdaTransform',
+            "OneDimensionalDataset",
+            "TwoDimensionalDataset",
+            "BayesianModel",
+            "Pipeline",
+            "LambdaTransform",
         ]
 
         for cls in key_classes:
@@ -180,7 +172,7 @@ class TestBackwardCompatibility:
         import quantiq
 
         # Version should be available
-        assert hasattr(quantiq, '__version__')
+        assert hasattr(quantiq, "__version__")
         assert isinstance(quantiq.__version__, str)
 
 
@@ -195,19 +187,18 @@ class TestAPIStability:
         y = np.sin(x)
 
         dataset = piblin.OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
+            independent_variable_data=x, dependent_variable_data=y
         )
 
         # Check core attributes
-        assert hasattr(dataset, 'independent_variable_data')
-        assert hasattr(dataset, 'dependent_variable_data')
-        assert hasattr(dataset, 'conditions')
-        assert hasattr(dataset, 'details')
+        assert hasattr(dataset, "independent_variable_data")
+        assert hasattr(dataset, "dependent_variable_data")
+        assert hasattr(dataset, "conditions")
+        assert hasattr(dataset, "details")
 
         # Check core methods
-        assert hasattr(dataset, 'copy')
-        assert hasattr(dataset, 'with_uncertainty')
+        assert hasattr(dataset, "copy")
+        assert hasattr(dataset, "with_uncertainty")
 
     def test_transform_interface(self):
         """Test that transforms have stable interface."""
@@ -216,7 +207,7 @@ class TestAPIStability:
         transform = piblin.LambdaTransform(lambda ds: ds.dependent_variable_data)
 
         # Check core methods
-        assert hasattr(transform, 'apply_to')
+        assert hasattr(transform, "apply_to")
         assert callable(transform.apply_to)
 
     def test_bayesian_model_interface(self):
@@ -224,6 +215,6 @@ class TestAPIStability:
         import quantiq as piblin
 
         # Just check the base class interface
-        assert hasattr(piblin.BayesianModel, 'fit')
-        assert hasattr(piblin.BayesianModel, 'predict')
-        assert hasattr(piblin.BayesianModel, 'get_credible_intervals')
+        assert hasattr(piblin.BayesianModel, "fit")
+        assert hasattr(piblin.BayesianModel, "predict")
+        assert hasattr(piblin.BayesianModel, "get_credible_intervals")

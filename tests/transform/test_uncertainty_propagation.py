@@ -7,11 +7,12 @@ This module tests Task Group 14:
 - Bootstrap method for uncertainty quantification
 """
 
-import pytest
 import numpy as np
+import pytest
+
 from quantiq.data.datasets import OneDimensionalDataset
 from quantiq.transform.base import DatasetTransform
-from quantiq.transform.pipeline import Pipeline, LazyPipeline
+from quantiq.transform.pipeline import LazyPipeline, Pipeline
 
 
 class MultiplyTransform(DatasetTransform):
@@ -48,10 +49,7 @@ class TestUncertaintyPropagationSingleTransform:
         # Create dataset
         x = np.linspace(0, 10, 50)
         y = 2.0 * x + 1.0
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Apply transform
         transform = MultiplyTransform(2.0)
@@ -66,10 +64,7 @@ class TestUncertaintyPropagationSingleTransform:
         # Create dataset with uncertainty
         x = np.linspace(0, 10, 50)
         y = 2.0 * x + 1.0
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Apply transform with propagate_uncertainty=True
         transform = MultiplyTransform(2.0)
@@ -84,16 +79,11 @@ class TestUncertaintyPropagationSingleTransform:
         np.random.seed(42)
         x = np.linspace(0, 10, 50)
         y = 2.0 * x + 1.0 + 0.1 * np.random.randn(len(x))
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Add uncertainty with bootstrap
         dataset_with_unc = dataset.with_uncertainty(
-            n_samples=100,
-            method='bootstrap',
-            keep_samples=True
+            n_samples=100, method="bootstrap", keep_samples=True
         )
 
         # Apply transform
@@ -113,16 +103,10 @@ class TestUncertaintyPropagationPipeline:
         # Create dataset
         x = np.linspace(0, 10, 50)
         y = 2.0 * x + 1.0
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Create pipeline
-        pipeline = Pipeline([
-            MultiplyTransform(2.0),
-            AddTransform(5.0)
-        ])
+        pipeline = Pipeline([MultiplyTransform(2.0), AddTransform(5.0)])
 
         # Apply pipeline
         result = pipeline.apply_to(dataset, propagate_uncertainty=False)
@@ -135,16 +119,10 @@ class TestUncertaintyPropagationPipeline:
         # Create dataset
         x = np.linspace(0, 10, 50)
         y = 2.0 * x + 1.0
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Create pipeline
-        pipeline = Pipeline([
-            MultiplyTransform(2.0),
-            AddTransform(5.0)
-        ])
+        pipeline = Pipeline([MultiplyTransform(2.0), AddTransform(5.0)])
 
         # Apply with propagate_uncertainty=True
         result = pipeline.apply_to(dataset, propagate_uncertainty=True)
@@ -158,23 +136,15 @@ class TestUncertaintyPropagationPipeline:
         np.random.seed(42)
         x = np.linspace(0, 10, 50)
         y = 2.0 * x + 1.0 + 0.1 * np.random.randn(len(x))
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Add uncertainty with bootstrap
         dataset_with_unc = dataset.with_uncertainty(
-            n_samples=100,
-            method='bootstrap',
-            keep_samples=True
+            n_samples=100, method="bootstrap", keep_samples=True
         )
 
         # Create pipeline
-        pipeline = Pipeline([
-            MultiplyTransform(2.0),
-            AddTransform(5.0)
-        ])
+        pipeline = Pipeline([MultiplyTransform(2.0), AddTransform(5.0)])
 
         # Apply with uncertainty propagation
         result = pipeline.apply_to(dataset_with_unc, propagate_uncertainty=True)
@@ -188,16 +158,10 @@ class TestUncertaintyPropagationPipeline:
         # Create dataset
         x = np.linspace(0, 10, 50)
         y = 2.0 * x + 1.0
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Create lazy pipeline
-        pipeline = LazyPipeline([
-            MultiplyTransform(2.0),
-            AddTransform(5.0)
-        ])
+        pipeline = LazyPipeline([MultiplyTransform(2.0), AddTransform(5.0)])
 
         # Apply with propagate_uncertainty
         result = pipeline.apply_to(dataset, propagate_uncertainty=True)
@@ -217,16 +181,11 @@ class TestBootstrapMethod:
         np.random.seed(42)
         x = np.linspace(0, 10, 50)
         y = 2.0 * x + 1.0 + 0.1 * np.random.randn(len(x))
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Add uncertainty with bootstrap
         dataset_with_unc = dataset.with_uncertainty(
-            n_samples=100,
-            method='bootstrap',
-            keep_samples=False
+            n_samples=100, method="bootstrap", keep_samples=False
         )
 
         # Check that uncertainty is added
@@ -238,25 +197,20 @@ class TestBootstrapMethod:
         np.random.seed(42)
         x = np.linspace(0, 10, 50)
         y = 2.0 * x + 1.0 + 0.1 * np.random.randn(len(x))
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Add uncertainty with bootstrap, keeping samples
         dataset_with_unc = dataset.with_uncertainty(
-            n_samples=100,
-            method='bootstrap',
-            keep_samples=True
+            n_samples=100, method="bootstrap", keep_samples=True
         )
 
         # Check that samples are stored
         assert dataset_with_unc.has_uncertainty
         assert dataset_with_unc.uncertainty_samples is not None
-        assert 'bootstrap_samples' in dataset_with_unc.uncertainty_samples
+        assert "bootstrap_samples" in dataset_with_unc.uncertainty_samples
 
         # Check shape of bootstrap samples
-        samples = dataset_with_unc.uncertainty_samples['bootstrap_samples']
+        samples = dataset_with_unc.uncertainty_samples["bootstrap_samples"]
         assert samples.shape == (100, len(x))
 
     def test_bootstrap_credible_intervals(self):
@@ -265,17 +219,10 @@ class TestBootstrapMethod:
         x = np.linspace(0, 10, 50)
         # Add noise to data
         y = 2.0 * x + 1.0 + 0.5 * np.random.randn(len(x))
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Add uncertainty with bootstrap
-        dataset_with_unc = dataset.with_uncertainty(
-            n_samples=200,
-            method='bootstrap',
-            level=0.95
-        )
+        dataset_with_unc = dataset.with_uncertainty(n_samples=200, method="bootstrap", level=0.95)
 
         # Get credible intervals
         lower, upper = dataset_with_unc.credible_intervals
@@ -292,25 +239,14 @@ class TestBootstrapMethod:
         np.random.seed(42)
         x = np.linspace(0, 10, 30)
         y = 2.0 * x + 1.0 + 0.5 * np.random.randn(len(x))
-        dataset = OneDimensionalDataset(
-            independent_variable_data=x,
-            dependent_variable_data=y
-        )
+        dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # 95% interval
-        dataset_95 = dataset.with_uncertainty(
-            n_samples=100,
-            method='bootstrap',
-            level=0.95
-        )
+        dataset_95 = dataset.with_uncertainty(n_samples=100, method="bootstrap", level=0.95)
         lower_95, upper_95 = dataset_95.credible_intervals
 
         # 68% interval (should be narrower)
-        dataset_68 = dataset.with_uncertainty(
-            n_samples=100,
-            method='bootstrap',
-            level=0.68
-        )
+        dataset_68 = dataset.with_uncertainty(n_samples=100, method="bootstrap", level=0.68)
         lower_68, upper_68 = dataset_68.credible_intervals
 
         # 68% interval should be narrower than 95% interval

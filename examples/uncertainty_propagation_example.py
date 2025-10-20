@@ -18,13 +18,13 @@ Key concepts:
 Expected output: Plots showing uncertainty bands through processing pipeline
 """
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Import quantiq dataset and transform classes
 from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.transform.dataset import GaussianSmooth, Normalize, Derivative
 from quantiq.transform import Pipeline
+from quantiq.transform.dataset import Derivative, GaussianSmooth, Normalize
 
 print("=" * 80)
 print("Uncertainty Propagation Example")
@@ -54,7 +54,7 @@ dataset = OneDimensionalDataset(
     independent_variable_data=x,
     dependent_variable_data=y_measured,
     conditions={"temperature": 25.0, "sample": "A"},
-    details={"instrument": "Rheometer", "operator": "Scientist"}
+    details={"instrument": "Rheometer", "operator": "Scientist"},
 )
 
 # Store uncertainty as metadata (quantiq pattern)
@@ -72,14 +72,11 @@ print(f"   ✓ Relative uncertainty: {(uncertainty_y.mean() / np.abs(y_measured)
 print("\n[2] Propagating uncertainty using Monte Carlo sampling...")
 
 # Define processing pipeline
-pipeline = Pipeline([
-    GaussianSmooth(sigma=1.5),
-    Normalize(method="min-max")
-])
+pipeline = Pipeline([GaussianSmooth(sigma=1.5), Normalize(method="min-max")])
 
 print(f"   ✓ Pipeline: {len(pipeline.transforms)} transforms")
-print(f"      1. GaussianSmooth(sigma=1.5)")
-print(f"      2. Normalize(method='min-max')")
+print("      1. GaussianSmooth(sigma=1.5)")
+print("      2. Normalize(method='min-max')")
 
 # Monte Carlo: Generate ensemble of realizations
 n_samples = 500
@@ -94,8 +91,7 @@ for i in range(n_samples):
 
     # Create temporary dataset
     dataset_sample = OneDimensionalDataset(
-        independent_variable_data=x,
-        dependent_variable_data=y_sample
+        independent_variable_data=x, dependent_variable_data=y_sample
     )
 
     # Apply pipeline
@@ -110,7 +106,7 @@ y_mc_std = np.std(mc_results, axis=0)
 y_mc_lower = np.percentile(mc_results, 2.5, axis=0)  # 95% interval
 y_mc_upper = np.percentile(mc_results, 97.5, axis=0)
 
-print(f"   ✓ Monte Carlo completed")
+print("   ✓ Monte Carlo completed")
 print(f"   ✓ Result uncertainty range: [{y_mc_std.min():.4f}, {y_mc_std.max():.4f}]")
 
 # =============================================================================
@@ -121,9 +117,11 @@ print("\n[3] Applying pipeline to nominal dataset...")
 # Process the measured data (nominal case)
 result_nominal = pipeline.apply_to(dataset, make_copy=True)
 
-print(f"   ✓ Nominal processing completed")
-print(f"   ✓ Result range: [{result_nominal.dependent_variable_data.min():.3f}, "
-      f"{result_nominal.dependent_variable_data.max():.3f}]")
+print("   ✓ Nominal processing completed")
+print(
+    f"   ✓ Result range: [{result_nominal.dependent_variable_data.min():.3f}, "
+    f"{result_nominal.dependent_variable_data.max():.3f}]"
+)
 
 # =============================================================================
 # Section 4: Derivative with Uncertainty
@@ -131,10 +129,9 @@ print(f"   ✓ Result range: [{result_nominal.dependent_variable_data.min():.3f}
 print("\n[4] Computing derivative with uncertainty propagation...")
 
 # Derivative amplifies noise - important for uncertainty analysis
-derivative_pipeline = Pipeline([
-    GaussianSmooth(sigma=2.0),  # Pre-smooth to reduce noise amplification
-    Derivative(order=1)
-])
+derivative_pipeline = Pipeline(
+    [GaussianSmooth(sigma=2.0), Derivative(order=1)]  # Pre-smooth to reduce noise amplification
+)
 
 print(f"   ⏳ Running Monte Carlo for derivative ({n_samples} samples)...")
 
@@ -144,8 +141,7 @@ mc_derivative_results = np.zeros((n_samples, len(x)))
 for i in range(n_samples):
     y_sample = y_measured + np.random.randn(len(x)) * uncertainty_y
     dataset_sample = OneDimensionalDataset(
-        independent_variable_data=x,
-        dependent_variable_data=y_sample
+        independent_variable_data=x, dependent_variable_data=y_sample
     )
     result_sample = derivative_pipeline.apply_to(dataset_sample, make_copy=True)
     mc_derivative_results[i, :] = result_sample.dependent_variable_data
@@ -159,7 +155,7 @@ dy_mc_upper = np.percentile(mc_derivative_results, 97.5, axis=0)
 # Nominal derivative
 result_derivative_nominal = derivative_pipeline.apply_to(dataset, make_copy=True)
 
-print(f"   ✓ Derivative uncertainty computed")
+print("   ✓ Derivative uncertainty computed")
 print(f"   ✓ Derivative uncertainty range: [{dy_mc_std.min():.4f}, {dy_mc_std.max():.4f}]")
 
 # =============================================================================
@@ -172,12 +168,20 @@ gs = fig.add_gridspec(2, 3, hspace=0.3, wspace=0.3)
 
 # --- Plot 1: Original data with uncertainty ---
 ax1 = fig.add_subplot(gs[0, 0])
-ax1.errorbar(x, y_measured, yerr=uncertainty_y, fmt='o', markersize=4,
-             alpha=0.6, capsize=2, label='Measured ± uncertainty')
-ax1.plot(x, y_true, 'r--', linewidth=2, label='True signal')
-ax1.set_xlabel('X')
-ax1.set_ylabel('Y')
-ax1.set_title('Original Dataset\nwith Measurement Uncertainties', fontweight='bold')
+ax1.errorbar(
+    x,
+    y_measured,
+    yerr=uncertainty_y,
+    fmt="o",
+    markersize=4,
+    alpha=0.6,
+    capsize=2,
+    label="Measured ± uncertainty",
+)
+ax1.plot(x, y_true, "r--", linewidth=2, label="True signal")
+ax1.set_xlabel("X")
+ax1.set_ylabel("Y")
+ax1.set_title("Original Dataset\nwith Measurement Uncertainties", fontweight="bold")
 ax1.legend()
 ax1.grid(True, alpha=0.3)
 
@@ -185,50 +189,52 @@ ax1.grid(True, alpha=0.3)
 ax2 = fig.add_subplot(gs[0, 1])
 # Plot subset of Monte Carlo realizations
 for i in range(0, n_samples, 50):
-    ax2.plot(x, mc_results[i, :], 'b-', alpha=0.05, linewidth=1)
-ax2.plot(x, y_mc_mean, 'r-', linewidth=2, label='MC mean')
-ax2.fill_between(x, y_mc_lower, y_mc_upper, color='red', alpha=0.2,
-                  label='95% confidence')
-ax2.set_xlabel('X')
-ax2.set_ylabel('Y (normalized)')
-ax2.set_title('Monte Carlo Uncertainty\n(Smooth + Normalize)', fontweight='bold')
+    ax2.plot(x, mc_results[i, :], "b-", alpha=0.05, linewidth=1)
+ax2.plot(x, y_mc_mean, "r-", linewidth=2, label="MC mean")
+ax2.fill_between(x, y_mc_lower, y_mc_upper, color="red", alpha=0.2, label="95% confidence")
+ax2.set_xlabel("X")
+ax2.set_ylabel("Y (normalized)")
+ax2.set_title("Monte Carlo Uncertainty\n(Smooth + Normalize)", fontweight="bold")
 ax2.legend()
 ax2.grid(True, alpha=0.3)
 
 # --- Plot 3: Nominal vs MC mean ---
 ax3 = fig.add_subplot(gs[0, 2])
-ax3.plot(x, result_nominal.dependent_variable_data, 'b-', linewidth=2,
-         label='Nominal result')
-ax3.plot(x, y_mc_mean, 'r--', linewidth=2, label='MC mean')
-ax3.fill_between(x, y_mc_mean - 2*y_mc_std, y_mc_mean + 2*y_mc_std,
-                  color='red', alpha=0.2, label='±2σ (95%)')
-ax3.set_xlabel('X')
-ax3.set_ylabel('Y (normalized)')
-ax3.set_title('Nominal vs Monte Carlo\n(Pipeline Result)', fontweight='bold')
+ax3.plot(x, result_nominal.dependent_variable_data, "b-", linewidth=2, label="Nominal result")
+ax3.plot(x, y_mc_mean, "r--", linewidth=2, label="MC mean")
+ax3.fill_between(
+    x, y_mc_mean - 2 * y_mc_std, y_mc_mean + 2 * y_mc_std, color="red", alpha=0.2, label="±2σ (95%)"
+)
+ax3.set_xlabel("X")
+ax3.set_ylabel("Y (normalized)")
+ax3.set_title("Nominal vs Monte Carlo\n(Pipeline Result)", fontweight="bold")
 ax3.legend()
 ax3.grid(True, alpha=0.3)
 
 # --- Plot 4: Uncertainty magnitude comparison ---
 ax4 = fig.add_subplot(gs[1, 0])
-ax4.plot(x, uncertainty_y, 'b-', linewidth=2, label='Input uncertainty')
-ax4.plot(x, y_mc_std, 'r-', linewidth=2, label='Output uncertainty')
-ax4.set_xlabel('X')
-ax4.set_ylabel('Uncertainty')
-ax4.set_title('Uncertainty Transformation\n(Input → Pipeline → Output)', fontweight='bold')
+ax4.plot(x, uncertainty_y, "b-", linewidth=2, label="Input uncertainty")
+ax4.plot(x, y_mc_std, "r-", linewidth=2, label="Output uncertainty")
+ax4.set_xlabel("X")
+ax4.set_ylabel("Uncertainty")
+ax4.set_title("Uncertainty Transformation\n(Input → Pipeline → Output)", fontweight="bold")
 ax4.legend()
 ax4.grid(True, alpha=0.3)
 
 # --- Plot 5: Derivative with uncertainty ---
 ax5 = fig.add_subplot(gs[1, 1])
-ax5.plot(result_derivative_nominal.independent_variable_data,
-         result_derivative_nominal.dependent_variable_data,
-         'b-', linewidth=2, label='Nominal derivative')
-ax5.fill_between(x, dy_mc_lower, dy_mc_upper, color='red', alpha=0.2,
-                  label='95% confidence')
-ax5.axhline(0, color='gray', linestyle='--', linewidth=1)
-ax5.set_xlabel('X')
-ax5.set_ylabel('dY/dX')
-ax5.set_title('Derivative with Uncertainty\n(Noise Amplification)', fontweight='bold')
+ax5.plot(
+    result_derivative_nominal.independent_variable_data,
+    result_derivative_nominal.dependent_variable_data,
+    "b-",
+    linewidth=2,
+    label="Nominal derivative",
+)
+ax5.fill_between(x, dy_mc_lower, dy_mc_upper, color="red", alpha=0.2, label="95% confidence")
+ax5.axhline(0, color="gray", linestyle="--", linewidth=1)
+ax5.set_xlabel("X")
+ax5.set_ylabel("dY/dX")
+ax5.set_title("Derivative with Uncertainty\n(Noise Amplification)", fontweight="bold")
 ax5.legend()
 ax5.grid(True, alpha=0.3)
 
@@ -237,15 +243,15 @@ ax6 = fig.add_subplot(gs[1, 2])
 # Compute input uncertainty for derivative (approximate)
 dx = np.diff(x).mean()
 dy_input_uncertainty = uncertainty_y / dx
-ax6.plot(x, dy_input_uncertainty, 'b-', linewidth=2, label='Naive estimate')
-ax6.plot(x, dy_mc_std, 'r-', linewidth=2, label='MC uncertainty')
-ax6.set_xlabel('X')
-ax6.set_ylabel('Uncertainty in dY/dX')
-ax6.set_title('Derivative Uncertainty\n(Smoothing Effect)', fontweight='bold')
+ax6.plot(x, dy_input_uncertainty, "b-", linewidth=2, label="Naive estimate")
+ax6.plot(x, dy_mc_std, "r-", linewidth=2, label="MC uncertainty")
+ax6.set_xlabel("X")
+ax6.set_ylabel("Uncertainty in dY/dX")
+ax6.set_title("Derivative Uncertainty\n(Smoothing Effect)", fontweight="bold")
 ax6.legend()
 ax6.grid(True, alpha=0.3)
 
-fig.suptitle('Uncertainty Propagation Example', fontsize=16, fontweight='bold', y=0.995)
+fig.suptitle("Uncertainty Propagation Example", fontsize=16, fontweight="bold", y=0.995)
 print("   ✓ Visualization created")
 
 # =============================================================================
@@ -254,7 +260,8 @@ print("   ✓ Visualization created")
 print("\n" + "=" * 80)
 print("Summary")
 print("=" * 80)
-print(f"""
+print(
+    f"""
 Uncertainty Propagation Results:
 
 Input Data:
@@ -270,7 +277,7 @@ After Pipeline (Smooth + Normalize):
 After Derivative:
   - Mean derivative uncertainty: {dy_mc_std.mean():.4f}
   - Pre-smoothing essential to control noise amplification
-  - Without smoothing, derivative uncertainty would be ~{(uncertainty_y.mean()/dx):.2f}x larger
+  - Without smoothing, derivative uncertainty would be ~{(uncertainty_y.mean() / dx):.2f}x larger
 
 Key Takeaways:
 
@@ -314,7 +321,8 @@ Next Steps:
 - Explore bayesian_parameter_estimation.py for Bayesian uncertainty
 - See transform_pipeline_example.py for advanced pipelines
 - Check basic_usage_example.py for fundamental patterns
-""")
+"""
+)
 
 plt.tight_layout()
 plt.show()

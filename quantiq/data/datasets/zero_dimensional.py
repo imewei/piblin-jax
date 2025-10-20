@@ -6,8 +6,9 @@ or aggregated results.
 """
 
 from typing import Any
-import numpy as np
+
 from quantiq.backend import jnp, to_numpy
+
 from .base import Dataset
 
 
@@ -69,7 +70,7 @@ class ZeroDimensionalDataset(Dataset):
         self,
         value: float,
         conditions: dict[str, Any] | None = None,
-        details: dict[str, Any] | None = None
+        details: dict[str, Any] | None = None,
     ):
         """
         Initialize zero-dimensional dataset with a scalar value.
