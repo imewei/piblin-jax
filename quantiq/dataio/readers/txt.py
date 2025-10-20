@@ -42,5 +42,9 @@ class GenericTXTReader(GenericCSVReader):
     """
 
     def __init__(self, comment_char: str = "#"):
+        """Initialize GenericTXTReader.
+
+        See class docstring for parameter details.
+        """
         # Use None as delimiter to trigger whitespace splitting
         super().__init__(delimiter=None, comment_char=comment_char)

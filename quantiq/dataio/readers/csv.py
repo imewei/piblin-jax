@@ -49,6 +49,10 @@ class GenericCSVReader:
     """
 
     def __init__(self, delimiter: str = ",", comment_char: str = "#"):
+        """Initialize GenericCSVReader.
+
+        See class docstring for parameter details.
+        """
         self.delimiter = delimiter
         self.comment_char = comment_char
 
