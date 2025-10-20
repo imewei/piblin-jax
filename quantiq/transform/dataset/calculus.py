@@ -5,6 +5,7 @@ This module provides derivatives and integration transforms for
 numerical differentiation and integration of experimental data.
 """
 
+from typing import Any
 import numpy as np
 from quantiq.transform.base import DatasetTransform
 from quantiq.data.datasets import OneDimensionalDataset
@@ -77,7 +78,7 @@ class Derivative(DatasetTransform):
     - For noisy data, consider smoothing before differentiation
     """
 
-    def __init__(self, order: int = 1, method: str = 'gradient'):
+    def __init__(self, order: int = 1, method: str = 'gradient') -> None:
         """
         Initialize derivative transform.
 
@@ -101,20 +102,20 @@ class Derivative(DatasetTransform):
 
     @staticmethod
     @jit
-    def _compute_gradient(y, x):
+    def _compute_gradient(y: Any, x: Any) -> Any:
         """JIT-compiled gradient computation for 3-5x speedup."""
         return jnp.gradient(y, x)
 
     @staticmethod
     @jit
-    def _compute_forward_diff(y, x):
+    def _compute_forward_diff(y: Any, x: Any) -> Any:
         """JIT-compiled forward difference for 3-5x speedup."""
         dy = jnp.diff(y) / jnp.diff(x)
         return jnp.concatenate([dy, jnp.array([dy[-1]])])
 
     @staticmethod
     @jit
-    def _compute_backward_diff(y, x):
+    def _compute_backward_diff(y: Any, x: Any) -> Any:
         """JIT-compiled backward difference for 3-5x speedup."""
         dy = jnp.diff(y) / jnp.diff(x)
         return jnp.concatenate([jnp.array([dy[0]]), dy])
@@ -214,7 +215,7 @@ class CumulativeIntegral(DatasetTransform):
     - For smoother results on noisy data, consider smoothing first
     """
 
-    def __init__(self, method: str = 'trapezoid'):
+    def __init__(self, method: str = 'trapezoid') -> None:
         """
         Initialize cumulative integral transform.
 
@@ -228,7 +229,7 @@ class CumulativeIntegral(DatasetTransform):
 
     @staticmethod
     @jit
-    def _compute_trapezoid_cumsum(x, y):
+    def _compute_trapezoid_cumsum(x: Any, y: Any) -> Any:
         """JIT-compiled cumulative trapezoidal integration for 3-5x speedup."""
         dx = jnp.diff(x)
         y_avg = (y[1:] + y[:-1]) / 2.0
@@ -316,7 +317,7 @@ class DefiniteIntegral(DatasetTransform):
     - For cumulative integral, use CumulativeIntegral instead
     """
 
-    def __init__(self, x_min=None, x_max=None, method: str = 'trapezoid'):
+    def __init__(self, x_min: float | None = None, x_max: float | None = None, method: str = 'trapezoid') -> None:
         """
         Initialize definite integral transform.
 
@@ -336,7 +337,7 @@ class DefiniteIntegral(DatasetTransform):
 
     @staticmethod
     @jit
-    def _compute_trapezoid_sum(x_region, y_region):
+    def _compute_trapezoid_sum(x_region: Any, y_region: Any) -> Any:
         """JIT-compiled trapezoidal integration for 3-5x speedup."""
         dx = jnp.diff(x_region)
         y_avg = (y_region[1:] + y_region[:-1]) / 2.0

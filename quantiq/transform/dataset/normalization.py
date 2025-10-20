@@ -5,6 +5,7 @@ This module provides various normalization and scaling transforms
 to standardize data for comparison and analysis.
 """
 
+from typing import Any
 import numpy as np
 from quantiq.transform.base import DatasetTransform
 from quantiq.data.datasets import OneDimensionalDataset
@@ -79,7 +80,7 @@ class MinMaxNormalize(DatasetTransform):
 
     @staticmethod
     @jit
-    def _compute_minmax_norm(y, target_min, target_max):
+    def _compute_minmax_norm(y: Any, target_min: float, target_max: float) -> Any:
         """JIT-compiled min-max normalization for 3-5x speedup."""
         y_min = jnp.min(y)
         y_max = jnp.max(y)
@@ -160,7 +161,7 @@ class ZScoreNormalize(DatasetTransform):
 
     @staticmethod
     @jit
-    def _compute_zscore(y):
+    def _compute_zscore(y: Any) -> Any:
         """JIT-compiled z-score normalization for 3-5x speedup."""
         mean = jnp.mean(y)
         std = jnp.std(y)
@@ -225,7 +226,7 @@ class RobustNormalize(DatasetTransform):
 
     @staticmethod
     @jit
-    def _compute_robust_norm(y):
+    def _compute_robust_norm(y: Any) -> Any:
         """JIT-compiled robust normalization for 3-5x speedup."""
         median = jnp.median(y)
         q75 = jnp.percentile(y, 75)
@@ -290,7 +291,7 @@ class MaxNormalize(DatasetTransform):
 
     @staticmethod
     @jit
-    def _compute_max_norm(y):
+    def _compute_max_norm(y: Any) -> Any:
         """JIT-compiled max normalization for 3-5x speedup."""
         max_abs = jnp.max(jnp.abs(y))
         return y / (max_abs + 1e-10)

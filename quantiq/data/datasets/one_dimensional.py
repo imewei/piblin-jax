@@ -246,7 +246,7 @@ class OneDimensionalDataset(Dataset):
             class SimpleNoiseModel(BayesianModel):
                 """Simple model assuming Gaussian noise around measurements."""
 
-                def model(self, x, y=None):
+                def model(self, x: Any, y: Any = None, **kwargs: Any) -> None:
                     """
                     Model: y ~ N(y_obs, sigma)
 
@@ -261,7 +261,7 @@ class OneDimensionalDataset(Dataset):
                         with numpyro.plate("data", y.shape[0]):
                             numpyro.sample("obs", dist.Normal(y, sigma), obs=y)
 
-                def predict(self, x, credible_interval=0.95):
+                def predict(self, x: Any, credible_interval: float = 0.95) -> Any:
                     """Not used for noise estimation."""
                     raise NotImplementedError()
 
@@ -306,8 +306,7 @@ class OneDimensionalDataset(Dataset):
 
                 y_data = jnp.asarray(self.dependent_variable_data)
 
-                @staticmethod
-                def _single_bootstrap(rng_key, y_data, n_points):
+                def _single_bootstrap(rng_key: Any, y_data: Any, n_points: int) -> Any:
                     """Single bootstrap sample - to be vmapped."""
                     indices = random.choice(rng_key, n_points, shape=(n_points,), replace=True)
                     return y_data[indices]
