@@ -9,7 +9,7 @@ description = "Modern JAX-Powered Framework for Measurement Data Science"
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
-    {name = "quantiq developers"}
+    {name = "Wei Chen", email = "wchen@anl.gov"}
 ]
 requires-python = ">=3.12"
 classifiers = [

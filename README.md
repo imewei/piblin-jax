@@ -8,6 +8,10 @@
 
 ---
 
+> **Acknowledgement**: quantiq is an enhanced fork of [piblin](https://github.com/3mcloud/piblin) by 3M. We gratefully acknowledge the original piblin project for establishing the foundational concepts and API design that quantiq builds upon. quantiq extends piblin with JAX-powered performance improvements, advanced Bayesian inference capabilities, and modern Python features while maintaining backward compatibility.
+
+---
+
 ## Overview
 
 **quantiq** is a high-performance framework for measurement data science, providing a complete reimplementation of piblin with dramatic performance improvements and advanced Bayesian uncertainty quantification capabilities.
@@ -251,7 +255,7 @@ If you use quantiq in your research, please cite:
 
 ```bibtex
 @software{quantiq2025,
-  author = {quantiq developers},
+  author = {Chen, Wei},
   title = {quantiq: Modern JAX-Powered Framework for Measurement Data Science},
   year = {2025},
   url = {https://github.com/quantiq/quantiq}
@@ -264,9 +268,9 @@ quantiq is licensed under the [MIT License](LICENSE).
 
 ## Acknowledgments
 
+- Forked from [piblin](https://github.com/3mcloud/piblin) by 3M - the original framework for measurement data science
 - Built on [JAX](https://github.com/google/jax) for high-performance numerical computing
 - Uses [NumPyro](https://github.com/pyro-ppl/numpyro) for Bayesian inference
-- Inspired by and compatible with piblin
 
 ## Support
 
@@ -276,4 +280,4 @@ quantiq is licensed under the [MIT License](LICENSE).
 
 ---
 
-Made with ❤️ by the quantiq developers
+Made with ❤️ by Wei Chen and the quantiq developers
