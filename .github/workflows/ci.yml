@@ -139,6 +139,7 @@ jobs:
           pip uninstall -y jax jaxlib
 
       - name: Run tests with coverage
+        shell: bash
         run: |
           # Skip coverage threshold for numpy backend
           # (JAX-dependent code is skipped)
