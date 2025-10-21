@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "last_updated": "2025-10-21T13:15:00Z",
+  "last_updated": "2025-10-21T14:00:00Z",
   "patterns": [
     {
       "id": "pip-audit-uv-compatibility",
@@ -54,16 +54,16 @@
       },
       "metadata": {
         "confidence": 0.95,
-        "occurrences": 1,
+        "occurrences": 2,
         "first_seen": "2025-10-21",
         "last_seen": "2025-10-21",
-        "success_rate": null,
+        "success_rate": 1.0,
         "avg_fix_time_minutes": 2,
         "auto_fixed": true
       },
       "tags": ["ci-cd", "uv", "dependency-management", "pep-621", "pep-735", "syntax-error"],
       "related_commits": ["43f5e3a", "4177b5f"],
-      "related_runs": [18684820415],
+      "related_runs": [18684820415, 18685016155],
       "documentation": "uv supports two dependency group formats: PEP 735 [dependency-groups] (use --group) and PEP 621 [project.optional-dependencies] (use --extra). Match the syntax to your pyproject.toml structure."
     },
     {
@@ -103,21 +103,100 @@
       "related_commits": ["e0bddec"],
       "related_issues": [],
       "documentation": "Transform copy semantics may have changed with dependency version updates. Investigation needed to determine if tests or implementation is incorrect."
+    },
+    {
+      "id": "gitleaks-shallow-clone-001",
+      "category": "ci-transient",
+      "problem": {
+        "description": "Gitleaks secret scanning fails due to shallow Git clone missing parent commit",
+        "error_pattern": "fatal: ambiguous argument '.*\\^\\.\\..+'): unknown revision or path not in the working tree",
+        "affected_tools": ["gitleaks", "git"],
+        "context": "GitHub Actions with default fetch-depth: 1 (shallow clone)"
+      },
+      "solution": {
+        "description": "NOT AN AUTO-FIXABLE CODE ISSUE - Transient CI infrastructure problem",
+        "status": "transient",
+        "recommended_actions": [
+          "Increase fetch-depth in actions/checkout step (e.g., fetch-depth: 2 or fetch-depth: 0)",
+          "Configure gitleaks to scan only current commit instead of range",
+          "Wait for next commit - issue often self-resolves",
+          "Manually re-run the workflow"
+        ],
+        "code_fix_needed": false
+      },
+      "metadata": {
+        "confidence": 0.9,
+        "occurrences": 1,
+        "first_seen": "2025-10-21",
+        "last_seen": "2025-10-21",
+        "success_rate": null,
+        "auto_fixed": false,
+        "transient": true
+      },
+      "tags": ["ci-cd", "gitleaks", "security-scanning", "git", "shallow-clone", "transient"],
+      "related_commits": ["25a0362"],
+      "related_runs": [18686256130],
+      "documentation": "Gitleaks action automatically determines commit range based on push event. With shallow clones (fetch-depth: 1), parent commits may not be available, causing transient failures. This is not a code issue."
+    },
+    {
+      "id": "backend-integration-test-mocking-001",
+      "category": "test-failures",
+      "problem": {
+        "description": "Backend integration tests fail due to incomplete JAX mocking when numpyro import chain requires extensive JAX submodules",
+        "error_pattern": "ModuleNotFoundError.*jax\\.tree_util|AttributeError.*NoneType.*has no attribute",
+        "affected_tests": [
+          "test_linux_cuda12_gpu_enabled_integration",
+          "test_linux_cuda11_fallback_integration",
+          "test_macos_gpu_fallback_integration",
+          "test_windows_gpu_fallback_integration"
+        ],
+        "context": "Integration tests mocking JAX to test backend platform detection, but quantiq imports trigger numpyro which needs comprehensive JAX mock"
+      },
+      "solution": {
+        "description": "REQUIRES TEST ARCHITECTURE REDESIGN - Tests need either comprehensive JAX mock or module import isolation",
+        "status": "deferred",
+        "recommended_actions": [
+          "Option 1: Add all required JAX submodules to sys.modules mock (jax.tree_util, jax.lax, jax.random, etc.)",
+          "Option 2: Isolate backend module testing from full quantiq package imports",
+          "Option 3: Use pytest fixtures to provide comprehensive JAX mock infrastructure",
+          "Option 4: Mock at a higher level - mock get_device_info() instead of JAX itself"
+        ],
+        "code_fix_needed": true,
+        "complexity": "high"
+      },
+      "metadata": {
+        "confidence": 0.85,
+        "occurrences": 2,
+        "first_seen": "2025-10-21",
+        "last_seen": "2025-10-21",
+        "success_rate": 0.0,
+        "pre_existing": true,
+        "introduced_by": "95a999e",
+        "deferred_reason": "Requires comprehensive test architecture redesign"
+      },
+      "tags": ["test-failures", "backend", "jax", "mocking", "numpyro", "integration-tests", "pre-existing"],
+      "related_commits": ["95a999e", "4177b5f", "25a0362"],
+      "related_runs": [18685016155, 18686256130],
+      "related_issues": [],
+      "documentation": "Backend integration tests mock JAX to simulate different platform/CUDA configurations. However, quantiq package imports pull in numpyro which requires extensive JAX submodules. Tests need architectural improvements to properly isolate or comprehensively mock the JAX dependency chain."
     }
   ],
   "statistics": {
-    "total_patterns": 3,
-    "auto_fixed_patterns": 2,
-    "deferred_patterns": 1,
-    "average_confidence": 0.733,
+    "total_patterns": 5,
+    "auto_fixed_patterns": 1,
+    "deferred_patterns": 3,
+    "transient_patterns": 1,
+    "average_confidence": 0.79,
     "patterns_by_category": {
       "dependency-scanning": 1,
       "ci-configuration": 1,
-      "test-failures": 1
+      "test-failures": 3,
+      "ci-transient": 1
     },
-    "total_fixes_applied": 2,
+    "total_fixes_applied": 1,
     "total_successes": 1,
-    "total_pending": 1
+    "total_deferred": 3,
+    "total_transient": 1
   },
   "learning_notes": [
     "pip-audit works best with requirements.txt format, not pyproject.toml",
@@ -127,7 +206,13 @@
     "Security scanning tools may have different input format requirements than modern package managers",
     "uv sync --group is for PEP 735 [dependency-groups], --extra is for PEP 621 [project.optional-dependencies]",
     "Always match CI workflow syntax to pyproject.toml structure",
-    "sed syntax differs between Linux (-i) and macOS (-i '')"
+    "sed syntax differs between Linux (-i) and macOS (-i '')",
+    "CRITICAL: Always check if test failures are PRE-EXISTING by examining previous CI runs before attempting auto-fix",
+    "Gitleaks failures with 'unknown revision' in shallow clones are transient CI issues, not code bugs",
+    "Integration test mocking must account for full import chain, not just the module being tested directly",
+    "When quantiq package is imported, it triggers numpyro imports which require extensive JAX submodule mocking",
+    "Distinguish between: (1) code bugs, (2) pre-existing test failures, (3) transient CI issues before applying fixes",
+    "Compare current run failures with previous commit's run failures to identify NEW vs. PRE-EXISTING issues"
   ],
   "fix_history": [
     {
@@ -143,9 +228,23 @@
       "run_id": "18684820415",
       "pattern_id": "uv-dependency-group-mismatch-001",
       "solution_applied": "replace --group with --extra",
-      "outcome": "pending",
+      "outcome": "success",
       "commit_sha": "4177b5f",
-      "monitoring": true
+      "monitoring": false
+    },
+    {
+      "timestamp": "2025-10-21T14:00:00Z",
+      "run_id": "18686256130",
+      "commit_sha": "25a0362",
+      "patterns_identified": [
+        "gitleaks-shallow-clone-001",
+        "backend-integration-test-mocking-001"
+      ],
+      "solution_applied": "none - no auto-fix needed",
+      "outcome": "no_fix_required",
+      "analysis": "All failures were either transient CI issues or pre-existing test failures. Commit 25a0362 only contained safe linting fixes and did not introduce new failures.",
+      "pre_existing_failures": true,
+      "transient_issues": true
     }
   ]
 }
