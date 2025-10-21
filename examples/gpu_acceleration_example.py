@@ -12,15 +12,19 @@ Key concepts:
 - Memory management on GPU
 
 Requirements:
-- JAX with GPU support (CUDA, Metal, or ROCm)
-- NVIDIA GPU, Apple Silicon, or AMD GPU
+- JAX with CUDA 12+ on Linux
+- NVIDIA GPU on Linux
 
 Run time: ~5 seconds (varies by hardware)
+
+Note: GPU acceleration is only available on Linux with CUDA 12+.
+On macOS and Windows, the example will run in CPU-only mode.
 
 Author: quantiq developers
 Date: 2025-10-20
 """
 
+import sys
 import time
 
 import numpy as np
@@ -45,6 +49,25 @@ def print_device_info():
         info = get_device_info()
         print("JAX available: Yes")
         print(f"Default device: {info.get('default_device', 'CPU')}")
+
+        # Display platform information
+        os_platform = info.get("os_platform", "unknown")
+        print(f"OS Platform: {os_platform}")
+
+        # Display GPU support status
+        gpu_supported = info.get("gpu_supported", False)
+        cuda_version = info.get("cuda_version")
+
+        if gpu_supported and cuda_version:
+            major, minor = cuda_version
+            print(f"GPU Support: Yes (CUDA {major}.{minor})")
+        else:
+            print("GPU Support: No")
+            if os_platform != "linux":
+                print("  (GPU acceleration requires Linux with CUDA 12+)")
+            elif cuda_version:
+                major, minor = cuda_version
+                print(f"  (CUDA {major}.{minor} detected, CUDA 12+ required)")
 
         devices = info.get("devices", [])
         if devices:
@@ -143,7 +166,7 @@ def benchmark_cpu_vs_gpu():
             print("  Expected speedup: 10-100x compared to CPU")
         else:
             print("\n⚠ Running on CPU")
-            print("  Install GPU-enabled JAX for acceleration")
+            print("  GPU acceleration requires Linux with CUDA 12+")
     else:
         print("\n⚠ Using NumPy backend")
         print("  Install JAX for automatic GPU acceleration")
@@ -295,6 +318,28 @@ def main():
     print("╚" + "=" * 68 + "╝")
     print()
 
+    # Detect platform at startup
+    device_info = get_device_info()
+    os_platform = device_info.get("os_platform", "unknown")
+    gpu_supported = device_info.get("gpu_supported", False)
+
+    # Display platform-specific message
+    if os_platform != "linux":
+        print("=" * 70)
+        print("PLATFORM NOTICE")
+        print("=" * 70)
+        print()
+        print("GPU acceleration is only available on Linux with CUDA 12+.")
+        print(f"Detected platform: {os_platform}")
+        print("Running in CPU-only mode.")
+        print()
+        print("For GPU acceleration, please run on a Linux system with:")
+        print("  - NVIDIA GPU with CUDA 12+ drivers")
+        print("  - JAX with CUDA support: pip install 'jax[cuda12]'")
+        print()
+        print("=" * 70)
+        print()
+
     # 1. Device information
     print_device_info()
 
@@ -304,11 +349,35 @@ def main():
     # 3. JIT compilation
     demonstrate_jit_compilation()
 
-    # 4. Batch processing
-    demonstrate_batch_processing()
+    # 4. Batch processing (only show GPU-specific tips if on Linux with GPU)
+    if os_platform == "linux" and gpu_supported:
+        demonstrate_batch_processing()
+    else:
+        print("=" * 70)
+        print("BATCH PROCESSING")
+        print("=" * 70)
+        print()
+        print("Batch processing demonstrations are optimized for GPU acceleration.")
+        print("Running on CPU-only mode - batch processing tips skipped.")
+        print()
+        print("To see GPU-optimized batch processing, run on Linux with CUDA 12+.")
+        print("=" * 70)
+        print()
 
-    # 5. Memory management
-    memory_management_tips()
+    # 5. Memory management (only show GPU-specific tips if on Linux with GPU)
+    if os_platform == "linux" and gpu_supported:
+        memory_management_tips()
+    else:
+        print("=" * 70)
+        print("MEMORY MANAGEMENT")
+        print("=" * 70)
+        print()
+        print("GPU memory management tips are specific to GPU acceleration.")
+        print("Running on CPU-only mode - GPU memory tips skipped.")
+        print()
+        print("To see GPU memory management tips, run on Linux with CUDA 12+.")
+        print("=" * 70)
+        print()
 
     # Summary
     print("=" * 70)
@@ -318,8 +387,14 @@ def main():
     print("✓ Device information retrieved")
     print("✓ Performance benchmark completed")
     print("✓ JIT compilation demonstrated")
-    print("✓ Batch processing explained")
-    print("✓ Memory management tips provided")
+
+    if os_platform == "linux" and gpu_supported:
+        print("✓ Batch processing explained")
+        print("✓ Memory management tips provided")
+    else:
+        print("⚠ Batch processing skipped (GPU-specific)")
+        print("⚠ Memory management skipped (GPU-specific)")
+
     print()
 
     backend = get_backend()
@@ -331,10 +406,8 @@ def main():
             print("   Your code is running at optimal performance.")
         else:
             print("💡 GPU not detected - running on CPU")
-            print("   Install GPU-enabled JAX for acceleration:")
-            print("   - NVIDIA: pip install 'jax[cuda12]'")
-            print("   - Apple: pip install 'jax[metal]'")
-            print("   - AMD: pip install 'jax[rocm]'")
+            print("   GPU acceleration requires:")
+            print("   - Linux with CUDA 12+: pip install 'jax[cuda12]'")
     else:
         print("💡 Using NumPy backend")
         print("   Install JAX for automatic GPU acceleration:")

@@ -9,8 +9,9 @@ All array operations should use the exported `jnp` interface which points to eit
 jax.numpy or numpy depending on availability.
 """
 
+import sys
 import warnings
-from typing import Any, Union
+from typing import Any, Optional, Tuple, Union
 
 import numpy as np
 
@@ -19,6 +20,133 @@ _JAX_AVAILABLE = False
 BACKEND = "numpy"  # Default to NumPy
 jnp = np  # Default to NumPy
 
+
+def _detect_platform() -> str:
+    """
+    Detect the current operating system platform.
+
+    Returns
+    -------
+    str
+        One of 'linux', 'macos', or 'windows'.
+    """
+    platform = sys.platform.lower()
+    if platform.startswith("linux"):
+        return "linux"
+    elif platform == "darwin":
+        return "macos"
+    elif platform.startswith("win"):
+        return "windows"
+    else:
+        # Default to the actual platform string for unknown platforms
+        return platform
+
+
+def _get_cuda_version() -> Optional[Tuple[int, int]]:
+    """
+    Get CUDA version from JAX backend.
+
+    Returns
+    -------
+    tuple of (int, int) or None
+        Tuple of (major, minor) version numbers, or None if CUDA unavailable.
+    """
+    try:
+        import jax
+
+        # Try newer JAX API first (v0.8.0+)
+        try:
+            from jax.extend import backend as jax_backend
+            backend = jax_backend.get_backend()
+        except (ImportError, AttributeError):
+            # Fallback to older API for JAX < 0.8.0
+            backend = jax.lib.xla_bridge.get_backend()
+
+        version_string = backend.platform_version
+
+        # Parse version string (e.g., "12.0", "11.8", "12.3.1")
+        parts = version_string.split(".")
+        if len(parts) >= 2:
+            major = int(parts[0])
+            minor = int(parts[1])
+            return (major, minor)
+        return None
+    except Exception:
+        # CUDA not available or error accessing version
+        return None
+
+
+def _validate_cuda_version(cuda_version: Optional[Tuple[int, int]]) -> bool:
+    """
+    Validate that CUDA version meets minimum requirements.
+
+    Parameters
+    ----------
+    cuda_version : tuple of (int, int) or None
+        CUDA version tuple (major, minor).
+
+    Returns
+    -------
+    bool
+        True if CUDA version >= 12.0, False otherwise.
+    """
+    if cuda_version is None:
+        return False
+    major, _ = cuda_version
+    return major >= 12
+
+
+def _check_legacy_gpu_extras() -> None:
+    """
+    Check for legacy GPU extras (gpu-metal, gpu-rocm) and issue deprecation warning.
+
+    This function attempts to detect if the user has installed deprecated GPU extras
+    and warns them to migrate to gpu-cuda on Linux.
+    """
+    try:
+        # Check if JAX was installed with Metal or ROCm backend
+        import jax
+
+        # Try to detect Metal backend (macOS)
+        try:
+            devices = jax.devices()
+            for device in devices:
+                device_str = str(device).lower()
+                if "metal" in device_str or "gpu" in device_str:
+                    platform = _detect_platform()
+                    if platform == "macos":
+                        warnings.warn(
+                            "Detected JAX with Metal backend. gpu-metal is deprecated. "
+                            "GPU support is now only available on Linux with CUDA 12+. "
+                            "On macOS, CPU-only mode is recommended.",
+                            DeprecationWarning,
+                            stacklevel=2,
+                        )
+                        return
+        except Exception:
+            pass
+
+        # Try to detect ROCm backend (AMD GPUs)
+        try:
+            devices = jax.devices()
+            for device in devices:
+                device_str = str(device).lower()
+                if "rocm" in device_str or "amd" in device_str:
+                    warnings.warn(
+                        "Detected JAX with ROCm backend. gpu-rocm is deprecated. "
+                        "GPU support is now only available on Linux with CUDA 12+.",
+                        DeprecationWarning,
+                        stacklevel=2,
+                    )
+                    return
+        except Exception:
+            pass
+
+    except ImportError:
+        # JAX not installed, no legacy extras to check
+        pass
+
+
 try:
     import jax
     import jax.numpy as jnp_jax
@@ -26,6 +154,37 @@ try:
     _JAX_AVAILABLE = True
     BACKEND = "jax"
     jnp = jnp_jax
+
+    # Check for legacy GPU extras and warn if detected
+    _check_legacy_gpu_extras()
+
+    # Platform validation
+    detected_platform = _detect_platform()
+
+    if detected_platform == "linux":
+        # On Linux, validate CUDA version
+        cuda_version = _get_cuda_version()
+        if not _validate_cuda_version(cuda_version):
+            warnings.warn(
+                "GPU support is only available on Linux with CUDA 12+. "
+                "Falling back to CPU backend.",
+                UserWarning,
+                stacklevel=2,
+            )
+            _JAX_AVAILABLE = False
+            BACKEND = "numpy"
+            jnp = np
+    else:
+        # Non-Linux platforms: fall back to CPU
+        warnings.warn(
+            "GPU support is only available on Linux with CUDA 12+. "
+            "Falling back to CPU backend.",
+            UserWarning,
+            stacklevel=2,
+        )
+        _JAX_AVAILABLE = False
+        BACKEND = "numpy"
+        jnp = np
 
 except ImportError:
     warnings.warn(
@@ -88,6 +247,9 @@ def get_device_info() -> dict[str, Any]:
         - 'backend': str, name of backend ('jax' or 'numpy')
         - 'devices': list, available compute devices
         - 'default_device': str, the default device being used
+        - 'os_platform': str, detected OS platform ('linux', 'macos', 'windows')
+        - 'gpu_supported': bool, whether GPU is supported on current platform
+        - 'cuda_version': tuple or None, CUDA version (major, minor) if available
         - Additional JAX-specific info if JAX is available
 
     Examples
@@ -101,7 +263,16 @@ def get_device_info() -> dict[str, Any]:
         "backend": BACKEND,
         "devices": [],
         "default_device": "cpu",
+        "os_platform": _detect_platform(),
+        "gpu_supported": False,
+        "cuda_version": None,
     }
+
+    # Detect CUDA version if on Linux
+    if info["os_platform"] == "linux":
+        cuda_version = _get_cuda_version()
+        info["cuda_version"] = cuda_version
+        info["gpu_supported"] = _validate_cuda_version(cuda_version)
 
     if _JAX_AVAILABLE:
         try:
