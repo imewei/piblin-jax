@@ -10,7 +10,7 @@
 # Tool versions match installed packages in venv
 
 default_language_version:
-  python: python3  # Uses system default Python (3.14.0)
+  python: python3.13  # Match CI/CD and ruff target-version (py313)
 
 repos:
   # =============================================================================

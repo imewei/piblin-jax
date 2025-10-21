@@ -219,6 +219,18 @@ Desktop.ini
 *.temp
 .cache/
 
+# Code review reports and test artifacts
+*_review_report.json
+code_review_*.json
+dependency_impact_analysis.json
+final_test_report.json
+test_suite_report.json
+DELIVERABLES.md
+QUICK_REFERENCE.txt
+TEST_EXECUTION_SUMMARY.md
+TEST_REPORT_INDEX.md
+generate_test_report.py
+
 # ----------------------------------------------------------------------------
 # Profiling
 # ----------------------------------------------------------------------------
