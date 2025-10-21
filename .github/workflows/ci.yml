@@ -95,7 +95,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --frozen --all-extras
+          uv sync --frozen --extra dev --extra test
 
       - name: Run Ruff linter
         run: |
@@ -133,7 +133,7 @@ jobs:
   #
   #     - name: Install dependencies
   #       run: |
-  #         uv sync --frozen --all-extras
+  #         uv sync --frozen --extra dev --extra test
   #
   #     - name: Run mypy
   #       run: |
@@ -173,7 +173,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --frozen --all-extras
+          uv sync --frozen --extra dev --extra test
 
       - name: Run tests with coverage
         run: |
@@ -233,7 +233,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --frozen --all-extras
+          uv sync --frozen --extra dev --extra test
 
       - name: Run slow tests
         run: |
@@ -346,7 +346,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --frozen --all-extras
+          uv sync --frozen --extra dev --extra test
 
       - name: Run Bandit security linter
         run: |
