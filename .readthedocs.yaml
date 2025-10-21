@@ -1,0 +1,57 @@
+---
+# Read the Docs configuration file for quantiq
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+
+version: 2
+
+# Build documentation in the "docs/" directory with Sphinx
+sphinx:
+  configuration: docs/source/conf.py
+  builder: html
+  fail_on_warning: false
+
+# Build PDF and EPUB formats (optional)
+formats:
+  - pdf
+  - epub
+
+# Python configuration
+python:
+  version: "3.13"
+  install:
+    # Install quantiq package with documentation dependencies
+    - method: pip
+      path: .
+      extra_requirements:
+        - docs
+
+# Build configuration
+build:
+  os: ubuntu-22.04
+  tools:
+    python: "3.13"
+  jobs:
+    post_install:
+      # Verify installation and check JAX availability
+      - >-
+        python -c
+        'import quantiq; print("quantiq version:", quantiq.__version__)'
+      - >-
+        python -c
+        'from quantiq.backend import is_jax_available;
+        print("JAX available:", is_jax_available())'
+
+# Search configuration
+search:
+  ranking:
+    # Boost ranking for API reference pages
+    api/*: 2
+  ignore:
+    # Don't index these patterns
+    - _build/*
+    - .git/*
+
+# Submodules configuration (if using git submodules)
+submodules:
+  include: []
+  recursive: false
