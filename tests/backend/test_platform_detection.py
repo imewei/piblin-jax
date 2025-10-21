@@ -62,10 +62,31 @@ class TestPlatformDetection:
         mock_jax = MagicMock()
         mock_backend = MagicMock()
         mock_backend.platform_version = "12.3"
-        mock_jax.lib.xla_bridge.get_backend.return_value = mock_backend
+
+        # Mock JAX submodules for proper import chain
+        mock_jax_lib = MagicMock()
+        mock_jax_lib_xla_bridge = MagicMock()
+        mock_jax_lib_xla_bridge.get_backend.return_value = mock_backend
+        mock_jax_lib.xla_bridge = mock_jax_lib_xla_bridge
+        mock_jax.lib = mock_jax_lib
+
+        mock_jax_extend = MagicMock()
+        mock_jax_extend_backend = MagicMock()
+        mock_jax_extend_backend.get_backend.return_value = mock_backend
+        mock_jax_extend.backend = mock_jax_extend_backend
+        mock_jax.extend = mock_jax_extend
 
         with (
-            patch.dict("sys.modules", {"jax": mock_jax}),
+            patch.dict(
+                "sys.modules",
+                {
+                    "jax": mock_jax,
+                    "jax.lib": mock_jax_lib,
+                    "jax.lib.xla_bridge": mock_jax_lib_xla_bridge,
+                    "jax.extend": mock_jax_extend,
+                    "jax.extend.backend": mock_jax_extend_backend,
+                },
+            ),
             patch("quantiq.backend.jax", mock_jax),
         ):
             result = _get_cuda_version()

@@ -189,24 +189,41 @@ class TestPlatformValidationIntegration:
         mock_backend.platform_version = "12.3"
 
         # Mock both old and new JAX APIs
-        mock_jax.lib.xla_bridge.get_backend.return_value = mock_backend
+        mock_jax_lib = MagicMock()
+        mock_jax_lib_xla_bridge = MagicMock()
+        mock_jax_lib_xla_bridge.get_backend.return_value = mock_backend
+        mock_jax_lib.xla_bridge = mock_jax_lib_xla_bridge
+        mock_jax.lib = mock_jax_lib
 
         # Mock new JAX API (jax.extend.backend)
+        mock_jax_extend = MagicMock()
         mock_jax_extend_backend = MagicMock()
         mock_jax_extend_backend.get_backend.return_value = mock_backend
-        mock_jax.extend.backend = mock_jax_extend_backend
+        mock_jax_extend.backend = mock_jax_extend_backend
+        mock_jax.extend = mock_jax_extend
 
         # Mock jax.devices() for legacy extras check
         mock_jax.devices.return_value = []
 
         # Mock JAX submodules that numpyro might import
         mock_jax_scipy = MagicMock()
+        mock_jax_scipy_special = MagicMock()
+        mock_jax_scipy.special = mock_jax_scipy_special
         mock_jax.scipy = mock_jax_scipy
-        mock_jax.typing = MagicMock()  # Required by numpyro
+        mock_jax_typing = MagicMock()
+        mock_jax.typing = mock_jax_typing
 
-        # Remove cached module
-        if "quantiq.backend" in sys.modules:
-            del sys.modules["quantiq.backend"]
+        # Mock numpyro to prevent import errors when quantiq.bayesian loads
+        mock_numpyro = MagicMock()
+        mock_numpyro_infer = MagicMock()
+        mock_numpyro_distributions = MagicMock()
+        mock_numpyro.infer = mock_numpyro_infer
+        mock_numpyro.distributions = mock_numpyro_distributions
+
+        # Remove cached modules
+        for module in list(sys.modules.keys()):
+            if module.startswith("quantiq"):
+                del sys.modules[module]
 
         with (
             patch("sys.platform", "linux"),
@@ -215,9 +232,16 @@ class TestPlatformValidationIntegration:
                 {
                     "jax": mock_jax,
                     "jax.numpy": mock_jax_numpy,
+                    "jax.lib": mock_jax_lib,
+                    "jax.lib.xla_bridge": mock_jax_lib_xla_bridge,
+                    "jax.extend": mock_jax_extend,
+                    "jax.extend.backend": mock_jax_extend_backend,
                     "jax.scipy": mock_jax_scipy,
-                    "jax.scipy.special": MagicMock(),
-                    "jax.typing": mock_jax.typing,
+                    "jax.scipy.special": mock_jax_scipy_special,
+                    "jax.typing": mock_jax_typing,
+                    "numpyro": mock_numpyro,
+                    "numpyro.infer": mock_numpyro_infer,
+                    "numpyro.distributions": mock_numpyro_distributions,
                 },
             ),
             warnings.catch_warnings(record=True) as w,
@@ -254,24 +278,41 @@ class TestPlatformValidationIntegration:
         mock_backend.platform_version = "11.8"
 
         # Mock both old and new JAX APIs
-        mock_jax.lib.xla_bridge.get_backend.return_value = mock_backend
+        mock_jax_lib = MagicMock()
+        mock_jax_lib_xla_bridge = MagicMock()
+        mock_jax_lib_xla_bridge.get_backend.return_value = mock_backend
+        mock_jax_lib.xla_bridge = mock_jax_lib_xla_bridge
+        mock_jax.lib = mock_jax_lib
 
         # Mock new JAX API (jax.extend.backend)
+        mock_jax_extend = MagicMock()
         mock_jax_extend_backend = MagicMock()
         mock_jax_extend_backend.get_backend.return_value = mock_backend
-        mock_jax.extend.backend = mock_jax_extend_backend
+        mock_jax_extend.backend = mock_jax_extend_backend
+        mock_jax.extend = mock_jax_extend
 
         # Mock jax.devices() for legacy extras check
         mock_jax.devices.return_value = []
 
         # Mock JAX submodules that numpyro might import
         mock_jax_scipy = MagicMock()
+        mock_jax_scipy_special = MagicMock()
+        mock_jax_scipy.special = mock_jax_scipy_special
         mock_jax.scipy = mock_jax_scipy
-        mock_jax.typing = MagicMock()  # Required by numpyro
+        mock_jax_typing = MagicMock()
+        mock_jax.typing = mock_jax_typing
 
-        # Remove cached module
-        if "quantiq.backend" in sys.modules:
-            del sys.modules["quantiq.backend"]
+        # Mock numpyro to prevent import errors when quantiq.bayesian loads
+        mock_numpyro = MagicMock()
+        mock_numpyro_infer = MagicMock()
+        mock_numpyro_distributions = MagicMock()
+        mock_numpyro.infer = mock_numpyro_infer
+        mock_numpyro.distributions = mock_numpyro_distributions
+
+        # Remove cached modules
+        for module in list(sys.modules.keys()):
+            if module.startswith("quantiq"):
+                del sys.modules[module]
 
         with (
             patch("sys.platform", "linux"),
@@ -280,9 +321,16 @@ class TestPlatformValidationIntegration:
                 {
                     "jax": mock_jax,
                     "jax.numpy": mock_jax_numpy,
+                    "jax.lib": mock_jax_lib,
+                    "jax.lib.xla_bridge": mock_jax_lib_xla_bridge,
+                    "jax.extend": mock_jax_extend,
+                    "jax.extend.backend": mock_jax_extend_backend,
                     "jax.scipy": mock_jax_scipy,
-                    "jax.scipy.special": MagicMock(),
-                    "jax.typing": mock_jax.typing,
+                    "jax.scipy.special": mock_jax_scipy_special,
+                    "jax.typing": mock_jax_typing,
+                    "numpyro": mock_numpyro,
+                    "numpyro.infer": mock_numpyro_infer,
+                    "numpyro.distributions": mock_numpyro_distributions,
                 },
             ),
             warnings.catch_warnings(record=True) as w,
@@ -425,16 +473,62 @@ class TestPlatformValidationIntegration:
         """Test graceful handling of CUDA detection failures."""
         mock_jax = MagicMock()
         mock_jax_numpy = MagicMock()
-        # Mock CUDA version detection to raise exception
-        mock_jax.lib.xla_bridge.get_backend.side_effect = Exception("CUDA not available")
 
-        # Remove cached module
-        if "quantiq.backend" in sys.modules:
-            del sys.modules["quantiq.backend"]
+        # Mock CUDA version detection to raise exception
+        mock_jax_lib = MagicMock()
+        mock_jax_lib_xla_bridge = MagicMock()
+        mock_jax_lib_xla_bridge.get_backend.side_effect = Exception("CUDA not available")
+        mock_jax_lib.xla_bridge = mock_jax_lib_xla_bridge
+        mock_jax.lib = mock_jax_lib
+
+        # Mock new JAX API to also raise exception
+        mock_jax_extend = MagicMock()
+        mock_jax_extend_backend = MagicMock()
+        mock_jax_extend_backend.get_backend.side_effect = Exception("CUDA not available")
+        mock_jax_extend.backend = mock_jax_extend_backend
+        mock_jax.extend = mock_jax_extend
+
+        # Mock jax.devices() for legacy extras check
+        mock_jax.devices.return_value = []
+
+        mock_jax_scipy = MagicMock()
+        mock_jax_scipy_special = MagicMock()
+        mock_jax_scipy.special = mock_jax_scipy_special
+        mock_jax.scipy = mock_jax_scipy
+        mock_jax_typing = MagicMock()
+        mock_jax.typing = mock_jax_typing
+
+        # Mock numpyro to prevent import errors
+        mock_numpyro = MagicMock()
+        mock_numpyro_infer = MagicMock()
+        mock_numpyro_distributions = MagicMock()
+        mock_numpyro.infer = mock_numpyro_infer
+        mock_numpyro.distributions = mock_numpyro_distributions
+
+        # Remove cached modules
+        for module in list(sys.modules.keys()):
+            if module.startswith("quantiq"):
+                del sys.modules[module]
 
         with (
             patch("sys.platform", "linux"),
-            patch.dict("sys.modules", {"jax": mock_jax, "jax.numpy": mock_jax_numpy}),
+            patch.dict(
+                "sys.modules",
+                {
+                    "jax": mock_jax,
+                    "jax.numpy": mock_jax_numpy,
+                    "jax.lib": mock_jax_lib,
+                    "jax.lib.xla_bridge": mock_jax_lib_xla_bridge,
+                    "jax.extend": mock_jax_extend,
+                    "jax.extend.backend": mock_jax_extend_backend,
+                    "jax.scipy": mock_jax_scipy,
+                    "jax.scipy.special": mock_jax_scipy_special,
+                    "jax.typing": mock_jax_typing,
+                    "numpyro": mock_numpyro,
+                    "numpyro.infer": mock_numpyro_infer,
+                    "numpyro.distributions": mock_numpyro_distributions,
+                },
+            ),
             warnings.catch_warnings(record=True) as w,
         ):
             warnings.simplefilter("always")
@@ -446,8 +540,14 @@ class TestPlatformValidationIntegration:
 
             from quantiq.backend import BACKEND, get_device_info
 
-            # Should fall back to NumPy when CUDA detection fails
-            assert BACKEND == "numpy", "Should fall back when CUDA detection fails"
+            # Should still use JAX in CPU mode when CUDA detection fails
+            assert BACKEND == "jax", "Should use JAX in CPU mode when CUDA detection fails"
+
+            # Should issue warning about CUDA requirement
+            cuda_warnings = [
+                w_msg for w_msg in w if "GPU acceleration requires CUDA 12+" in str(w_msg.message)
+            ]
+            assert len(cuda_warnings) >= 1, "Should warn about CUDA requirement"
 
             # Device info should handle error gracefully
             info = get_device_info()
@@ -479,13 +579,44 @@ class TestPlatformValidationIntegration:
         assert info["cuda_version"] is None or isinstance(info["cuda_version"], tuple)
 
     def test_linux_without_cuda_fallback(self):
-        """Test Linux without CUDA falls back to CPU gracefully."""
+        """Test Linux without CUDA falls back to JAX CPU mode gracefully."""
         mock_jax = MagicMock()
         mock_jax_numpy = MagicMock()
         mock_backend = MagicMock()
         # Mock no CUDA available (no platform_version)
         del mock_backend.platform_version
-        mock_jax.lib.xla_bridge.get_backend.return_value = mock_backend
+
+        mock_jax_lib = MagicMock()
+        mock_jax_lib_xla_bridge = MagicMock()
+        mock_jax_lib_xla_bridge.get_backend.return_value = mock_backend
+        mock_jax_lib.xla_bridge = mock_jax_lib_xla_bridge
+        mock_jax.lib = mock_jax_lib
+
+        mock_jax_extend = MagicMock()
+        mock_jax_extend_backend = MagicMock()
+        mock_jax_extend_backend.get_backend.return_value = mock_backend
+        mock_jax_extend.backend = mock_jax_extend_backend
+        mock_jax.extend = mock_jax_extend
+
+        mock_jax.devices.return_value = []
+
+        mock_jax_scipy = MagicMock()
+        mock_jax_scipy_special = MagicMock()
+        mock_jax_scipy.special = mock_jax_scipy_special
+        mock_jax.scipy = mock_jax_scipy
+        mock_jax_typing = MagicMock()
+        mock_jax.typing = mock_jax_typing
+
+        # Mock jax.tree_util for numpyro
+        mock_jax_tree_util = MagicMock()
+        mock_jax.tree_util = mock_jax_tree_util
+
+        # Mock numpyro modules
+        mock_numpyro = MagicMock()
+        mock_numpyro_infer = MagicMock()
+        mock_numpyro_distributions = MagicMock()
+        mock_numpyro.infer = mock_numpyro_infer
+        mock_numpyro.distributions = mock_numpyro_distributions
 
         # Remove cached module
         if "quantiq.backend" in sys.modules:
@@ -493,7 +624,24 @@ class TestPlatformValidationIntegration:
 
         with (
             patch("sys.platform", "linux"),
-            patch.dict("sys.modules", {"jax": mock_jax, "jax.numpy": mock_jax_numpy}),
+            patch.dict(
+                "sys.modules",
+                {
+                    "jax": mock_jax,
+                    "jax.numpy": mock_jax_numpy,
+                    "jax.lib": mock_jax_lib,
+                    "jax.lib.xla_bridge": mock_jax_lib_xla_bridge,
+                    "jax.extend": mock_jax_extend,
+                    "jax.extend.backend": mock_jax_extend_backend,
+                    "jax.scipy": mock_jax_scipy,
+                    "jax.scipy.special": mock_jax_scipy_special,
+                    "jax.typing": mock_jax_typing,
+                    "jax.tree_util": mock_jax_tree_util,
+                    "numpyro": mock_numpyro,
+                    "numpyro.infer": mock_numpyro_infer,
+                    "numpyro.distributions": mock_numpyro_distributions,
+                },
+            ),
             warnings.catch_warnings(record=True) as w,
         ):
             warnings.simplefilter("always")
@@ -505,8 +653,14 @@ class TestPlatformValidationIntegration:
 
             from quantiq.backend import BACKEND, get_device_info
 
-            # Should fall back to NumPy when CUDA unavailable
-            assert BACKEND == "numpy", "Should fall back when no CUDA on Linux"
+            # Should use JAX in CPU mode when CUDA unavailable
+            assert BACKEND == "jax", "Should use JAX in CPU mode when no CUDA on Linux"
+
+            # Should issue warning about CUDA requirement
+            cuda_warnings = [
+                w_msg for w_msg in w if "GPU acceleration requires CUDA 12+" in str(w_msg.message)
+            ]
+            assert len(cuda_warnings) >= 1, "Should warn about CUDA requirement"
 
             # Device info should reflect no CUDA
             info = get_device_info()
@@ -519,6 +673,37 @@ class TestPlatformValidationIntegration:
         mock_jax = MagicMock()
         mock_jax_numpy = MagicMock()
 
+        # Mock JAX submodules for import chain
+        mock_jax_lib = MagicMock()
+        mock_jax_lib_xla_bridge = MagicMock()
+        mock_jax_lib.xla_bridge = mock_jax_lib_xla_bridge
+        mock_jax.lib = mock_jax_lib
+
+        mock_jax_extend = MagicMock()
+        mock_jax_extend_backend = MagicMock()
+        mock_jax_extend.backend = mock_jax_extend_backend
+        mock_jax.extend = mock_jax_extend
+
+        mock_jax.devices.return_value = []
+
+        mock_jax_scipy = MagicMock()
+        mock_jax_scipy_special = MagicMock()
+        mock_jax_scipy.special = mock_jax_scipy_special
+        mock_jax.scipy = mock_jax_scipy
+        mock_jax_typing = MagicMock()
+        mock_jax.typing = mock_jax_typing
+
+        # Mock jax.tree_util for numpyro
+        mock_jax_tree_util = MagicMock()
+        mock_jax.tree_util = mock_jax_tree_util
+
+        # Mock numpyro modules
+        mock_numpyro = MagicMock()
+        mock_numpyro_infer = MagicMock()
+        mock_numpyro_distributions = MagicMock()
+        mock_numpyro.infer = mock_numpyro_infer
+        mock_numpyro.distributions = mock_numpyro_distributions
+
         # Remove cached module
         if "quantiq.backend" in sys.modules:
             del sys.modules["quantiq.backend"]
@@ -526,7 +711,24 @@ class TestPlatformValidationIntegration:
         # Test on macOS
         with (
             patch("sys.platform", "darwin"),
-            patch.dict("sys.modules", {"jax": mock_jax, "jax.numpy": mock_jax_numpy}),
+            patch.dict(
+                "sys.modules",
+                {
+                    "jax": mock_jax,
+                    "jax.numpy": mock_jax_numpy,
+                    "jax.lib": mock_jax_lib,
+                    "jax.lib.xla_bridge": mock_jax_lib_xla_bridge,
+                    "jax.extend": mock_jax_extend,
+                    "jax.extend.backend": mock_jax_extend_backend,
+                    "jax.scipy": mock_jax_scipy,
+                    "jax.scipy.special": mock_jax_scipy_special,
+                    "jax.typing": mock_jax_typing,
+                    "jax.tree_util": mock_jax_tree_util,
+                    "numpyro": mock_numpyro,
+                    "numpyro.infer": mock_numpyro_infer,
+                    "numpyro.distributions": mock_numpyro_distributions,
+                },
+            ),
             warnings.catch_warnings(record=True) as w,
         ):
             warnings.simplefilter("always")
@@ -538,7 +740,7 @@ class TestPlatformValidationIntegration:
 
             # Warning should mention Linux and CUDA 12+
             platform_warnings = [
-                w_msg for w_msg in w if "GPU support is only available" in str(w_msg.message)
+                w_msg for w_msg in w if "GPU acceleration is only available" in str(w_msg.message)
             ]
             assert len(platform_warnings) >= 1, "Should issue warning"
 
