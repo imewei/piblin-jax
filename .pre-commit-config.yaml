@@ -137,7 +137,7 @@ repos:
   # Security checks
   # =============================================================================
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.8.0
+    rev: 1.8.6  # Updated to match pyproject.toml requirement (>=1.8.6)
     hooks:
       - id: bandit
         args: ['-c', 'pyproject.toml']

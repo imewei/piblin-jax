@@ -124,7 +124,7 @@ def _check_legacy_gpu_extras() -> None:
                             stacklevel=2,
                         )
                         return
-        except Exception:
+        except Exception:  # nosec B110  # Intentional: silently ignore detection errors
             pass
 
         # Try to detect ROCm backend (AMD GPUs)
@@ -140,7 +140,7 @@ def _check_legacy_gpu_extras() -> None:
                         stacklevel=2,
                     )
                     return
-        except Exception:
+        except Exception:  # nosec B110  # Intentional: silently ignore detection errors
             pass
 
     except ImportError:
