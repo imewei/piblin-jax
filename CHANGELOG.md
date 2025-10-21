@@ -25,6 +25,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated CONTRIBUTING.md with new tooling instructions
   - Removed `.flake8` and `.coveragerc` configuration files
   - Consolidated all configuration in `pyproject.toml`
+- **Development Requirement:** Pre-commit hooks now require Python 3.13
+  - Aligns local development environment with CI/CD (Python 3.13) and ruff target (py313)
+  - Ensures consistent linting and formatting behavior across all environments
+  - Runtime execution still supports Python 3.12+
+  - Developers must run migration steps (see CONTRIBUTING.md)
 - Enabled strict type checking with mypy for enhanced code quality
 - Fixed Python version references in CI workflows (3.14 → 3.13)
 - Updated pre-commit configuration for optimal performance

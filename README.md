@@ -36,6 +36,8 @@ Built on JAX, quantiq delivers 5-10x CPU speedup and 50-100x GPU acceleration wh
   ```
 
 - **Modern Python 3.12+**: Type-safe, functional programming approach
+  - Runtime: Python 3.12+ supported
+  - Development: Python 3.13 recommended (required for pre-commit hooks)
   - Comprehensive type hints throughout
   - NumPy-style docstrings
   - Immutable data structures
@@ -200,9 +202,17 @@ See [`examples/README.md`](examples/README.md) for detailed descriptions and usa
 
 ## Development
 
+### Prerequisites
+
+- **Python 3.13+** (required for pre-commit hooks)
+- Python 3.12+ supported for runtime code execution
+
 ### Setup Development Environment
 
 ```bash
+# Verify Python 3.13 is available
+python3.13 --version
+
 # Clone and install in development mode
 git clone https://github.com/quantiq/quantiq.git
 cd quantiq

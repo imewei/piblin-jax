@@ -27,10 +27,13 @@ By participating in this project, you agree to maintain a respectful, inclusive,
 
 ### Prerequisites
 
-- Python 3.12 or higher
+- **Python 3.13 or higher** (required for development and pre-commit hooks)
+- Python 3.12+ supported for runtime execution
 - Git
 - Basic understanding of JAX and NumPy
 - Familiarity with scientific computing concepts
+
+> **Note**: As of the latest update, pre-commit hooks require Python 3.13 to align with CI/CD environments and ruff target version. While the package runs on Python 3.12+, development requires 3.13.
 
 ### Quick Contribution Checklist
 
@@ -73,6 +76,32 @@ pre-commit install
 # (Optional) Run against all files to verify setup
 pre-commit run --all-files
 ```
+
+### Migrating from Python 3.12 or 3.14
+
+If you previously had the repository set up with a different Python version:
+
+```bash
+# 1. Verify Python 3.13 is installed
+python3.13 --version
+
+# 2. Pull latest changes (includes Python 3.13 requirement)
+git pull origin main
+
+# 3. Clean pre-commit cache
+pre-commit clean
+
+# 4. Reinstall pre-commit hooks with Python 3.13
+pre-commit install --install-hooks
+
+# 5. Verify hooks work correctly
+pre-commit run --all-files
+```
+
+**Why Python 3.13?** The pre-commit configuration now explicitly requires Python 3.13 to match:
+- CI/CD environment (Python 3.13)
+- Ruff target version (py313)
+- Ensures consistent linting and formatting behavior across all developer environments
 
 ### 4. Verify Installation
 
