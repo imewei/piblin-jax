@@ -140,7 +140,15 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          pytest -v --cov=quantiq --cov-report=xml --cov-report=term-missing
+          # Skip coverage threshold for numpy backend
+          # (JAX-dependent code is skipped)
+          if [ "${{ matrix.backend }}" = "numpy" ]; then
+            pytest -v --cov=quantiq --cov-report=xml \
+              --cov-report=term-missing -o addopts=""
+          else
+            pytest -v --cov=quantiq --cov-report=xml \
+              --cov-report=term-missing
+          fi
 
       - name: Check coverage threshold
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.13'

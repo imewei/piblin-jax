@@ -14,6 +14,7 @@ import pytest
 matplotlib.use("Agg")  # Use non-interactive backend for testing
 import matplotlib.pyplot as plt
 
+from quantiq.backend import is_jax_available
 from quantiq.data.datasets import OneDimensionalDataset
 
 
@@ -101,6 +102,7 @@ class TestOneDimensionalVisualization:
 
         plt.close(fig)
 
+    @pytest.mark.skipif(not is_jax_available(), reason="JAX required for Bayesian uncertainty")
     def test_visualization_with_bayesian_uncertainty(self):
         """Test visualization with Bayesian uncertainty."""
         np.random.seed(42)

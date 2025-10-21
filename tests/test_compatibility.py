@@ -8,6 +8,8 @@ This verifies that `import quantiq as piblin` works correctly.
 import numpy as np
 import pytest
 
+from quantiq.backend import is_jax_available
+
 
 class TestPiblinCompatibility:
     """Test piblin compatibility layer."""
@@ -45,6 +47,7 @@ class TestPiblinCompatibility:
         assert hasattr(piblin, "Pipeline")
         assert hasattr(piblin, "LambdaTransform")
 
+    @pytest.mark.skipif(not is_jax_available(), reason="JAX required for Bayesian classes")
     def test_bayesian_classes_available(self):
         """Test that Bayesian classes are available."""
         import quantiq as piblin
@@ -147,6 +150,9 @@ class TestPiblinCompatibility:
 class TestBackwardCompatibility:
     """Test backward compatibility features."""
 
+    @pytest.mark.skipif(
+        not is_jax_available(), reason="JAX required for BayesianModel export check"
+    )
     def test_all_exports_present(self):
         """Test that __all__ contains key exports."""
         import quantiq
@@ -210,6 +216,7 @@ class TestAPIStability:
         assert hasattr(transform, "apply_to")
         assert callable(transform.apply_to)
 
+    @pytest.mark.skipif(not is_jax_available(), reason="JAX required for BayesianModel")
     def test_bayesian_model_interface(self):
         """Test that Bayesian models have stable interface."""
         import quantiq as piblin
