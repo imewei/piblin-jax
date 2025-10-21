@@ -166,6 +166,7 @@ def jit(func: Callable | None = None, **kwargs) -> Callable:
     """
 
     def decorator(f: Callable) -> Callable:
+        """Apply JIT compilation or no-op depending on backend availability."""
         if _JAX_AVAILABLE:
             import jax
 
@@ -174,6 +175,7 @@ def jit(func: Callable | None = None, **kwargs) -> Callable:
             # No-op for NumPy backend
             @wraps(f)
             def wrapper(*args, **kwargs):
+                """Wrapper function for NumPy backend compatibility."""
                 return f(*args, **kwargs)
 
             return wrapper
@@ -229,6 +231,7 @@ def vmap(
         # Simple NumPy implementation
         @wraps(func)
         def wrapper(*args):
+            """Simplified vectorization wrapper for NumPy backend."""
             # Basic implementation - map over first axis
             if not args:
                 return func()
@@ -288,6 +291,7 @@ def grad(func: Callable, argnums: int | Sequence[int] = 0, **kwargs) -> Callable
     else:
 
         def not_implemented(*args, **kwargs):
+            """Raise error when automatic differentiation is unavailable."""
             raise NotImplementedError(
                 "Automatic differentiation requires JAX backend. "
                 "Install JAX or use numerical differentiation."
