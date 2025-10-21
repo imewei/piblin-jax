@@ -111,7 +111,7 @@ jobs:
         run: |
           if [ -f "uv.lock" ]; then
             uv sync --frozen --no-dev
-            uv sync --frozen --group dev
+            uv sync --frozen --extra dev
           else
             uv sync
           fi
@@ -163,9 +163,9 @@ jobs:
       - name: Install dependencies with exact versions
         run: |
           if [ -f "uv.lock" ]; then
-            uv sync --frozen --group test
+            uv sync --frozen --extra test
           else
-            uv sync --group test
+            uv sync --extra test
           fi
         shell: bash
 
@@ -214,9 +214,9 @@ jobs:
       - name: Install dependencies (CPU fallback for CI)
         run: |
           if [ -f "uv.lock" ]; then
-            uv sync --frozen --group test
+            uv sync --frozen --extra test
           else
-            uv sync --group test
+            uv sync --extra test
           fi
 
       - name: Run GPU-marked tests (CPU fallback)
@@ -260,9 +260,9 @@ jobs:
       - name: Install security tools
         run: |
           if [ -f "uv.lock" ]; then
-            uv sync --frozen --group security
+            uv sync --frozen --extra security
           else
-            uv sync --group security
+            uv sync --extra security
           fi
 
       - name: Run pip-audit (dependency vulnerability scan)
@@ -346,9 +346,9 @@ jobs:
       - name: Generate SBOM (Software Bill of Materials)
         run: |
           if [ -f "uv.lock" ]; then
-            uv sync --frozen --group security
+            uv sync --frozen --extra security
           else
-            uv sync --group security
+            uv sync --extra security
           fi
           uv run cyclonedx-py requirements -o sbom.json || echo "⚠️ SBOM generation skipped"
 
