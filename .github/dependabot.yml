@@ -1,0 +1,89 @@
+# Dependabot configuration for automated dependency updates
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+
+updates:
+  # Python dependencies (pip/uv)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "America/Chicago"
+    open-pull-requests-limit: 10
+
+    # Group updates by type
+    groups:
+      # Production dependencies - patch and minor updates together
+      production-dependencies:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+
+      # Development dependencies - all together
+      development-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+
+    # Commit message configuration
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+
+    # Reviewers and assignees
+    reviewers:
+      - "imewei"
+
+    # PR labels
+    labels:
+      - "dependencies"
+      - "python"
+      - "automated"
+
+    # Allow updates even if security vulnerabilities exist
+    # (they'll be handled separately by security alerts)
+    ignore:
+      # Ignore major version updates for now (require manual review)
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+      # Ignore specific dependencies that require careful updates
+      - dependency-name: "jax"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "jaxlib"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "numpyro"
+        update-types: ["version-update:semver-major"]
+
+    # Version requirements
+    versioning-strategy: "increase"  # Use >= not ==
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "America/Chicago"
+    open-pull-requests-limit: 5
+
+    commit-message:
+      prefix: "chore(ci)"
+      include: "scope"
+
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "automated"
+
+    reviewers:
+      - "imewei"
+
+# Security updates are handled automatically by Dependabot security updates
+# Enable at: Repository Settings -> Code security and analysis -> Dependabot security updates

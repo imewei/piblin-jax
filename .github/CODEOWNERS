@@ -1,0 +1,27 @@
+# Code owners for QuantiQ repository
+# These owners will be automatically requested for review when someone opens a pull request
+
+# Default owner for everything in the repo
+* @imewei
+
+# Core library code
+/quantiq/ @imewei
+
+# Tests
+/tests/ @imewei
+
+# Documentation
+/docs/ @imewei
+*.md @imewei
+
+# CI/CD and configuration
+/.github/ @imewei
+/pyproject.toml @imewei
+/uv.lock @imewei
+/.pre-commit-config.yaml @imewei
+/Dockerfile @imewei
+/docker-compose.yml @imewei
+
+# Security-sensitive files
+/.github/workflows/ @imewei
+/setup.py @imewei

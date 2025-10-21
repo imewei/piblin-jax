@@ -74,8 +74,10 @@ gpu-cuda = [
     "jax[cuda12]>=0.4.0",
 ]
 
+# Note: JAX Metal support is built into jaxlib for Apple Silicon
+# No separate extra needed - JAX automatically detects and uses Metal
 gpu-metal = [
-    "jax[metal]>=0.4.0",
+    "jax>=0.4.0",
 ]
 
 gpu-rocm = [

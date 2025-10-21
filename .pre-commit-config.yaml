@@ -156,6 +156,33 @@ repos:
           - --skip="*.lock,*.css,*.js,*.map,*.json,.git,_build,venv"
         exclude: ^(docs/_build/|\.git/)
 
+  # =============================================================================
+  # Dependency version consistency (uv lock file validation)
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: uv-lock-check
+        name: Verify uv.lock is up to date
+        entry: bash -c 'uv lock --locked 2>&1 || exit 1'
+        language: system
+        pass_filenames: false
+        files: ^(pyproject\.toml|uv\.lock)$
+
+      - id: check-test-markers
+        name: Verify pytest markers are registered
+        entry: python -c "import re; import sys; markers = re.findall(r'@pytest\.mark\.(\w+)', open(sys.argv[1]).read()); config_markers = re.findall(r'\"(\\w+):', open('pyproject.toml').read()); unregistered = set(markers) - set(config_markers) - {'parametrize', 'skip', 'skipif', 'xfail', 'usefixtures', 'filterwarnings'}; sys.exit(1) if unregistered else 0"
+        language: system
+        files: ^tests/.*\.py$
+        types: [python]
+
+      - id: no-print-statements
+        name: Check for print statements in source code
+        entry: python -c "import sys; import re; code = open(sys.argv[1]).read(); sys.exit(1) if re.search(r'^\\s*print\\(', code, re.MULTILINE) else 0"
+        language: system
+        files: ^quantiq/.*\.py$
+        types: [python]
+        exclude: ^(tests/|examples/|scripts/)
+
 
 # =============================================================================
 # Configuration notes:
