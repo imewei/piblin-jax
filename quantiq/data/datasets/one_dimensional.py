@@ -536,8 +536,9 @@ class OneDimensionalDataset(Dataset):
                         ax.fill_between(
                             x, y - sigma, y + sigma, alpha=0.3, label="Uncertainty (±σ)"
                         )
-            except Exception:
+            except Exception:  # nosec B110
                 # If getting intervals fails, just skip uncertainty visualization
+                # Using broad exception handler intentionally for graceful degradation
                 pass
 
         # Set labels

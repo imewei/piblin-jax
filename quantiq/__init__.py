@@ -24,17 +24,32 @@ Usage:
 
 __version__ = "0.1.0"
 
-# Import submodules
-from . import backend, bayesian, data, dataio, transform
+# Import core submodules (JAX-independent)
+from . import backend, data, dataio, transform
 
-# Bayesian classes
-from .bayesian.base import BayesianModel
-from .bayesian.models import (
-    ArrheniusModel,
-    CarreauYasudaModel,
-    CrossModel,
-    PowerLawModel,
-)
+# Conditionally import JAX-dependent modules
+# The bayesian module requires JAX/NumPyro which may not be available
+# when testing with numpy backend or in environments without JAX
+if backend.is_jax_available():
+    from . import bayesian
+
+    # Bayesian classes
+    from .bayesian.base import BayesianModel
+    from .bayesian.models import (
+        ArrheniusModel,
+        CarreauYasudaModel,
+        CrossModel,
+        PowerLawModel,
+    )
+else:
+    # Provide None placeholders when JAX is unavailable
+    # This allows the package to be imported even without JAX installed
+    bayesian = None  # type: ignore
+    BayesianModel = None  # type: ignore
+    ArrheniusModel = None  # type: ignore
+    CarreauYasudaModel = None  # type: ignore
+    CrossModel = None  # type: ignore
+    PowerLawModel = None  # type: ignore
 
 # Collection classes
 from .data.collections import (
