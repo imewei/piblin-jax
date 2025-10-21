@@ -144,15 +144,75 @@ Lambda and Dynamic Transforms
 Dataset Transforms
 ------------------
 
+Overview
+^^^^^^^^
+
 .. automodule:: quantiq.transform.dataset
    :members:
    :undoc-members:
    :show-inheritance:
 
+Smoothing Transforms
+^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: quantiq.transform.dataset.smoothing
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :noindex:
+
+Interpolation Transforms
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: quantiq.transform.dataset.interpolate
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :noindex:
+
+Normalization Transforms
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: quantiq.transform.dataset.normalization
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :noindex:
+
+Baseline Correction Transforms
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: quantiq.transform.dataset.baseline
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :noindex:
+
+Calculus Transforms
+^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: quantiq.transform.dataset.calculus
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :noindex:
+
 Measurement Transforms
 ----------------------
+
+Overview
+^^^^^^^^
 
 .. automodule:: quantiq.transform.measurement
    :members:
    :undoc-members:
    :show-inheritance:
+
+Filtering Transforms
+^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: quantiq.transform.measurement.filter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :noindex:

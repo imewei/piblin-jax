@@ -11,6 +11,8 @@ Step-by-step tutorials for learning quantiq.
    uncertainty_quantification
    custom_transforms
    rheological_models
+   advanced_pipelines
+   gpu_acceleration
 
 Getting Started
 ---------------
@@ -26,3 +28,14 @@ Getting Started
 
 :doc:`rheological_models`
     Working with rheological models (Power-law, Arrhenius, Cross, Carreau-Yasuda)
+
+Advanced Topics
+---------------
+
+:doc:`advanced_pipelines`
+    Advanced pipeline composition patterns - conditional logic, parallel processing,
+    dynamic configuration, and reusable pipeline libraries
+
+:doc:`gpu_acceleration`
+    GPU acceleration best practices - JIT compilation, batch processing,
+    memory management, and performance optimization

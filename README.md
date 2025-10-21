@@ -178,10 +178,25 @@ Full documentation is available at [quantiq.readthedocs.io](https://quantiq.read
 
 ## Examples
 
-Explore complete examples in the `examples/` directory:
+Explore complete, runnable examples in the [`examples/`](examples/) directory:
 
-- **Bayesian Rheological Models**: Parameter estimation for rheological fluids
-- *(More examples coming soon)*
+- **basic_usage_example.py** - Core workflow: data loading, transforms, visualization
+- **transform_pipeline_example.py** - Composable transform pipelines
+- **bayesian_rheological_models.py** - Rheological model fitting (Power Law, Cross, Carreau-Yasuda, Arrhenius)
+- **bayesian_parameter_estimation.py** - Advanced Bayesian inference techniques
+- **uncertainty_propagation_example.py** - Propagating uncertainty through pipelines
+- **piblin_migration_example.py** - Migrating from piblin to quantiq
+- **gpu_acceleration_example.py** - Leveraging GPU for 10-100x speedups ⚡
+- **custom_transforms_example.py** - Building domain-specific transforms
+
+Each example is fully documented and can be run directly:
+
+```bash
+cd examples
+python basic_usage_example.py
+```
+
+See [`examples/README.md`](examples/README.md) for detailed descriptions and usage instructions.
 
 ## Development
 

@@ -125,6 +125,51 @@ One-Dimensional Dataset
    :show-inheritance:
    :noindex:
 
+Two-Dimensional Dataset
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: quantiq.data.datasets.two_dimensional
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :noindex:
+
+Three-Dimensional Dataset
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: quantiq.data.datasets.three_dimensional
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :noindex:
+
+Composite Dataset
+^^^^^^^^^^^^^^^^^
+
+.. automodule:: quantiq.data.datasets.composite
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :noindex:
+
+Distribution Dataset
+^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: quantiq.data.datasets.distribution
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :noindex:
+
+Histogram Dataset
+^^^^^^^^^^^^^^^^^
+
+.. automodule:: quantiq.data.datasets.histogram
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :noindex:
+
 Collections
 -----------
 
@@ -146,4 +191,68 @@ MeasurementSet
    :show-inheritance:
    :noindex:
 
-Note: API documentation will be auto-generated as modules are implemented in subsequent phases.
+ConsistentMeasurementSet
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: quantiq.data.collections.consistent_measurement_set
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :noindex:
+
+TabularMeasurementSet
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: quantiq.data.collections.tabular_measurement_set
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :noindex:
+
+TidyMeasurementSet
+^^^^^^^^^^^^^^^^^^
+
+.. automodule:: quantiq.data.collections.tidy_measurement_set
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :noindex:
+
+Experiment
+^^^^^^^^^^
+
+.. automodule:: quantiq.data.collections.experiment
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :noindex:
+
+ExperimentSet
+^^^^^^^^^^^^^
+
+.. automodule:: quantiq.data.collections.experiment_set
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :noindex:
+
+Utilities
+---------
+
+Metadata
+^^^^^^^^
+
+.. automodule:: quantiq.data.metadata
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :noindex:
+
+Region of Interest (ROI)
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: quantiq.data.roi
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :noindex:
