@@ -58,11 +58,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --frozen --all-extras
-
-      - name: Install pip-audit
-        run: |
-          uv pip install pip-audit
+          uv sync --frozen --extra security
 
       - name: Run pip-audit
         run: |
@@ -118,11 +114,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --frozen --all-extras
-
-      - name: Install pip-licenses
-        run: |
-          uv pip install pip-licenses
+          uv sync --frozen --extra security
 
       - name: Check licenses
         run: |
@@ -208,11 +200,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --frozen --all-extras
-
-      - name: Install CycloneDX
-        run: |
-          uv pip install cyclonedx-bom
+          uv sync --frozen --extra security
 
       - name: Generate SBOM
         run: |

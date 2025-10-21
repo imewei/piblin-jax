@@ -346,11 +346,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --frozen --extra dev --extra test
+          uv sync --frozen --extra security
 
       - name: Run Bandit security linter
         run: |
-          uv run pip install bandit[toml]
           uv run bandit -r quantiq/ -f json -o bandit-report.json || true
           uv run bandit -r quantiq/ -f screen
 
