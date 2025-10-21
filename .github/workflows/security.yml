@@ -216,9 +216,8 @@ jobs:
 
       - name: Generate SBOM
         run: |
-          uv run cyclonedx-py environment \
-            --outfile sbom.json \
-            --format json
+          # CycloneDX environment subcommand generates SBOM from current env
+          uv run cyclonedx-py environment > sbom.json
 
           echo "📦 SBOM generated successfully"
           ls -lh sbom.json
