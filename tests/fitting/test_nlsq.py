@@ -10,6 +10,7 @@ This module tests Task Group 15:
 import numpy as np
 import pytest
 
+from quantiq.backend import is_jax_available
 from quantiq.fitting.nlsq import estimate_initial_parameters, fit_curve
 
 
@@ -177,6 +178,7 @@ class TestEstimateInitialParameters:
         assert np.all(p0 <= bounds[1])
 
 
+@pytest.mark.skipif(not is_jax_available(), reason="JAX required for BayesianModel tests")
 class TestBayesianModelIntegration:
     """Test BayesianModel integration with NLSQ."""
 

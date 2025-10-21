@@ -10,9 +10,13 @@ This module tests:
 - Parameter recovery
 """
 
+import pytest
+
+# Skip all tests in this module if JAX is not available
+pytest.importorskip("jax", reason="JAX required for bayesian tests")
+
 import jax.numpy as jnp
 import numpy as np
-import pytest
 from numpy.testing import assert_allclose
 
 from quantiq.bayesian.models import (

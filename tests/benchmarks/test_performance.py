@@ -8,6 +8,11 @@ Uses pytest-benchmark for systematic performance testing.
 import numpy as np
 import pytest
 
+# Skip bayesian benchmarks if JAX is not available
+jax = pytest.importorskip("jax", reason="JAX required for bayesian benchmarks")
+
+# Imports after importorskip are intentional (tests only run if JAX available)
+# ruff: noqa: E402
 from quantiq.bayesian.models import PowerLawModel
 from quantiq.data.datasets import OneDimensionalDataset
 from quantiq.fitting import fit_curve
