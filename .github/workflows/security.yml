@@ -216,10 +216,9 @@ jobs:
 
       - name: Generate SBOM
         run: |
-          uv run cyclonedx-py \
+          uv run cyclonedx-py environment \
             --format json \
-            --output sbom.json \
-            --pyproject pyproject.toml
+            --output sbom.json
 
           echo "📦 SBOM generated successfully"
           ls -lh sbom.json
