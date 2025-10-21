@@ -131,7 +131,7 @@ class TestGPUAccelerationExample:
         example_path = "/Users/b80985/Projects/quantiq/examples/gpu_acceleration_example.py"
 
         # Read the example file
-        with open(example_path, "r") as f:
+        with open(example_path) as f:
             content = f.read().lower()
 
         # Verify no references to Metal or ROCm

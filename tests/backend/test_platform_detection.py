@@ -64,11 +64,12 @@ class TestPlatformDetection:
         mock_backend.platform_version = "12.3"
         mock_jax.lib.xla_bridge.get_backend.return_value = mock_backend
 
-        with patch.dict("sys.modules", {"jax": mock_jax}):
-            # We need to patch the already imported jax in the backend module
-            with patch("quantiq.backend.jax", mock_jax):
-                result = _get_cuda_version()
-                assert result == (12, 3), f"Expected (12, 3), got {result}"
+        with (
+            patch.dict("sys.modules", {"jax": mock_jax}),
+            patch("quantiq.backend.jax", mock_jax),
+        ):
+            result = _get_cuda_version()
+            assert result == (12, 3), f"Expected (12, 3), got {result}"
 
     def test_cuda_version_detection_exception(self):
         """Test CUDA version detection when exception occurs."""

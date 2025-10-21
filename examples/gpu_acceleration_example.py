@@ -24,7 +24,6 @@ Author: quantiq developers
 Date: 2025-10-20
 """
 
-import sys
 import time
 
 import numpy as np

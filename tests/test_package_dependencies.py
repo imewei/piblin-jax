@@ -33,9 +33,10 @@ class TestPackageDependencies:
         )
 
         # Verify no references to Metal GPU support
-        assert "Metal" not in content or "Apple Silicon" in content.split("[project.optional-dependencies]")[0], (
-            "No Metal references should exist in optional dependencies section"
-        )
+        assert (
+            "Metal" not in content
+            or "Apple Silicon" in content.split("[project.optional-dependencies]")[0]
+        ), "No Metal references should exist in optional dependencies section"
 
     def test_gpu_rocm_removed_from_dependencies(self, pyproject_toml_path):
         """Test that gpu-rocm optional dependency has been completely removed."""
@@ -63,9 +64,9 @@ class TestPackageDependencies:
             "gpu-cuda should include sys_platform == 'linux' marker"
         )
 
-        # Verify jax[cuda12] is specified
-        assert "jax[cuda12]" in content, (
-            "gpu-cuda should specify jax[cuda12] dependency"
+        # Verify jax[cuda12-local] is specified
+        assert "jax[cuda12-local]" in content, (
+            "gpu-cuda should specify jax[cuda12-local] dependency"
         )
 
     def test_gpu_cuda_platform_marker_syntax(self, pyproject_toml_path):
@@ -92,8 +93,7 @@ class TestPackageDependencies:
         )
 
     @pytest.mark.skipif(
-        sys.platform != "linux",
-        reason="Platform marker enforcement only testable on Linux"
+        sys.platform != "linux", reason="Platform marker enforcement only testable on Linux"
     )
     def test_gpu_cuda_installable_on_linux(self):
         """Test that gpu-cuda extra can be queried on Linux systems."""
@@ -112,8 +112,7 @@ class TestPackageDependencies:
         )
 
     @pytest.mark.skipif(
-        sys.platform == "linux",
-        reason="Non-Linux platform marker test only on non-Linux systems"
+        sys.platform == "linux", reason="Non-Linux platform marker test only on non-Linux systems"
     )
     def test_gpu_cuda_platform_marker_on_non_linux(self, pyproject_toml_path):
         """Test that platform marker correctly identifies non-Linux systems."""
@@ -123,14 +122,10 @@ class TestPackageDependencies:
         content = pyproject_toml_path.read_text()
 
         # The marker should be present
-        assert "sys_platform == 'linux'" in content, (
-            "Platform marker should restrict to Linux only"
-        )
+        assert "sys_platform == 'linux'" in content, "Platform marker should restrict to Linux only"
 
         # Verify current platform is not Linux (test assumption)
-        assert sys.platform != "linux", (
-            "This test should only run on non-Linux platforms"
-        )
+        assert sys.platform != "linux", "This test should only run on non-Linux platforms"
 
     def test_only_gpu_cuda_extra_exists(self, pyproject_toml_path):
         """Test that gpu-cuda is the only GPU optional dependency."""
@@ -175,6 +170,4 @@ class TestPackageDependencies:
                 assert "metal" not in deps_array.lower(), (
                     "No Metal references in dependencies array"
                 )
-                assert "rocm" not in deps_array.lower(), (
-                    "No ROCm references in dependencies array"
-                )
+                assert "rocm" not in deps_array.lower(), "No ROCm references in dependencies array"

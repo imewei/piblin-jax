@@ -432,26 +432,28 @@ class TestPlatformValidationIntegration:
         if "quantiq.backend" in sys.modules:
             del sys.modules["quantiq.backend"]
 
-        with patch("sys.platform", "linux"):
-            with patch.dict("sys.modules", {"jax": mock_jax, "jax.numpy": mock_jax_numpy}):
-                with warnings.catch_warnings(record=True) as w:
-                    warnings.simplefilter("always")
-                    import importlib
+        with (
+            patch("sys.platform", "linux"),
+            patch.dict("sys.modules", {"jax": mock_jax, "jax.numpy": mock_jax_numpy}),
+            warnings.catch_warnings(record=True) as w,
+        ):
+            warnings.simplefilter("always")
+            import importlib
 
-                    import quantiq.backend
+            import quantiq.backend
 
-                    importlib.reload(quantiq.backend)
+            importlib.reload(quantiq.backend)
 
-                    from quantiq.backend import BACKEND, get_device_info
+            from quantiq.backend import BACKEND, get_device_info
 
-                    # Should fall back to NumPy when CUDA detection fails
-                    assert BACKEND == "numpy", "Should fall back when CUDA detection fails"
+            # Should fall back to NumPy when CUDA detection fails
+            assert BACKEND == "numpy", "Should fall back when CUDA detection fails"
 
-                    # Device info should handle error gracefully
-                    info = get_device_info()
-                    assert info["os_platform"] == "linux"
-                    assert info["gpu_supported"] is False
-                    assert info["cuda_version"] is None
+            # Device info should handle error gracefully
+            info = get_device_info()
+            assert info["os_platform"] == "linux"
+            assert info["gpu_supported"] is False
+            assert info["cuda_version"] is None
 
     def test_device_info_includes_all_platform_fields(self):
         """Test that get_device_info() includes all required platform fields."""
@@ -489,26 +491,28 @@ class TestPlatformValidationIntegration:
         if "quantiq.backend" in sys.modules:
             del sys.modules["quantiq.backend"]
 
-        with patch("sys.platform", "linux"):
-            with patch.dict("sys.modules", {"jax": mock_jax, "jax.numpy": mock_jax_numpy}):
-                with warnings.catch_warnings(record=True) as w:
-                    warnings.simplefilter("always")
-                    import importlib
+        with (
+            patch("sys.platform", "linux"),
+            patch.dict("sys.modules", {"jax": mock_jax, "jax.numpy": mock_jax_numpy}),
+            warnings.catch_warnings(record=True) as w,
+        ):
+            warnings.simplefilter("always")
+            import importlib
 
-                    import quantiq.backend
+            import quantiq.backend
 
-                    importlib.reload(quantiq.backend)
+            importlib.reload(quantiq.backend)
 
-                    from quantiq.backend import BACKEND, get_device_info
+            from quantiq.backend import BACKEND, get_device_info
 
-                    # Should fall back to NumPy when CUDA unavailable
-                    assert BACKEND == "numpy", "Should fall back when no CUDA on Linux"
+            # Should fall back to NumPy when CUDA unavailable
+            assert BACKEND == "numpy", "Should fall back when no CUDA on Linux"
 
-                    # Device info should reflect no CUDA
-                    info = get_device_info()
-                    assert info["os_platform"] == "linux"
-                    assert info["gpu_supported"] is False
-                    assert info["cuda_version"] is None
+            # Device info should reflect no CUDA
+            info = get_device_info()
+            assert info["os_platform"] == "linux"
+            assert info["gpu_supported"] is False
+            assert info["cuda_version"] is None
 
     def test_platform_validation_warning_messages(self):
         """Test that platform validation warnings contain helpful messages."""
@@ -520,25 +524,25 @@ class TestPlatformValidationIntegration:
             del sys.modules["quantiq.backend"]
 
         # Test on macOS
-        with patch("sys.platform", "darwin"):
-            with patch.dict("sys.modules", {"jax": mock_jax, "jax.numpy": mock_jax_numpy}):
-                with warnings.catch_warnings(record=True) as w:
-                    warnings.simplefilter("always")
-                    import importlib
+        with (
+            patch("sys.platform", "darwin"),
+            patch.dict("sys.modules", {"jax": mock_jax, "jax.numpy": mock_jax_numpy}),
+            warnings.catch_warnings(record=True) as w,
+        ):
+            warnings.simplefilter("always")
+            import importlib
 
-                    import quantiq.backend
+            import quantiq.backend
 
-                    importlib.reload(quantiq.backend)
+            importlib.reload(quantiq.backend)
 
-                    # Warning should mention Linux and CUDA 12+
-                    platform_warnings = [
-                        w_msg
-                        for w_msg in w
-                        if "GPU support is only available" in str(w_msg.message)
-                    ]
-                    assert len(platform_warnings) >= 1, "Should issue warning"
+            # Warning should mention Linux and CUDA 12+
+            platform_warnings = [
+                w_msg for w_msg in w if "GPU support is only available" in str(w_msg.message)
+            ]
+            assert len(platform_warnings) >= 1, "Should issue warning"
 
-                    warning_text = str(platform_warnings[0].message).lower()
-                    assert "linux" in warning_text, "Warning should mention Linux requirement"
-                    assert "cuda 12+" in warning_text, "Warning should mention CUDA 12+ requirement"
-                    assert "cpu" in warning_text, "Warning should mention CPU fallback"
+            warning_text = str(platform_warnings[0].message).lower()
+            assert "linux" in warning_text, "Warning should mention Linux requirement"
+            assert "cuda 12+" in warning_text, "Warning should mention CUDA 12+ requirement"
+            assert "cpu" in warning_text, "Warning should mention CPU fallback"
