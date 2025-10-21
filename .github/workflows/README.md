@@ -1,485 +1,349 @@
 # CI/CD Pipeline Documentation
 
-This directory contains GitHub Actions workflows for continuous integration, deployment, and security scanning.
+This directory contains GitHub Actions workflows for continuous integration and deployment.
 
 ## Overview
 
-The CI/CD pipeline ensures code quality, security, and reliability through automated testing and validation.
+The CI/CD pipeline enforces **dependency version consistency** to ensure reproducible builds across local development and CI environments.
 
-### Workflows
+## Workflows
 
-1. **CI/CD Pipeline** (`.github/workflows/ci.yml`)
-   - Runs on: Push to `main`/`develop`, Pull Requests
-   - Duration: ~5-10 minutes
-   - Key features:
-     - Dependency lock file validation
-     - Multi-version testing (Python 3.12, 3.13)
-     - Cross-platform testing (Linux, macOS, Windows)
-     - Code quality checks (Ruff, mypy)
-     - Test coverage (95% minimum)
-     - Documentation builds
-     - Security scanning
+### `ci.yml` - Main CI/CD Pipeline
 
-2. **Security Scanning** (`.github/workflows/security.yml`)
-   - Runs on: Weekly schedule (Mondays 3 AM), Push to `main`, Pull Requests
-   - Duration: ~3-5 minutes
-   - Key features:
-     - Secret detection (Gitleaks)
-     - Dependency vulnerability scanning (pip-audit)
-     - Static analysis (Semgrep, CodeQL)
-     - License compliance checking
-     - SBOM generation
+**Triggers:**
+- Push to `main` or `develop` branches
+- Pull requests to `main` or `develop`
+- Manual workflow dispatch
+
+**Jobs:**
+
+1. **validate-dependencies** - Ensures lock file consistency
+   - Verifies Python version matches local environment (3.13.9)
+   - Checks if `uv.lock` exists and is up to date
+   - Creates initial lock file if missing (with warning)
+   - Installs exact dependency versions from lock file
+
+2. **lint** - Code quality checks
+   - Ruff linter (check mode)
+   - Ruff formatter (check mode)
+   - MyPy type checking (non-blocking)
+
+3. **test** - Multi-platform testing
+   - Matrix: Python 3.12 & 3.13 on Ubuntu, macOS, Windows
+   - CPU-only tests (excludes GPU and slow tests)
+   - Coverage reporting to Codecov
+   - Uses exact dependencies from `uv.lock`
+
+4. **test-gpu** - GPU support testing (Linux only)
+   - Runs on main/develop branches or manual trigger
+   - Tests GPU-marked tests in CPU fallback mode
+   - Notes about requiring self-hosted runner for real GPU testing
+
+5. **security** - Security scanning
+   - `pip-audit` for dependency vulnerabilities
+   - `bandit` for security linting
+   - Trivy filesystem scanning
+   - Gitleaks secret detection
+   - Results uploaded to GitHub Security
+
+6. **build** - Package building
+   - Builds distribution packages (wheel + sdist)
+   - Generates SBOM (Software Bill of Materials)
+   - Uploads build artifacts (7 days retention)
+   - Uploads SBOM (30 days retention)
+
+7. **dependency-review** - PR dependency analysis
+   - Only runs on pull requests
+   - Blocks moderate+ severity vulnerabilities
+   - Denies GPL-3.0 and AGPL-3.0 licenses
+
+8. **all-checks-passed** - Final status check
+   - Aggregates all job results
+   - Required for branch protection rules
 
 ## Dependency Version Consistency
 
-### Critical Principle
+### Key Principle
 
-**The `uv.lock` file is the source of truth for all dependency versions.**
-
-This ensures:
-- ✅ Reproducible builds across all environments
-- ✅ Identical dependencies in development, CI, and production
-- ✅ No "works on my machine" issues
-- ✅ Predictable security vulnerability management
+**Lock files are the source of truth.** The CI pipeline uses the exact same Python version and dependencies as your local environment.
 
 ### How It Works
 
-1. **Local Development**
+1. **Python Version Matching**
+   - Local: Specified in `.python-version` (currently 3.13.9)
+   - CI: Reads from `.python-version` file
+   - Verification step ensures exact match
+
+2. **Dependency Locking**
+   - Local: `uv lock` creates/updates `uv.lock`
+   - CI: `uv sync --frozen` installs exact versions from `uv.lock`
+   - Lock check: `uv lock --check` fails if pyproject.toml changed
+
+3. **Installation Commands**
    ```bash
-   # Install exact dependencies from lock file
+   # ✅ CORRECT - Uses lock file
    uv sync --frozen
 
-   # Add new dependency (updates pyproject.toml and uv.lock)
-   uv add package-name
-
-   # Update dependencies (regenerates uv.lock)
-   uv lock --upgrade
+   # ❌ WRONG - Resolves dependencies (non-deterministic)
+   uv sync
+   uv pip install quantiq
    ```
 
-2. **Pre-commit Hook**
-   - Automatically validates `uv.lock` is in sync before commits
-   - Prevents committing outdated lock files
-   - Run manually: `pre-commit run uv-lock-check --all-files`
+### Local Development Workflow
 
-3. **CI Pipeline**
-   - First job validates lock file integrity
-   - All subsequent jobs use `uv sync --frozen`
-   - Fails fast if lock file is out of sync
+1. **Initial Setup**
+   ```bash
+   # Create virtual environment and install dependencies
+   uv venv
+   source .venv/bin/activate  # or `.venv\Scripts\activate` on Windows
 
-### Common Scenarios
+   # Install with exact versions (if uv.lock exists)
+   uv sync --frozen
 
-#### Adding a New Dependency
+   # OR create lock file if it doesn't exist
+   uv lock
+   uv sync
+   ```
+
+2. **Adding Dependencies**
+   ```bash
+   # Edit pyproject.toml manually, then:
+   uv lock                    # Update lock file
+   uv sync --frozen           # Install updated dependencies
+   git add pyproject.toml uv.lock
+   git commit -m "chore(deps): add new-package"
+   ```
+
+3. **Updating Dependencies**
+   ```bash
+   # Update specific package
+   uv lock --upgrade-package requests
+
+   # Update all packages
+   uv lock --upgrade
+
+   # Install updated versions
+   uv sync --frozen
+
+   # Commit lock file
+   git add uv.lock
+   git commit -m "chore(deps): update dependencies"
+   ```
+
+### Pre-commit Hooks
+
+The repository includes pre-commit hooks that validate lock file consistency:
 
 ```bash
-# Add the package (automatically updates lock file)
-uv add numpy
+# Install hooks
+pre-commit install
 
-# Commit both files
-git add pyproject.toml uv.lock
-git commit -m "feat: add numpy dependency"
+# Run manually
+pre-commit run --all-files
 ```
 
-#### Updating Dependencies
+**Key Hook:** `uv-lock-check`
+- Runs when `pyproject.toml` or `uv.lock` changes
+- Verifies lock file is up to date
+- Fails if `uv.lock` is missing or out of sync
 
-```bash
-# Update all dependencies
-uv lock --upgrade
-
-# Or update specific package
-uv lock --upgrade-package jax
-
-# Review changes
-git diff uv.lock
-
-# Commit if everything looks good
-git add uv.lock
-git commit -m "chore(deps): update dependencies"
-```
+### Troubleshooting
 
 #### Lock File Out of Sync
 
-If CI fails with lock file validation error:
+**Symptom:** CI fails with "uv.lock is out of sync"
 
+**Solution:**
 ```bash
-# Regenerate lock file locally
 uv lock
-
-# Commit the updated lock file
 git add uv.lock
 git commit -m "chore: update lock file"
 git push
 ```
 
-## Workflow Jobs
+#### Python Version Mismatch
 
-### CI Pipeline (`ci.yml`)
+**Symptom:** "Python version mismatch" in CI
 
-#### 1. Validate Dependencies
-- **Purpose**: Ensure reproducible builds
-- **Checks**:
-  - Lock file is in sync with `pyproject.toml`
-  - No dependency drift
-  - Security vulnerability scan
-- **Failure**: Prevents all downstream jobs from running
+**Solution:**
+```bash
+# Check your local version
+python --version
 
-#### 2. Lint
-- **Tool**: Ruff
-- **Checks**:
-  - Code style (PEP 8)
-  - Import sorting
-  - Code complexity
-  - Security patterns
-- **Config**: `pyproject.toml` → `[tool.ruff]`
+# Update .python-version if needed
+echo "3.13.9" > .python-version
 
-#### 3. Type Check
-- **Tool**: mypy
-- **Checks**:
-  - Static type correctness
-  - Type annotations
-  - Generic type usage
-- **Config**: `pyproject.toml` → `[tool.mypy]`
-
-#### 4. Test
-- **Tool**: pytest
-- **Matrix**:
-  - Python: 3.12, 3.13
-  - OS: Ubuntu, macOS, Windows
-- **Coverage**: Minimum 95%
-- **Markers**:
-  - `not slow`: Fast tests only in PRs
-  - `not gpu`: Skip GPU tests in CI
-- **Artifacts**:
-  - Coverage report (Codecov)
-  - HTML coverage report
-
-#### 5. Slow Tests
-- **Runs**: Only on `main`/`develop` branches
-- **Purpose**: Expensive integration tests
-- **Trigger**: After fast tests pass
-
-#### 6. Build
-- **Purpose**: Verify package builds correctly
-- **Outputs**:
-  - Wheel (`.whl`)
-  - Source distribution (`.tar.gz`)
-- **Artifacts**: Retained for 7 days
-
-#### 7. Docs
-- **Tool**: Sphinx
-- **Output**: HTML documentation
-- **Deployment**: Read the Docs (automatic)
-
-#### 8. Security
-- **Tools**:
-  - Bandit (Python security linter)
-  - Trivy (vulnerability scanner)
-- **Output**: SARIF reports to GitHub Security
-
-#### 9. CodeQL
-- **Purpose**: Advanced security analysis
-- **Language**: Python
-- **Queries**: Security + Quality
-
-### Security Workflow (`security.yml`)
-
-#### Secret Scanning
-- **Tool**: Gitleaks
-- **Scans**: Full git history
-- **Purpose**: Detect accidentally committed secrets
-
-#### Dependency Audit
-- **Tool**: pip-audit
-- **Database**: OSV, PyPI Advisory Database
-- **Action**: Fails on HIGH/CRITICAL vulnerabilities
-
-#### SAST
-- **Tool**: Semgrep
-- **Rules**: Auto (security-focused)
-- **Output**: SARIF for GitHub Security tab
-
-#### License Compliance
-- **Tool**: pip-licenses
-- **Checks**: GPL/AGPL detection
-- **Output**: Markdown license report
-
-#### SBOM
-- **Tool**: CycloneDX
-- **Format**: JSON
-- **Purpose**: Software supply chain transparency
-
-## Branch Protection Rules
-
-Recommended settings for `main` branch:
-
-```yaml
-Require a pull request before merging: ✅
-  Required approvals: 1
-  Dismiss stale reviews: ✅
-
-Require status checks to pass: ✅
-  Status checks required:
-    - CI Status Check
-    - Lint (Ruff)
-    - Type Check (mypy)
-    - Test (Python 3.12) (ubuntu-latest)
-    - Test (Python 3.13) (ubuntu-latest)
-    - Build Package
-    - Security Scan
-
-Require conversation resolution before merging: ✅
-Require signed commits: ⚠️ (Optional but recommended)
-Include administrators: ✅
+# Commit the change
+git add .python-version
+git commit -m "chore: update Python version"
 ```
 
-## Secrets Configuration
+#### "Works on My Machine" but CI Fails
 
-Required GitHub Secrets:
+**Common Causes:**
+1. **Different Python version** - Check `.python-version` matches your local `python --version`
+2. **Lock file not committed** - Ensure `uv.lock` is in git and up to date
+3. **Environment variables** - Check if local env vars affect behavior
 
-| Secret | Purpose | Required |
-|--------|---------|----------|
-| `CODECOV_TOKEN` | Coverage reporting | Optional |
-| `GITLEAKS_LICENSE` | Gitleaks Pro features | Optional |
+**Debug Steps:**
+```bash
+# 1. Verify you're in venv
+which python  # Should point to .venv/bin/python
 
-To add secrets:
-1. Go to repository Settings → Secrets and variables → Actions
-2. Click "New repository secret"
-3. Add name and value
+# 2. Verify lock file exists and is current
+uv lock --check
+
+# 3. Clean install (matches CI)
+rm -rf .venv
+uv venv
+uv sync --frozen
+
+# 4. Run tests locally
+uv run pytest
+```
+
+#### CI Stuck on "Creating lock file"
+
+**Symptom:** First CI run creates lock file instead of using existing one
+
+**Solution:**
+```bash
+# Lock file wasn't committed
+git add uv.lock
+git commit -m "chore: add uv.lock"
+git push
+```
+
+## Security Features
+
+### Automated Security Scanning
+
+- **pip-audit**: Scans Python dependencies for known vulnerabilities
+- **bandit**: Static analysis for security issues in code
+- **Trivy**: Container and filesystem vulnerability scanning
+- **Gitleaks**: Prevents committing secrets
+
+### Dependency Review
+
+Pull requests automatically check for:
+- Vulnerable dependencies (moderate+ severity blocked)
+- License compliance (GPL-3.0, AGPL-3.0 denied)
+- Supply chain security issues
+
+### SBOM Generation
+
+Every build generates a Software Bill of Materials (SBOM) in CycloneDX format:
+- Enables vulnerability tracking
+- Required for compliance (NIST, CISA)
+- Available as build artifact
 
 ## Automated Dependency Updates
 
 ### Dependabot Configuration
 
-- **Location**: `.github/dependabot.yml`
-- **Schedule**: Weekly (Mondays 3 AM)
-- **Ecosystems**:
-  - Python dependencies (pip)
-  - GitHub Actions versions
+Dependabot automatically creates PRs for dependency updates:
 
-#### Dependency Groups
-
-- **jax-ecosystem**: JAX, JAXlib, NumPyro, Optax
-- **testing**: pytest, hypothesis
-- **docs**: Sphinx, numpydoc
-- **dev-tools**: Ruff, mypy, pre-commit
+- **Schedule**: Weekly on Mondays at 3:00 AM
+- **Python Dependencies**: Grouped by production/development/major
+- **GitHub Actions**: All actions grouped together
+- **Labels**: Auto-tagged with `dependencies`, `python`, or `github-actions`
 
 ### Reviewing Dependabot PRs
 
-1. **Automated Checks**: All CI must pass
-2. **Review Changes**: Check CHANGELOG in PR description
-3. **Breaking Changes**: Review carefully, may require code updates
-4. **Security Updates**: Merge quickly after validation
+1. **Check CI Status**: All checks must pass
+2. **Review Changes**: Check CHANGELOG/release notes
+3. **Test Locally** (for major updates):
+   ```bash
+   gh pr checkout <PR-number>
+   uv sync --frozen
+   uv run pytest
+   ```
+4. **Merge**: Use "Squash and merge" for clean history
 
-## Performance Optimization
+## GPU Testing
 
-### Caching Strategy
+### Current Setup (CPU Fallback)
 
-The pipeline uses aggressive caching:
+GPU tests run in CPU fallback mode in CI because GitHub-hosted runners don't have GPUs.
 
-```yaml
-# uv cache (dependencies)
-- uses: astral-sh/setup-uv@v4
-  with:
-    enable-cache: true
+### Future: Self-Hosted GPU Runner
 
-# Based on lock file hash
-key: ${{ runner.os }}-uv-${{ hashFiles('**/uv.lock') }}
-```
+To enable real GPU testing:
 
-### Parallel Execution
+1. **Setup Self-Hosted Runner** with CUDA 12+
+   ```bash
+   # On GPU machine (Linux only)
+   nvidia-smi  # Verify CUDA 12+ is installed
 
-Jobs run in parallel where possible:
+   # Register runner with GitHub
+   # Settings → Actions → Runners → New self-hosted runner
+   ```
 
-```
-validate-dependencies (30s)
-├── lint (1m) ────────────┐
-├── type-check (1.5m) ────┤
-├── test (3m) ────────────┼─→ build (1m) ─→ ci-status
-├── docs (2m) ────────────┤
-└── security (2m) ────────┘
-```
+2. **Update Workflow**
+   ```yaml
+   test-gpu:
+     runs-on: [self-hosted, linux, gpu, cuda12]
+   ```
 
-Total time: ~5-7 minutes (vs. 10+ sequential)
+3. **Add GPU Tests**
+   ```python
+   @pytest.mark.gpu
+   def test_gpu_acceleration():
+       assert jax.default_backend() == "gpu"
+   ```
 
-## Troubleshooting
+## Caching Strategy
 
-### Common Issues
+The pipeline uses aggressive caching to speed up builds:
 
-#### 1. Lock File Out of Sync
+- **uv cache**: Keyed on `uv.lock` hash
+- **Shared across jobs**: All jobs use same cache
+- **Auto-invalidation**: Cache updates when lock file changes
 
-**Error:**
-```
-❌ ERROR: uv.lock is out of sync with pyproject.toml!
-```
+**Expected Speedup:**
+- First run: ~2-3 minutes (no cache)
+- Subsequent runs: ~30-60 seconds (cached)
 
-**Solution:**
-```bash
-uv lock
-git add uv.lock
-git commit -m "chore: sync lock file"
-```
+## Branch Protection Rules
 
-#### 2. Pre-commit Hook Fails
+Recommended settings for `main` branch:
 
-**Error:**
-```
-Verify uv.lock is up to date...Failed
-```
+- ✅ Require pull request reviews (1 approval)
+- ✅ Require status checks to pass:
+  - `validate-dependencies`
+  - `lint`
+  - `test`
+  - `security`
+  - `build`
+- ✅ Require branches to be up to date
+- ✅ Require conversation resolution
+- ✅ Require signed commits (optional)
 
-**Solution:**
-```bash
-# Fix the lock file
-uv lock
+## Monitoring and Alerts
 
-# Or bypass (NOT RECOMMENDED)
-git commit --no-verify
-```
+### Failed Builds
 
-#### 3. Coverage Below Threshold
-
-**Error:**
-```
-FAILED coverage: total coverage is 94.5%, expected at least 95%
-```
-
-**Solution:**
-```bash
-# Find uncovered lines
-pytest --cov=quantiq --cov-report=term-missing
-
-# Add tests for uncovered code
-# Or adjust threshold in pyproject.toml (if justified)
-```
-
-#### 4. Mypy Type Errors
-
-**Error:**
-```
-error: Incompatible return value type
-```
-
-**Solution:**
-```bash
-# Run mypy locally
-uv run mypy quantiq/
-
-# Add type hints or use type: ignore comments
-x: int = 5  # type: ignore[assignment]
-```
-
-#### 5. Security Vulnerabilities
-
-**Error:**
-```
-pip-audit found 2 known vulnerabilities
-```
-
-**Solution:**
-```bash
-# Check vulnerabilities
-uv run pip-audit
-
-# Update vulnerable packages
-uv lock --upgrade-package vulnerable-package
-
-# Or wait for Dependabot PR
-```
-
-## Local Testing
-
-Run CI checks locally before pushing:
-
-```bash
-# Full pre-commit checks
-pre-commit run --all-files
-
-# Lock file validation
-uv lock --locked
-
-# Linting
-uv run ruff check .
-uv run ruff format --check .
-
-# Type checking
-uv run mypy quantiq/
-
-# Tests
-uv run pytest --cov=quantiq
-
-# Build
-uv build
-
-# Docs
-cd docs && uv run make html
-```
-
-## Monitoring
-
-### GitHub Actions Dashboard
-
-View workflow status:
-- Repository → Actions tab
-- Click workflow name for details
-- View logs for failed jobs
+GitHub automatically sends email notifications for failed workflows on `main`/`develop`.
 
 ### Security Alerts
 
-Review security findings:
-- Repository → Security tab
-- Code scanning alerts (CodeQL, Trivy, Semgrep)
-- Dependabot alerts
-- Secret scanning alerts
-
-### Coverage Reports
-
-- **Codecov**: Detailed coverage analytics (if configured)
-- **Artifacts**: Download HTML report from workflow run
+- **Dependabot alerts**: Navigate to Security → Dependabot alerts
+- **Code scanning**: Navigate to Security → Code scanning
+- **Secret scanning**: Navigate to Security → Secret scanning
 
 ## Best Practices
 
-### 1. Keep Lock File Updated
+1. **Always commit lock files**: `uv.lock` must be in version control
+2. **Use frozen installs in CI**: `uv sync --frozen` ensures reproducibility
+3. **Match Python versions**: Local and CI must use same Python version
+4. **Run pre-commit locally**: Catch issues before pushing
+5. **Review Dependabot PRs weekly**: Don't let security updates pile up
+6. **Test major updates locally**: Don't blindly merge major version bumps
+7. **Keep SBOM artifacts**: Required for security audits
 
-```bash
-# Regularly update dependencies
-uv lock --upgrade
+## References
 
-# Or let Dependabot handle it weekly
-```
-
-### 2. Review Security Alerts Promptly
-
-- Check Security tab weekly
-- Merge security updates quickly
-- Subscribe to notifications
-
-### 3. Maintain High Test Coverage
-
-- Target: 95%+ coverage
-- Write tests before features (TDD)
-- Cover edge cases
-
-### 4. Use Semantic Commits
-
-```bash
-git commit -m "feat: add new feature"
-git commit -m "fix: resolve bug"
-git commit -m "chore(deps): update dependencies"
-```
-
-### 5. Run Pre-commit Hooks
-
-```bash
-# Install once
-pre-commit install
-
-# Runs automatically on git commit
-# Or manually:
-pre-commit run --all-files
-```
-
-## Additional Resources
-
-- [uv documentation](https://github.com/astral-sh/uv)
+- [uv documentation](https://docs.astral.sh/uv/)
 - [GitHub Actions documentation](https://docs.github.com/actions)
-- [Dependabot documentation](https://docs.github.com/code-security/dependabot)
-- [Codecov documentation](https://docs.codecov.com)
-- [Ruff documentation](https://docs.astral.sh/ruff/)
+- [Dependabot configuration](https://docs.github.com/code-security/dependabot)
+- [Pre-commit framework](https://pre-commit.com/)
