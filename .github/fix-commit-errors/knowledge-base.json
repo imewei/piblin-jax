@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "last_updated": "2025-10-21",
+  "last_updated": "2025-10-21T13:15:00Z",
   "patterns": [
     {
       "id": "pip-audit-uv-compatibility",
@@ -28,9 +28,43 @@
         "avg_fix_time_minutes": 5
       },
       "tags": ["ci-cd", "security-scanning", "uv", "pip-audit", "pyproject.toml", "requirements.txt"],
-      "related_commits": ["e0bddec"],
+      "related_commits": ["e0bddec", "1532b3b"],
       "related_issues": [],
       "documentation": "pip-audit expects requirements.txt format. Modern Python projects using pyproject.toml need to export dependencies to requirements.txt format first."
+    },
+    {
+      "id": "uv-dependency-group-mismatch-001",
+      "category": "ci-configuration",
+      "problem": {
+        "description": "Using PEP 735 --group syntax with PEP 621 optional-dependencies structure",
+        "error_pattern": "error: Group `(\\w+)` is not defined in the project's `dependency-groups` table",
+        "affected_tools": ["uv"],
+        "context": "CI workflows using uv sync --group with [project.optional-dependencies]"
+      },
+      "solution": {
+        "description": "Replace --group with --extra in uv sync commands",
+        "code": "sed -i '' 's/--group /--extra /g' .github/workflows/ci.yml",
+        "alternative_solutions": [
+          "Convert to PEP 735 [dependency-groups] table (breaking change)",
+          "Manually update each uv sync command to use --extra"
+        ],
+        "fix_locations": [
+          ".github/workflows/ci.yml (lines with uv sync --group)"
+        ]
+      },
+      "metadata": {
+        "confidence": 0.95,
+        "occurrences": 1,
+        "first_seen": "2025-10-21",
+        "last_seen": "2025-10-21",
+        "success_rate": null,
+        "avg_fix_time_minutes": 2,
+        "auto_fixed": true
+      },
+      "tags": ["ci-cd", "uv", "dependency-management", "pep-621", "pep-735", "syntax-error"],
+      "related_commits": ["43f5e3a", "4177b5f"],
+      "related_runs": [18684820415],
+      "documentation": "uv supports two dependency group formats: PEP 735 [dependency-groups] (use --group) and PEP 621 [project.optional-dependencies] (use --extra). Match the syntax to your pyproject.toml structure."
     },
     {
       "id": "transform-make-copy-failures",
@@ -72,20 +106,46 @@
     }
   ],
   "statistics": {
-    "total_patterns": 2,
-    "auto_fixed_patterns": 1,
+    "total_patterns": 3,
+    "auto_fixed_patterns": 2,
     "deferred_patterns": 1,
-    "average_confidence": 0.625,
+    "average_confidence": 0.733,
     "patterns_by_category": {
       "dependency-scanning": 1,
+      "ci-configuration": 1,
       "test-failures": 1
-    }
+    },
+    "total_fixes_applied": 2,
+    "total_successes": 1,
+    "total_pending": 1
   },
   "learning_notes": [
     "pip-audit works best with requirements.txt format, not pyproject.toml",
     "uv package manager requires export step for compatibility with pip-based tools",
     "Test failures related to data mutation require careful investigation before auto-fixing",
     "Deleting uv.lock can expose latent bugs by changing dependency versions",
-    "Security scanning tools may have different input format requirements than modern package managers"
+    "Security scanning tools may have different input format requirements than modern package managers",
+    "uv sync --group is for PEP 735 [dependency-groups], --extra is for PEP 621 [project.optional-dependencies]",
+    "Always match CI workflow syntax to pyproject.toml structure",
+    "sed syntax differs between Linux (-i) and macOS (-i '')"
+  ],
+  "fix_history": [
+    {
+      "timestamp": "2025-10-21T05:50:00Z",
+      "run_id": "18674111446",
+      "pattern_id": "pip-audit-uv-compatibility",
+      "solution_applied": "uv pip freeze export",
+      "outcome": "success",
+      "commit_sha": "1532b3b"
+    },
+    {
+      "timestamp": "2025-10-21T13:15:00Z",
+      "run_id": "18684820415",
+      "pattern_id": "uv-dependency-group-mismatch-001",
+      "solution_applied": "replace --group with --extra",
+      "outcome": "pending",
+      "commit_sha": "4177b5f",
+      "monitoring": true
+    }
   ]
 }

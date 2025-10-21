@@ -11,7 +11,7 @@ jax.numpy or numpy depending on availability.
 
 import sys
 import warnings
-from typing import Any, Optional, Tuple, Union
+from typing import Any, Union
 
 import numpy as np
 
@@ -42,7 +42,7 @@ def _detect_platform() -> str:
         return platform
 
 
-def _get_cuda_version() -> Optional[Tuple[int, int]]:
+def _get_cuda_version() -> tuple[int, int] | None:
     """
     Get CUDA version from JAX backend.
 
@@ -57,6 +57,7 @@ def _get_cuda_version() -> Optional[Tuple[int, int]]:
         # Try newer JAX API first (v0.8.0+)
         try:
             from jax.extend import backend as jax_backend
+
             backend = jax_backend.get_backend()
         except (ImportError, AttributeError):
             # Fallback to older API for JAX < 0.8.0
@@ -76,7 +77,7 @@ def _get_cuda_version() -> Optional[Tuple[int, int]]:
         return None
 
 
-def _validate_cuda_version(cuda_version: Optional[Tuple[int, int]]) -> bool:
+def _validate_cuda_version(cuda_version: tuple[int, int] | None) -> bool:
     """
     Validate that CUDA version meets minimum requirements.
 
@@ -166,25 +167,19 @@ try:
         cuda_version = _get_cuda_version()
         if not _validate_cuda_version(cuda_version):
             warnings.warn(
-                "GPU support is only available on Linux with CUDA 12+. "
-                "Falling back to CPU backend.",
+                "GPU acceleration requires CUDA 12+. Using JAX in CPU mode.",
                 UserWarning,
                 stacklevel=2,
             )
-            _JAX_AVAILABLE = False
-            BACKEND = "numpy"
-            jnp = np
+            # Keep JAX available in CPU mode - don't disable it
     else:
-        # Non-Linux platforms: fall back to CPU
+        # Non-Linux platforms: JAX runs in CPU mode (GPU unavailable)
         warnings.warn(
-            "GPU support is only available on Linux with CUDA 12+. "
-            "Falling back to CPU backend.",
+            "GPU acceleration is only available on Linux with CUDA 12+. Using JAX in CPU mode.",
             UserWarning,
             stacklevel=2,
         )
-        _JAX_AVAILABLE = False
-        BACKEND = "numpy"
-        jnp = np
+        # Keep JAX available in CPU mode - don't disable it
 
 except ImportError:
     warnings.warn(

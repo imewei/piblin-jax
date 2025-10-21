@@ -17,8 +17,8 @@ class TestBackendDetection:
     """Test backend detection and initialization."""
 
     def test_backend_detection_with_jax(self):
-        """Test that backend is 'jax' when JAX is available on Linux with CUDA 12+."""
-        # This test now accounts for platform validation
+        """Test that backend is 'jax' when JAX is available (GPU only on Linux with CUDA 12+)."""
+        # JAX should be used on all platforms (GPU support is platform-dependent)
         try:
             import jax
 
@@ -27,13 +27,9 @@ class TestBackendDetection:
                 del sys.modules["quantiq.backend"]
             from quantiq.backend import BACKEND, get_backend
 
-            # Backend depends on platform: 'jax' on Linux with CUDA 12+, 'numpy' otherwise
-            if sys.platform.startswith("linux"):
-                # On Linux, backend depends on CUDA version (might be 'jax' or 'numpy')
-                assert BACKEND in ["jax", "numpy"], f"Expected BACKEND in ['jax', 'numpy'], got '{BACKEND}'"
-            else:
-                # On non-Linux platforms, should fall back to NumPy
-                assert BACKEND == "numpy", f"Expected BACKEND='numpy' on non-Linux platforms, got '{BACKEND}'"
+            # JAX should be available on all platforms (CPU mode minimum)
+            # GPU support depends on platform: only Linux with CUDA 12+
+            assert BACKEND == "jax", f"Expected BACKEND='jax' on all platforms, got '{BACKEND}'"
             assert get_backend() == BACKEND, "get_backend() should match BACKEND"
         except ImportError:
             pytest.skip("JAX not available, skipping JAX backend test")
@@ -67,18 +63,13 @@ class TestBackendDetection:
         result = is_jax_available()
         assert isinstance(result, bool), "is_jax_available() should return bool"
 
-        # The result depends on both JAX being importable AND platform validation
+        # The result depends on JAX being importable
+        # JAX is available on all platforms (CPU mode minimum, GPU only on Linux with CUDA 12+)
         try:
             import jax
 
-            # On Linux with CUDA 12+, JAX should be available
-            # On other platforms, JAX is available but GPU support is disabled
-            if sys.platform.startswith("linux"):
-                # Result depends on CUDA version
-                assert isinstance(result, bool), "is_jax_available() should return bool on Linux"
-            else:
-                # On non-Linux platforms, should return False due to platform restriction
-                assert result is False, "is_jax_available() should return False on non-Linux platforms"
+            # JAX should be available on all platforms when installed
+            assert result is True, "is_jax_available() should return True when JAX is installed"
         except ImportError:
             assert result is False, "is_jax_available() should return False when JAX not installed"
 
@@ -211,41 +202,52 @@ class TestPlatformValidationIntegration:
         # Mock JAX submodules that numpyro might import
         mock_jax_scipy = MagicMock()
         mock_jax.scipy = mock_jax_scipy
+        mock_jax.typing = MagicMock()  # Required by numpyro
 
         # Remove cached module
         if "quantiq.backend" in sys.modules:
             del sys.modules["quantiq.backend"]
 
-        with patch("sys.platform", "linux"):
-            with patch.dict("sys.modules", {
-                "jax": mock_jax,
-                "jax.numpy": mock_jax_numpy,
-                "jax.scipy": mock_jax_scipy,
-                "jax.scipy.special": MagicMock()
-            }):
-                with warnings.catch_warnings(record=True) as w:
-                    warnings.simplefilter("always")
-                    import importlib
-                    import quantiq.backend
-                    importlib.reload(quantiq.backend)
+        with (
+            patch("sys.platform", "linux"),
+            patch.dict(
+                "sys.modules",
+                {
+                    "jax": mock_jax,
+                    "jax.numpy": mock_jax_numpy,
+                    "jax.scipy": mock_jax_scipy,
+                    "jax.scipy.special": MagicMock(),
+                    "jax.typing": mock_jax.typing,
+                },
+            ),
+            warnings.catch_warnings(record=True) as w,
+        ):
+            warnings.simplefilter("always")
+            import importlib
 
-                    from quantiq.backend import BACKEND, get_device_info
+            import quantiq.backend
 
-                    # On Linux with CUDA 12+, should use JAX backend
-                    assert BACKEND == "jax", "Should use JAX backend on Linux with CUDA 12+"
+            importlib.reload(quantiq.backend)
 
-                    # Should not issue platform warning
-                    platform_warnings = [w_msg for w_msg in w if "GPU support is only available" in str(w_msg.message)]
-                    assert len(platform_warnings) == 0, "Should not warn on Linux with CUDA 12+"
+            from quantiq.backend import BACKEND, get_device_info
 
-                    # Device info should reflect GPU support
-                    info = get_device_info()
-                    assert info["os_platform"] == "linux"
-                    assert info["gpu_supported"] is True
-                    assert info["cuda_version"] == (12, 3)
+            # On Linux with CUDA 12+, should use JAX backend
+            assert BACKEND == "jax", "Should use JAX backend on Linux with CUDA 12+"
+
+            # Should not issue platform warning
+            platform_warnings = [
+                w_msg for w_msg in w if "GPU support is only available" in str(w_msg.message)
+            ]
+            assert len(platform_warnings) == 0, "Should not warn on Linux with CUDA 12+"
+
+            # Device info should reflect GPU support
+            info = get_device_info()
+            assert info["os_platform"] == "linux"
+            assert info["gpu_supported"] is True
+            assert info["cuda_version"] == (12, 3)
 
     def test_linux_cuda11_fallback_integration(self):
-        """Test Linux with CUDA 11.x falls back to CPU with version warning."""
+        """Test Linux with CUDA 11.x uses JAX CPU mode (GPU requires CUDA 12+)."""
         mock_jax = MagicMock()
         mock_jax_numpy = MagicMock()
         mock_backend = MagicMock()
@@ -265,102 +267,133 @@ class TestPlatformValidationIntegration:
         # Mock JAX submodules that numpyro might import
         mock_jax_scipy = MagicMock()
         mock_jax.scipy = mock_jax_scipy
+        mock_jax.typing = MagicMock()  # Required by numpyro
 
         # Remove cached module
         if "quantiq.backend" in sys.modules:
             del sys.modules["quantiq.backend"]
 
-        with patch("sys.platform", "linux"):
-            with patch.dict("sys.modules", {
-                "jax": mock_jax,
-                "jax.numpy": mock_jax_numpy,
-                "jax.scipy": mock_jax_scipy,
-                "jax.scipy.special": MagicMock()
-            }):
-                with warnings.catch_warnings(record=True) as w:
-                    warnings.simplefilter("always")
-                    import importlib
-                    import quantiq.backend
-                    importlib.reload(quantiq.backend)
+        with (
+            patch("sys.platform", "linux"),
+            patch.dict(
+                "sys.modules",
+                {
+                    "jax": mock_jax,
+                    "jax.numpy": mock_jax_numpy,
+                    "jax.scipy": mock_jax_scipy,
+                    "jax.scipy.special": MagicMock(),
+                    "jax.typing": mock_jax.typing,
+                },
+            ),
+            warnings.catch_warnings(record=True) as w,
+        ):
+            warnings.simplefilter("always")
+            import importlib
 
-                    from quantiq.backend import BACKEND, get_device_info
+            import quantiq.backend
 
-                    # Should fall back to NumPy
-                    assert BACKEND == "numpy", "Should fall back to NumPy with CUDA 11.x"
+            importlib.reload(quantiq.backend)
 
-                    # Should issue warning about CUDA version
-                    platform_warnings = [w_msg for w_msg in w if "GPU support is only available" in str(w_msg.message)]
-                    assert len(platform_warnings) >= 1, "Should warn about CUDA version requirement"
+            from quantiq.backend import BACKEND, get_device_info
 
-                    # Device info should reflect no GPU support
-                    info = get_device_info()
-                    assert info["os_platform"] == "linux"
-                    assert info["gpu_supported"] is False
-                    assert info["cuda_version"] == (11, 8)
+            # Should use JAX in CPU mode
+            assert BACKEND == "jax", "Should use JAX CPU mode with CUDA 11.x"
+
+            # Should issue warning about CUDA version requirement
+            platform_warnings = [
+                w_msg for w_msg in w if "GPU acceleration requires CUDA 12+" in str(w_msg.message)
+            ]
+            assert len(platform_warnings) >= 1, "Should warn about CUDA 12+ requirement"
+
+            # Device info should reflect no GPU support
+            info = get_device_info()
+            assert info["os_platform"] == "linux"
+            assert info["gpu_supported"] is False
+            assert info["cuda_version"] == (11, 8)
 
     def test_macos_gpu_fallback_integration(self):
-        """Test macOS platform falls back to CPU with platform warning."""
+        """Test macOS platform uses JAX CPU mode (GPU unavailable)."""
         mock_jax = MagicMock()
         mock_jax_numpy = MagicMock()
+        mock_jax.typing = MagicMock()  # Required by numpyro
 
         # Remove cached module
         if "quantiq.backend" in sys.modules:
             del sys.modules["quantiq.backend"]
 
-        with patch("sys.platform", "darwin"):
-            with patch.dict("sys.modules", {"jax": mock_jax, "jax.numpy": mock_jax_numpy}):
-                with warnings.catch_warnings(record=True) as w:
-                    warnings.simplefilter("always")
-                    import importlib
-                    import quantiq.backend
-                    importlib.reload(quantiq.backend)
+        with (
+            patch("sys.platform", "darwin"),
+            patch.dict(
+                "sys.modules",
+                {"jax": mock_jax, "jax.numpy": mock_jax_numpy, "jax.typing": mock_jax.typing},
+            ),
+            warnings.catch_warnings(record=True) as w,
+        ):
+            warnings.simplefilter("always")
+            import importlib
 
-                    from quantiq.backend import BACKEND, get_device_info
+            import quantiq.backend
 
-                    # Should fall back to NumPy
-                    assert BACKEND == "numpy", "Should fall back to NumPy on macOS"
+            importlib.reload(quantiq.backend)
 
-                    # Should issue platform warning
-                    platform_warnings = [w_msg for w_msg in w if "GPU support is only available" in str(w_msg.message)]
-                    assert len(platform_warnings) >= 1, "Should warn about platform restriction"
+            from quantiq.backend import BACKEND, get_device_info
 
-                    # Device info should reflect macOS and no GPU support
-                    info = get_device_info()
-                    assert info["os_platform"] == "macos"
-                    assert info["gpu_supported"] is False
-                    assert info["cuda_version"] is None
+            # Should use JAX in CPU mode
+            assert BACKEND == "jax", "Should use JAX CPU mode on macOS"
+
+            # Should issue platform warning about GPU unavailability
+            platform_warnings = [
+                w_msg for w_msg in w if "GPU acceleration is only available" in str(w_msg.message)
+            ]
+            assert len(platform_warnings) >= 1, "Should warn about GPU unavailability"
+
+            # Device info should reflect macOS and no GPU support
+            info = get_device_info()
+            assert info["os_platform"] == "macos"
+            assert info["gpu_supported"] is False
+            assert info["cuda_version"] is None
 
     def test_windows_gpu_fallback_integration(self):
-        """Test Windows platform falls back to CPU with platform warning."""
+        """Test Windows platform uses JAX CPU mode (GPU unavailable)."""
         mock_jax = MagicMock()
         mock_jax_numpy = MagicMock()
+        mock_jax.typing = MagicMock()  # Required by numpyro
 
         # Remove cached module
         if "quantiq.backend" in sys.modules:
             del sys.modules["quantiq.backend"]
 
-        with patch("sys.platform", "win32"):
-            with patch.dict("sys.modules", {"jax": mock_jax, "jax.numpy": mock_jax_numpy}):
-                with warnings.catch_warnings(record=True) as w:
-                    warnings.simplefilter("always")
-                    import importlib
-                    import quantiq.backend
-                    importlib.reload(quantiq.backend)
+        with (
+            patch("sys.platform", "win32"),
+            patch.dict(
+                "sys.modules",
+                {"jax": mock_jax, "jax.numpy": mock_jax_numpy, "jax.typing": mock_jax.typing},
+            ),
+            warnings.catch_warnings(record=True) as w,
+        ):
+            warnings.simplefilter("always")
+            import importlib
 
-                    from quantiq.backend import BACKEND, get_device_info
+            import quantiq.backend
 
-                    # Should fall back to NumPy
-                    assert BACKEND == "numpy", "Should fall back to NumPy on Windows"
+            importlib.reload(quantiq.backend)
 
-                    # Should issue platform warning
-                    platform_warnings = [w_msg for w_msg in w if "GPU support is only available" in str(w_msg.message)]
-                    assert len(platform_warnings) >= 1, "Should warn about platform restriction"
+            from quantiq.backend import BACKEND, get_device_info
 
-                    # Device info should reflect Windows and no GPU support
-                    info = get_device_info()
-                    assert info["os_platform"] == "windows"
-                    assert info["gpu_supported"] is False
-                    assert info["cuda_version"] is None
+            # Should use JAX in CPU mode
+            assert BACKEND == "jax", "Should use JAX CPU mode on Windows"
+
+            # Should issue platform warning about GPU unavailability
+            platform_warnings = [
+                w_msg for w_msg in w if "GPU acceleration is only available" in str(w_msg.message)
+            ]
+            assert len(platform_warnings) >= 1, "Should warn about GPU unavailability"
+
+            # Device info should reflect Windows and no GPU support
+            info = get_device_info()
+            assert info["os_platform"] == "windows"
+            assert info["gpu_supported"] is False
+            assert info["cuda_version"] is None
 
     def test_backward_compatibility_cpu_workflow(self):
         """Test that CPU-only workflows remain unchanged."""
@@ -382,6 +415,7 @@ class TestPlatformValidationIntegration:
 
             # Device info should work
             from quantiq.backend import get_device_info
+
             info = get_device_info()
             assert info["backend"] == "numpy"
             assert "os_platform" in info
@@ -403,7 +437,9 @@ class TestPlatformValidationIntegration:
                 with warnings.catch_warnings(record=True) as w:
                     warnings.simplefilter("always")
                     import importlib
+
                     import quantiq.backend
+
                     importlib.reload(quantiq.backend)
 
                     from quantiq.backend import BACKEND, get_device_info
@@ -431,7 +467,9 @@ class TestPlatformValidationIntegration:
         # Verify backward compatibility fields
         legacy_fields = ["backend", "devices", "default_device"]
         for field in legacy_fields:
-            assert field in info, f"Device info should maintain '{field}' for backward compatibility"
+            assert field in info, (
+                f"Device info should maintain '{field}' for backward compatibility"
+            )
 
         # Verify field types
         assert isinstance(info["os_platform"], str)
@@ -456,7 +494,9 @@ class TestPlatformValidationIntegration:
                 with warnings.catch_warnings(record=True) as w:
                     warnings.simplefilter("always")
                     import importlib
+
                     import quantiq.backend
+
                     importlib.reload(quantiq.backend)
 
                     from quantiq.backend import BACKEND, get_device_info
@@ -485,11 +525,17 @@ class TestPlatformValidationIntegration:
                 with warnings.catch_warnings(record=True) as w:
                     warnings.simplefilter("always")
                     import importlib
+
                     import quantiq.backend
+
                     importlib.reload(quantiq.backend)
 
                     # Warning should mention Linux and CUDA 12+
-                    platform_warnings = [w_msg for w_msg in w if "GPU support is only available" in str(w_msg.message)]
+                    platform_warnings = [
+                        w_msg
+                        for w_msg in w
+                        if "GPU support is only available" in str(w_msg.message)
+                    ]
                     assert len(platform_warnings) >= 1, "Should issue warning"
 
                     warning_text = str(platform_warnings[0].message).lower()
