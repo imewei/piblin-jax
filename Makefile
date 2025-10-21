@@ -19,7 +19,7 @@
 
 # Configuration
 PYTHON := python3
-VENV := venv
+VENV := .venv
 VENV_BIN := $(VENV)/bin
 PIP := $(VENV_BIN)/pip
 PYTEST := $(VENV_BIN)/pytest
@@ -110,11 +110,9 @@ help:
 ## init: Create virtual environment and install all dev dependencies
 init:
 	@echo "$(BOLD)$(BLUE)Creating virtual environment...$(RESET)"
-	$(PYTHON) -m venv $(VENV)
-	@echo "$(BOLD)$(BLUE)Upgrading pip...$(RESET)"
-	$(PIP) install --upgrade pip setuptools wheel
+	uv venv $(VENV)
 	@echo "$(BOLD)$(BLUE)Installing package with dev dependencies...$(RESET)"
-	$(PIP) install -e ".[dev,test,docs]"
+	uv sync --extra dev --extra test --extra docs
 	@echo "$(BOLD)$(GREEN)✓ Development environment ready!$(RESET)"
 	@echo ""
 	@echo "$(BOLD)Activate with:$(RESET) source $(VENV)/bin/activate"
@@ -126,7 +124,7 @@ install:
 		exit 1; \
 	fi
 	@echo "$(BOLD)$(BLUE)Installing $(PROJECT) in editable mode...$(RESET)"
-	$(PIP) install -e .
+	uv sync
 	@echo "$(BOLD)$(GREEN)✓ Package installed!$(RESET)"
 
 ## install-dev: Install with dev extras
@@ -136,7 +134,7 @@ install-dev:
 		exit 1; \
 	fi
 	@echo "$(BOLD)$(BLUE)Installing dev dependencies...$(RESET)"
-	$(PIP) install -e ".[dev]"
+	uv sync --extra dev
 	@echo "$(BOLD)$(GREEN)✓ Dev dependencies installed!$(RESET)"
 
 ## install-test: Install with test extras
@@ -146,7 +144,7 @@ install-test:
 		exit 1; \
 	fi
 	@echo "$(BOLD)$(BLUE)Installing test dependencies...$(RESET)"
-	$(PIP) install -e ".[test]"
+	uv sync --extra test
 	@echo "$(BOLD)$(GREEN)✓ Test dependencies installed!$(RESET)"
 
 ## install-docs: Install with docs extras
@@ -156,7 +154,7 @@ install-docs:
 		exit 1; \
 	fi
 	@echo "$(BOLD)$(BLUE)Installing docs dependencies...$(RESET)"
-	$(PIP) install -e ".[docs]"
+	uv sync --extra docs
 	@echo "$(BOLD)$(GREEN)✓ Docs dependencies installed!$(RESET)"
 
 ## install-gpu-cuda: Install with CUDA GPU support
@@ -166,7 +164,7 @@ install-gpu-cuda:
 		exit 1; \
 	fi
 	@echo "$(BOLD)$(BLUE)Installing CUDA GPU support...$(RESET)"
-	$(PIP) install -e ".[gpu-cuda]"
+	uv sync --extra gpu-cuda
 	@echo "$(BOLD)$(GREEN)✓ CUDA GPU support installed!$(RESET)"
 
 ## install-gpu-metal: Install with Metal GPU support (macOS)
@@ -176,7 +174,7 @@ install-gpu-metal:
 		exit 1; \
 	fi
 	@echo "$(BOLD)$(BLUE)Installing Metal GPU support...$(RESET)"
-	$(PIP) install -e ".[gpu-metal]"
+	uv sync --extra gpu-metal
 	@echo "$(BOLD)$(GREEN)✓ Metal GPU support installed!$(RESET)"
 
 ## install-gpu-rocm: Install with ROCm GPU support (AMD)
@@ -186,7 +184,7 @@ install-gpu-rocm:
 		exit 1; \
 	fi
 	@echo "$(BOLD)$(BLUE)Installing ROCm GPU support...$(RESET)"
-	$(PIP) install -e ".[gpu-rocm]"
+	uv sync --extra gpu-rocm
 	@echo "$(BOLD)$(GREEN)✓ ROCm GPU support installed!$(RESET)"
 
 # ============================================================================
@@ -196,27 +194,27 @@ install-gpu-rocm:
 ## format: Auto-format code with ruff
 format:
 	@echo "$(BOLD)$(BLUE)Formatting code with ruff...$(RESET)"
-	$(VENV_BIN)/ruff check --fix $(SRC_DIR) $(TEST_DIR) examples/
-	$(VENV_BIN)/ruff format $(SRC_DIR) $(TEST_DIR) examples/
+	uv run ruff check --fix $(SRC_DIR) $(TEST_DIR) examples/
+	uv run ruff format $(SRC_DIR) $(TEST_DIR) examples/
 	@echo "$(BOLD)$(GREEN)✓ Code formatted!$(RESET)"
 
 ## format-check: Check code formatting without changes
 format-check:
 	@echo "$(BOLD)$(BLUE)Checking code formatting...$(RESET)"
-	$(VENV_BIN)/ruff check $(SRC_DIR) $(TEST_DIR) examples/
-	$(VENV_BIN)/ruff format --check $(SRC_DIR) $(TEST_DIR) examples/
+	uv run ruff check $(SRC_DIR) $(TEST_DIR) examples/
+	uv run ruff format --check $(SRC_DIR) $(TEST_DIR) examples/
 	@echo "$(BOLD)$(GREEN)✓ Code formatting is correct!$(RESET)"
 
 ## lint: Run ruff linter
 lint:
 	@echo "$(BOLD)$(BLUE)Running ruff linter...$(RESET)"
-	$(VENV_BIN)/ruff check $(SRC_DIR) $(TEST_DIR) examples/
+	uv run ruff check $(SRC_DIR) $(TEST_DIR) examples/
 	@echo "$(BOLD)$(GREEN)✓ No linting errors!$(RESET)"
 
 ## type-check: Run mypy type checker
 type-check:
 	@echo "$(BOLD)$(BLUE)Running mypy type checker...$(RESET)"
-	$(VENV_BIN)/mypy $(SRC_DIR)
+	uv run mypy $(SRC_DIR)
 	@echo "$(BOLD)$(GREEN)✓ Type checking passed!$(RESET)"
 
 ## check: Run all checks (format + lint + type)
@@ -234,44 +232,44 @@ quick: format test-fast
 ## test: Run basic tests (fast, no GPU)
 test:
 	@echo "$(BOLD)$(BLUE)Running tests...$(RESET)"
-	$(PYTEST) -m "not slow and not gpu" --tb=short
+	uv run pytest -m "not slow and not gpu" --tb=short
 
 ## test-fast: Run only fast tests
 test-fast:
 	@echo "$(BOLD)$(BLUE)Running fast tests...$(RESET)"
-	$(PYTEST) -m "not slow and not gpu and not benchmark" --tb=short -q
+	uv run pytest -m "not slow and not gpu and not benchmark" --tb=short -q
 
 ## test-cov: Run tests with coverage report
 test-cov:
 	@echo "$(BOLD)$(BLUE)Running tests with coverage...$(RESET)"
-	$(PYTEST) -m "not slow and not gpu" --cov=$(SRC_DIR) --cov-report=term-missing --cov-report=html --cov-report=xml
+	uv run pytest -m "not slow and not gpu" --cov=$(SRC_DIR) --cov-report=term-missing --cov-report=html --cov-report=xml
 	@echo "$(BOLD)$(GREEN)✓ Coverage report generated!$(RESET)"
 	@echo "View HTML report: open htmlcov/index.html"
 
 ## test-slow: Include slow tests
 test-slow:
 	@echo "$(BOLD)$(BLUE)Running all tests (including slow)...$(RESET)"
-	$(PYTEST) -m "not gpu" --tb=short
+	uv run pytest -m "not gpu" --tb=short
 
 ## test-gpu: Run GPU tests only
 test-gpu:
 	@echo "$(BOLD)$(BLUE)Running GPU tests...$(RESET)"
-	$(PYTEST) -m "gpu" --tb=short
+	uv run pytest -m "gpu" --tb=short
 
 ## test-visual: Run visual regression tests
 test-visual:
 	@echo "$(BOLD)$(BLUE)Running visual regression tests...$(RESET)"
-	$(PYTEST) -m "visual" --tb=short
+	uv run pytest -m "visual" --tb=short
 
 ## test-bench: Run performance benchmarks
 test-bench:
 	@echo "$(BOLD)$(BLUE)Running benchmarks...$(RESET)"
-	$(PYTEST) -m "benchmark" --benchmark-only
+	uv run pytest -m "benchmark" --benchmark-only
 
 ## test-all: Run all tests (including slow, GPU, visual)
 test-all:
 	@echo "$(BOLD)$(BLUE)Running ALL tests...$(RESET)"
-	$(PYTEST) --tb=short
+	uv run pytest --tb=short
 
 ## coverage-html: Open HTML coverage report in browser
 coverage-html:
@@ -294,23 +292,20 @@ qa: check test-cov
 ## pre-commit-install: Install pre-commit hooks
 pre-commit-install:
 	@echo "$(BOLD)$(BLUE)Installing pre-commit hooks...$(RESET)"
-	$(VENV_BIN)/pre-commit install
+	uv run pre-commit install
 	@echo "$(BOLD)$(GREEN)✓ Pre-commit hooks installed!$(RESET)"
 
 ## pre-commit-run: Run pre-commit on all files
 pre-commit-run:
 	@echo "$(BOLD)$(BLUE)Running pre-commit on all files...$(RESET)"
-	$(VENV_BIN)/pre-commit run --all-files
+	uv run pre-commit run --all-files
 
 ## security: Run security audit (requires pip-audit)
 security:
 	@echo "$(BOLD)$(BLUE)Running security audit...$(RESET)"
-	@if $(VENV_BIN)/pip show pip-audit > /dev/null 2>&1; then \
-		$(VENV_BIN)/pip-audit; \
-	else \
-		echo "$(BOLD)$(YELLOW)Warning: pip-audit not installed. Install with: pip install pip-audit$(RESET)"; \
-		echo "Skipping security audit..."; \
-	fi
+	uv pip freeze > requirements-audit.txt
+	uv run pip-audit -r requirements-audit.txt --desc || echo "$(BOLD)$(YELLOW)Security audit completed with findings$(RESET)"
+	rm -f requirements-audit.txt
 
 # ============================================================================
 # BUILD & DISTRIBUTION
@@ -319,7 +314,7 @@ security:
 ## build: Build wheel and source distribution
 build: clean
 	@echo "$(BOLD)$(BLUE)Building distributions...$(RESET)"
-	$(PYTHON_VENV) -m build
+	uv build
 	@echo "$(BOLD)$(GREEN)✓ Build complete!$(RESET)"
 	@echo "Distributions in dist/"
 
@@ -345,21 +340,21 @@ clean:
 	rm -f test_results.log
 	@echo "$(BOLD)$(BLUE)Removing __pycache__ directories and .pyc files...$(RESET)"
 	find . -type d -name __pycache__ \
-		-not -path "./venv/*" \
+		-not -path "./.venv/*" \
 		-not -path "./.claude/*" \
 		-not -path "./.specify/*" \
 		-not -path "./agent-os/*" \
 		-exec rm -rf {} + 2>/dev/null || true
 	find . -type f \( -name "*.pyc" -o -name "*.pyo" \) \
-		-not -path "./venv/*" \
+		-not -path "./.venv/*" \
 		-not -path "./.claude/*" \
 		-not -path "./.specify/*" \
 		-not -path "./agent-os/*" \
 		-delete 2>/dev/null || true
 	@echo "$(BOLD)$(GREEN)✓ Cleaned!$(RESET)"
-	@echo "$(BOLD)Protected directories preserved:$(RESET) venv/, .claude/, .specify/, agent-os/"
+	@echo "$(BOLD)Protected directories preserved:$(RESET) .venv/, .claude/, .specify/, agent-os/"
 
-## clean-all: Deep clean of all caches (preserves venv, .claude, .specify, agent-os)
+## clean-all: Deep clean of all caches (preserves .venv, .claude, .specify, agent-os)
 clean-all: clean
 	@echo "$(BOLD)$(BLUE)Performing deep clean of additional caches...$(RESET)"
 	rm -rf .tox/ 2>/dev/null || true
@@ -372,13 +367,13 @@ clean-all: clean
 	rm -rf .benchmarks/ 2>/dev/null || true
 	rm -rf .nlsq_cache/ 2>/dev/null || true
 	find . -type d -name "*.egg-info" \
-		-not -path "./venv/*" \
+		-not -path "./.venv/*" \
 		-not -path "./.claude/*" \
 		-not -path "./.specify/*" \
 		-not -path "./agent-os/*" \
 		-exec rm -rf {} + 2>/dev/null || true
 	@echo "$(BOLD)$(GREEN)✓ Deep clean complete!$(RESET)"
-	@echo "$(BOLD)Protected directories preserved:$(RESET) venv/, .claude/, .specify/, agent-os/"
+	@echo "$(BOLD)Protected directories preserved:$(RESET) .venv/, .claude/, .specify/, agent-os/"
 
 ## clean-venv: Remove virtual environment (use with caution)
 clean-venv:
@@ -425,7 +420,7 @@ docs-clean:
 ## publish-test: Publish to TestPyPI
 publish-test: build
 	@echo "$(BOLD)$(BLUE)Publishing to TestPyPI...$(RESET)"
-	$(PYTHON_VENV) -m twine upload --repository testpypi dist/*
+	uv run twine upload --repository testpypi dist/*
 	@echo "$(BOLD)$(GREEN)✓ Published to TestPyPI!$(RESET)"
 
 ## publish: Publish to PyPI (requires confirmation)
@@ -435,7 +430,7 @@ publish: build
 	echo; \
 	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
 		echo "$(BOLD)$(BLUE)Publishing to PyPI...$(RESET)"; \
-		$(PYTHON_VENV) -m twine upload dist/*; \
+		uv run twine upload dist/*; \
 		echo "$(BOLD)$(GREEN)✓ Published to PyPI!$(RESET)"; \
 	else \
 		echo "Cancelled."; \
