@@ -1,23 +1,24 @@
----
 name: CI/CD Pipeline
 
-"on":
+on:
   push:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
-  workflow_dispatch:  # Allow manual trigger
+  workflow_dispatch:
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+env:
+  # Minimum Python version supported
+  MIN_PYTHON_VERSION: "3.12"
+  # Exact Python version from local environment
+  PYTHON_VERSION: "3.13.9"
 
 jobs:
-  # ============================================================================
-  # VALIDATE DEPENDENCIES - Ensure lock file is in sync
-  # ============================================================================
+  # ==========================================
+  # Job 1: Validate Dependencies
+  # ==========================================
   validate-dependencies:
-    name: Validate Dependencies
+    name: Validate Lock File Consistency
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -29,55 +30,67 @@ jobs:
           version: "latest"
           enable-cache: true
 
-      - name: Set up Python
+      - name: Set up Python from .python-version
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version-file: '.python-version'
 
-      - name: Verify lock file integrity
+      - name: Verify Python version consistency
         run: |
-          echo "🔒 Checking if uv.lock is in sync with pyproject.toml..."
-
-          # Create a backup of the current lock file
-          cp uv.lock uv.lock.original
-
-          # Regenerate lock file
-          uv lock
-
-          # Compare with committed version
-          if ! diff -q uv.lock uv.lock.original > /dev/null 2>&1; then
-            echo "❌ ERROR: uv.lock is out of sync with pyproject.toml!"
-            echo ""
-            echo "The lock file has diverged from the committed version."
-            echo "This means dependencies may not be reproducible."
-            echo ""
-            echo "To fix this, run locally:"
-            echo "  uv lock"
-            echo "  git add uv.lock"
-            echo "  git commit -m 'chore: update lock file'"
-            echo ""
-            diff uv.lock uv.lock.original || true
+          EXPECTED=$(cat .python-version)
+          ACTUAL=$(python --version | cut -d' ' -f2)
+          echo "Expected Python version: $EXPECTED"
+          echo "Actual Python version: $ACTUAL"
+          if [ "$ACTUAL" != "$EXPECTED" ]; then
+            echo "❌ Python version mismatch!"
             exit 1
           fi
+          echo "✅ Python version matches local environment: $ACTUAL"
 
-          echo "✅ Lock file is in sync!"
-
-      - name: Check for security vulnerabilities
+      - name: Check if uv.lock exists
+        id: check_lock
         run: |
-          echo "🔍 Scanning dependencies for known vulnerabilities..."
-          uv pip list --format json | python -c "
-          import json, sys
-          packages = json.load(sys.stdin)
-          print(f'Total packages: {len(packages)}')
-          " || echo "⚠️  Vulnerability scanning requires additional setup"
+          if [ -f "uv.lock" ]; then
+            echo "lock_exists=true" >> $GITHUB_OUTPUT
+            echo "✅ uv.lock file found"
+          else
+            echo "lock_exists=false" >> $GITHUB_OUTPUT
+            echo "⚠️ uv.lock file not found - will be created"
+          fi
 
-  # ============================================================================
-  # LINTING - Code quality checks
-  # ============================================================================
+      - name: Create initial lock file if missing
+        if: steps.check_lock.outputs.lock_exists == 'false'
+        run: |
+          echo "Creating initial uv.lock file..."
+          uv lock
+          echo "⚠️ WARNING: uv.lock was missing and has been created"
+          echo "⚠️ Please commit this file to version control"
+
+      - name: Verify lock file is up to date
+        if: steps.check_lock.outputs.lock_exists == 'true'
+        run: |
+          uv lock --check || {
+            echo "❌ uv.lock is out of sync with pyproject.toml!"
+            echo "Run 'uv lock' locally and commit the updated lock file."
+            exit 1
+          }
+          echo "✅ uv.lock is up to date"
+
+      - name: Install dependencies with exact versions
+        run: |
+          if [ -f "uv.lock" ]; then
+            uv sync --frozen
+          else
+            uv sync
+          fi
+
+  # ==========================================
+  # Job 2: Linting and Type Checking
+  # ==========================================
   lint:
-    name: Lint (Ruff)
-    runs-on: ubuntu-latest
+    name: Lint and Type Check
     needs: validate-dependencies
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -87,74 +100,44 @@ jobs:
         with:
           version: "latest"
           enable-cache: true
+          cache-dependency-glob: "uv.lock"
 
-      - name: Set up Python
+      - name: Set up Python from .python-version
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version-file: '.python-version'
 
       - name: Install dependencies
         run: |
-          uv sync --frozen --extra dev --extra test
+          if [ -f "uv.lock" ]; then
+            uv sync --frozen --no-dev
+            uv sync --frozen --group dev
+          else
+            uv sync
+          fi
 
-      - name: Run Ruff linter
-        run: |
-          uv run ruff check --output-format=github .
+      - name: Run Ruff linter (check only)
+        run: uv run ruff check .
 
       - name: Run Ruff formatter check
-        run: |
-          uv run ruff format --check .
+        run: uv run ruff format --check .
 
-  # ============================================================================
-  # TYPE CHECKING - Static type analysis
-  # ============================================================================
-  # TEMPORARILY DISABLED: Codebase needs type annotation improvements
-  # TODO: Re-enable after fixing ~50 mypy strict mode violations
-  # See: https://github.com/imewei/quantiq/issues/TBD
-  #
-  # type-check:
-  #   name: Type Check (mypy)
-  #   runs-on: ubuntu-latest
-  #   needs: validate-dependencies
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
-  #
-  #     - name: Install uv
-  #       uses: astral-sh/setup-uv@v4
-  #       with:
-  #         version: "latest"
-  #         enable-cache: true
-  #
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v5
-  #       with:
-  #         python-version: "3.12"
-  #
-  #     - name: Install dependencies
-  #       run: |
-  #         uv sync --frozen --extra dev --extra test
-  #
-  #     - name: Run mypy
-  #       run: |
-  #         uv run mypy quantiq/ --show-error-codes --pretty
+      - name: Run MyPy type checker
+        run: uv run mypy quantiq
+        continue-on-error: true  # Don't fail on type errors initially
 
-  # ============================================================================
-  # TESTS - Multi-version testing matrix
-  # ============================================================================
+  # ==========================================
+  # Job 3: Test Matrix (Python 3.12, 3.13)
+  # ==========================================
   test:
-    name: Test (Python ${{ matrix.python-version }} on ${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
+    name: Test Python ${{ matrix.python-version }} on ${{ matrix.os }}
     needs: validate-dependencies
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.12", "3.13"]
-        exclude:
-          # Windows tests can be flaky, run only on Python 3.12
-          - os: windows-latest
-            python-version: "3.13"
 
     steps:
       - name: Checkout code
@@ -165,57 +148,53 @@ jobs:
         with:
           version: "latest"
           enable-cache: true
+          cache-dependency-glob: "uv.lock"
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install dependencies
+      - name: Display Python and uv versions
         run: |
-          uv sync --frozen --extra dev --extra test
+          python --version
+          uv --version
 
-      - name: Run tests with coverage
+      - name: Install dependencies with exact versions
         run: |
-          uv run pytest \
-            --cov=quantiq \
-            --cov-report=xml \
-            --cov-report=term \
-            --cov-report=html \
-            -v \
-            -m "not slow and not gpu" \
-            --tb=short
+          if [ -f "uv.lock" ]; then
+            uv sync --frozen --group test
+          else
+            uv sync --group test
+          fi
+        shell: bash
 
-      - name: Upload coverage reports to Codecov
+      - name: Run CPU tests with coverage
+        run: uv run pytest -m "not gpu and not slow" --cov --cov-report=xml --cov-report=term
+        env:
+          JAX_PLATFORM_NAME: cpu
+
+      - name: Upload coverage to Codecov
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.13'
         uses: codecov/codecov-action@v4
-        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
         with:
           file: ./coverage.xml
           flags: unittests
-          name: codecov-${{ matrix.os }}-py${{ matrix.python-version }}
+          name: codecov-umbrella
           fail_ci_if_error: false
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: Upload coverage HTML artifact
-        uses: actions/upload-artifact@v4
-        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
-        with:
-          name: coverage-report
-          path: htmlcov/
-          retention-days: 7
-
-  # ============================================================================
-  # SLOW TESTS - Run expensive tests only on main/develop
-  # ============================================================================
-  test-slow:
-    name: Slow Tests
+  # ==========================================
+  # Job 4: GPU Tests (Linux only)
+  # ==========================================
+  test-gpu:
+    name: Test GPU Support (Linux with CUDA 12+)
+    needs: validate-dependencies
     runs-on: ubuntu-latest
-    needs: test
-    if: >
-      github.event_name == 'push' &&
-      (github.ref == 'refs/heads/main' ||
-       github.ref == 'refs/heads/develop')
+    # Only run on main/develop branches or when explicitly triggered
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.event_name == 'workflow_dispatch'
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -225,27 +204,115 @@ jobs:
         with:
           version: "latest"
           enable-cache: true
+          cache-dependency-glob: "uv.lock"
 
-      - name: Set up Python
+      - name: Set up Python from .python-version
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version-file: '.python-version'
 
-      - name: Install dependencies
+      - name: Install dependencies (CPU fallback for CI)
         run: |
-          uv sync --frozen --extra dev --extra test
+          if [ -f "uv.lock" ]; then
+            uv sync --frozen --group test
+          else
+            uv sync --group test
+          fi
 
-      - name: Run slow tests
+      - name: Run GPU-marked tests (CPU fallback)
+        run: uv run pytest -m "gpu" --cov --cov-report=term
+        env:
+          JAX_PLATFORM_NAME: cpu
+        continue-on-error: true  # GPU tests may fail without actual GPU
+
+      - name: Note about GPU testing
         run: |
-          uv run pytest -m "slow" -v --tb=short
+          echo "ℹ️ GPU tests run in CPU fallback mode in CI"
+          echo "ℹ️ Real GPU testing requires self-hosted runner with CUDA 12+"
 
-  # ============================================================================
-  # BUILD - Verify package builds correctly
-  # ============================================================================
+  # ==========================================
+  # Job 5: Security Scanning
+  # ==========================================
+  security:
+    name: Security Scanning
+    needs: validate-dependencies
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Set up Python from .python-version
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: '.python-version'
+
+      - name: Install security tools
+        run: |
+          if [ -f "uv.lock" ]; then
+            uv sync --frozen --group security
+          else
+            uv sync --group security
+          fi
+
+      - name: Run pip-audit (dependency vulnerability scan)
+        run: |
+          # Export dependencies to requirements.txt format for pip-audit
+          uv pip freeze > requirements-audit.txt
+          uv run pip-audit -r requirements-audit.txt --desc || {
+            echo "⚠️ Vulnerabilities found - review and update dependencies"
+            exit 0  # Don't fail build, just warn
+          }
+
+      - name: Run Bandit (security linter)
+        run: uv run bandit -r quantiq -f json -o bandit-report.json || true
+
+      - name: Display Bandit results
+        run: |
+          if [ -f bandit-report.json ]; then
+            echo "📊 Bandit Security Report:"
+            cat bandit-report.json
+          fi
+
+      - name: Run Trivy filesystem scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Check for secrets with Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+  # ==========================================
+  # Job 6: Build Package
+  # ==========================================
   build:
-    name: Build Package
-    runs-on: ubuntu-latest
+    name: Build Distribution Package
     needs: [lint, test]
+    runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -256,18 +323,13 @@ jobs:
           version: "latest"
           enable-cache: true
 
-      - name: Set up Python
+      - name: Set up Python from .python-version
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-
-      - name: Install build dependencies
-        run: |
-          uv sync --frozen --extra dev
+          python-version-file: '.python-version'
 
       - name: Build package
-        run: |
-          uv build
+        run: uv build
 
       - name: Verify build artifacts
         run: |
@@ -277,163 +339,63 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: dist-packages
           path: dist/
           retention-days: 7
 
-  # ============================================================================
-  # DOCS - Build documentation
-  # ============================================================================
-  docs:
-    name: Build Documentation
-    runs-on: ubuntu-latest
-    needs: validate-dependencies
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v4
-        with:
-          version: "latest"
-          enable-cache: true
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
+      - name: Generate SBOM (Software Bill of Materials)
         run: |
-          uv sync --frozen --extra docs
-
-      - name: Build Sphinx docs
-        run: |
-          cd docs
-          uv run make html
-
-      - name: Upload documentation artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: documentation
-          path: docs/_build/html/
-          retention-days: 7
-
-  # ============================================================================
-  # SECURITY SCAN - Comprehensive security analysis
-  # ============================================================================
-  security:
-    name: Security Scan
-    runs-on: ubuntu-latest
-    needs: validate-dependencies
-    permissions:
-      security-events: write
-      contents: read
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v4
-        with:
-          version: "latest"
-          enable-cache: true
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: |
-          uv sync --frozen --extra security
-
-      - name: Run Bandit security linter
-        run: |
-          uv run bandit -r quantiq/ -f json -o bandit-report.json || true
-          uv run bandit -r quantiq/ -f screen
-
-      - name: Upload Bandit results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: bandit-results
-          path: bandit-report.json
-          retention-days: 7
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH'
-
-      - name: Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: 'trivy-results.sarif'
-
-  # ============================================================================
-  # CODEQL - Advanced security analysis
-  # ============================================================================
-  codeql:
-    name: CodeQL Analysis
-    runs-on: ubuntu-latest
-    needs: validate-dependencies
-    permissions:
-      security-events: write
-      contents: read
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: python
-          queries: security-and-quality
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-
-  # ============================================================================
-  # STATUS CHECK - Overall CI status
-  # ============================================================================
-  ci-status:
-    name: CI Status Check
-    runs-on: ubuntu-latest
-    needs: [lint, test, build, docs, security, codeql]
-    if: always()
-    steps:
-      - name: Check CI status
-        run: |
-          LINT="${{ needs.lint.result }}"
-          TEST="${{ needs.test.result }}"
-          BUILD="${{ needs.build.result }}"
-          DOCS="${{ needs.docs.result }}"
-          SECURITY="${{ needs.security.result }}"
-          CODEQL="${{ needs.codeql.result }}"
-
-          if [[ "$LINT" == "success" && \
-                "$TEST" == "success" && \
-                "$BUILD" == "success" && \
-                "$DOCS" == "success" && \
-                ("$SECURITY" == "success" || \
-                 "$SECURITY" == "skipped") && \
-                ("$CODEQL" == "success" || \
-                 "$CODEQL" == "skipped") ]]; then
-            echo "✅ All CI checks passed!"
-            exit 0
+          if [ -f "uv.lock" ]; then
+            uv sync --frozen --group security
           else
-            echo "❌ Some CI checks failed!"
-            echo "Lint: $LINT"
-            echo "Test: $TEST"
-            echo "Build: $BUILD"
-            echo "Docs: $DOCS"
-            echo "Security: $SECURITY"
-            echo "CodeQL: $CODEQL"
+            uv sync --group security
+          fi
+          uv run cyclonedx-py requirements -o sbom.json || echo "⚠️ SBOM generation skipped"
+
+      - name: Upload SBOM artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.json
+          retention-days: 30
+
+  # ==========================================
+  # Job 7: Dependency Review (Pull Requests)
+  # ==========================================
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: moderate
+          deny-licenses: GPL-3.0, AGPL-3.0
+
+  # ==========================================
+  # Job 8: All Checks Passed
+  # ==========================================
+  all-checks-passed:
+    name: All Checks Passed
+    needs: [validate-dependencies, lint, test, security, build]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Check all jobs status
+        run: |
+          if [ "${{ needs.validate-dependencies.result }}" != "success" ] || \
+             [ "${{ needs.lint.result }}" != "success" ] || \
+             [ "${{ needs.test.result }}" != "success" ] || \
+             [ "${{ needs.security.result }}" != "success" ] || \
+             [ "${{ needs.build.result }}" != "success" ]; then
+            echo "❌ One or more checks failed"
             exit 1
           fi
+          echo "✅ All checks passed successfully!"

@@ -1,0 +1,91 @@
+{
+  "version": "1.0",
+  "last_updated": "2025-10-21",
+  "patterns": [
+    {
+      "id": "pip-audit-uv-compatibility",
+      "category": "dependency-scanning",
+      "problem": {
+        "description": "pip-audit cannot parse pyproject.toml with uv package manager",
+        "error_pattern": "ERROR:pip_audit._cli:requirement file pyproject.toml contains invalid specifier",
+        "affected_tools": ["pip-audit", "uv"],
+        "context": "Modern Python projects using pyproject.toml with uv package manager"
+      },
+      "solution": {
+        "description": "Export dependencies to requirements.txt format before running pip-audit",
+        "code": "uv pip freeze > requirements-audit.txt\nuv run pip-audit -r requirements-audit.txt --desc",
+        "alternative_solutions": [
+          "uv export --format requirements-txt > requirements.txt && pip-audit -r requirements.txt",
+          "pip-audit . (audit installed environment directly)"
+        ]
+      },
+      "metadata": {
+        "confidence": 0.95,
+        "occurrences": 1,
+        "first_seen": "2025-10-21",
+        "last_seen": "2025-10-21",
+        "success_rate": 1.0,
+        "avg_fix_time_minutes": 5
+      },
+      "tags": ["ci-cd", "security-scanning", "uv", "pip-audit", "pyproject.toml", "requirements.txt"],
+      "related_commits": ["e0bddec"],
+      "related_issues": [],
+      "documentation": "pip-audit expects requirements.txt format. Modern Python projects using pyproject.toml need to export dependencies to requirements.txt format first."
+    },
+    {
+      "id": "transform-make-copy-failures",
+      "category": "test-failures",
+      "problem": {
+        "description": "Transform tests failing due to make_copy parameter not being respected",
+        "error_pattern": "AssertionError: Arrays are not equal|Original array was modified",
+        "affected_tests": [
+          "test_moving_average_smoothing",
+          "test_region_multiply_transform_single_region",
+          "test_make_copy_true_creates_new_object",
+          "test_pipeline_single_copy_at_entry"
+        ],
+        "context": "Data preprocessing transforms not correctly handling array copying"
+      },
+      "solution": {
+        "description": "REQUIRES MANUAL INVESTIGATION - Likely need to fix transform implementation to properly handle make_copy parameter",
+        "status": "deferred",
+        "recommended_actions": [
+          "Review transform base class implementation",
+          "Check if make_copy parameter is properly propagated",
+          "Verify array copying logic (np.copy vs array.copy)",
+          "Test with different NumPy versions to identify regression",
+          "Review recent commit history for transform changes"
+        ]
+      },
+      "metadata": {
+        "confidence": 0.3,
+        "occurrences": 1,
+        "first_seen": "2025-10-21",
+        "last_seen": "2025-10-21",
+        "success_rate": 0.0,
+        "deferred_reason": "Requires domain knowledge of transform design intent"
+      },
+      "tags": ["test-failures", "preprocessing", "transforms", "make-copy", "array-mutation"],
+      "related_commits": ["e0bddec"],
+      "related_issues": [],
+      "documentation": "Transform copy semantics may have changed with dependency version updates. Investigation needed to determine if tests or implementation is incorrect."
+    }
+  ],
+  "statistics": {
+    "total_patterns": 2,
+    "auto_fixed_patterns": 1,
+    "deferred_patterns": 1,
+    "average_confidence": 0.625,
+    "patterns_by_category": {
+      "dependency-scanning": 1,
+      "test-failures": 1
+    }
+  },
+  "learning_notes": [
+    "pip-audit works best with requirements.txt format, not pyproject.toml",
+    "uv package manager requires export step for compatibility with pip-based tools",
+    "Test failures related to data mutation require careful investigation before auto-fixing",
+    "Deleting uv.lock can expose latent bugs by changing dependency versions",
+    "Security scanning tools may have different input format requirements than modern package managers"
+  ]
+}
