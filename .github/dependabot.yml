@@ -1,89 +1,68 @@
-# Dependabot configuration for automated dependency updates
-# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
-
+---
 version: 2
 
 updates:
-  # Python dependencies (pip/uv)
+  # Enable version updates for pip dependencies
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
-      time: "04:00"
+      time: "03:00"
       timezone: "America/Chicago"
-    open-pull-requests-limit: 10
-
-    # Group updates by type
-    groups:
-      # Production dependencies - patch and minor updates together
-      production-dependencies:
-        dependency-type: "production"
-        update-types:
-          - "minor"
-          - "patch"
-
-      # Development dependencies - all together
-      development-dependencies:
-        dependency-type: "development"
-        update-types:
-          - "minor"
-          - "patch"
-
-    # Commit message configuration
     commit-message:
       prefix: "chore(deps)"
       include: "scope"
-
-    # Reviewers and assignees
-    reviewers:
-      - "imewei"
-
-    # PR labels
     labels:
       - "dependencies"
       - "python"
-      - "automated"
+    reviewers:
+      - "imewei"
+    assignees:
+      - "imewei"
+    open-pull-requests-limit: 10
+    # Group dependency updates to reduce PR noise
+    groups:
+      # Group all JAX-related packages together
+      jax-ecosystem:
+        patterns:
+          - "jax*"
+          - "numpyro"
+          - "optax"
+          - "flax"
+      # Group testing dependencies
+      testing:
+        patterns:
+          - "pytest*"
+          - "hypothesis"
+      # Group documentation dependencies
+      docs:
+        patterns:
+          - "sphinx*"
+          - "numpydoc"
+      # Group linting/formatting tools
+      dev-tools:
+        patterns:
+          - "ruff"
+          - "mypy"
+          - "pre-commit"
 
-    # Allow updates even if security vulnerabilities exist
-    # (they'll be handled separately by security alerts)
-    ignore:
-      # Ignore major version updates for now (require manual review)
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
-
-      # Ignore specific dependencies that require careful updates
-      - dependency-name: "jax"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "jaxlib"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "numpyro"
-        update-types: ["version-update:semver-major"]
-
-    # Version requirements
-    versioning-strategy: "increase"  # Use >= not ==
-
-  # GitHub Actions
+  # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
-      time: "04:00"
+      time: "03:00"
       timezone: "America/Chicago"
-    open-pull-requests-limit: 5
-
     commit-message:
-      prefix: "chore(ci)"
+      prefix: "ci"
       include: "scope"
-
     labels:
       - "dependencies"
       - "github-actions"
-      - "automated"
-
     reviewers:
       - "imewei"
-
-# Security updates are handled automatically by Dependabot security updates
-# Enable at: Repository Settings -> Code security and analysis -> Dependabot security updates
+    assignees:
+      - "imewei"
+    open-pull-requests-limit: 5

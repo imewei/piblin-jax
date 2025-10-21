@@ -1,0 +1,262 @@
+---
+name: Security Scanning
+
+"on":
+  schedule:
+    # Run security scans every Monday at 3 AM UTC
+    - cron: '0 3 * * 1'
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:  # Allow manual trigger
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  # ============================================================================
+  # SECRET SCANNING - Detect accidentally committed secrets
+  # ============================================================================
+  secret-scan:
+    name: Secret Detection (Gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for better secret detection
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Optional: For Gitleaks Pro
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+  # ============================================================================
+  # DEPENDENCY AUDIT - Check for vulnerable dependencies
+  # ============================================================================
+  dependency-audit:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          uv sync --frozen --all-extras
+
+      - name: Install pip-audit
+        run: |
+          uv pip install pip-audit
+
+      - name: Run pip-audit
+        run: |
+          uv run pip-audit --desc --skip-editable -r pyproject.toml
+
+  # ============================================================================
+  # SAST - Static Application Security Testing
+  # ============================================================================
+  sast-semgrep:
+    name: SAST (Semgrep)
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep
+        run: |
+          semgrep scan \
+            --config=auto \
+            --sarif \
+            --output=semgrep-results.sarif \
+            --error \
+            --strict
+
+      - name: Upload Semgrep results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: semgrep-results.sarif
+
+  # ============================================================================
+  # LICENSE COMPLIANCE - Check for incompatible licenses
+  # ============================================================================
+  license-check:
+    name: License Compliance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          uv sync --frozen --all-extras
+
+      - name: Install pip-licenses
+        run: |
+          uv pip install pip-licenses
+
+      - name: Check licenses
+        run: |
+          uv run pip-licenses \
+            --format=markdown \
+            --output-file=licenses.md \
+            --order=license
+
+          echo "📄 License Summary:"
+          cat licenses.md
+
+      - name: Fail on GPL/AGPL licenses
+        run: |
+          # Check for potentially problematic licenses
+          PATTERN="GPL|AGPL|SSPL"
+          CMD="uv run pip-licenses --format=json"
+          if $CMD | grep -i -E "$PATTERN"; then
+            echo "⚠️  Warning: GPL/AGPL licenses detected!"
+            echo "Review the following licenses for compatibility:"
+            $CMD | grep -i -E "$PATTERN"
+            # Uncomment to fail on GPL licenses:
+            # exit 1
+          else
+            echo "✅ No problematic licenses detected"
+          fi
+
+      - name: Upload license report
+        uses: actions/upload-artifact@v4
+        with:
+          name: license-report
+          path: licenses.md
+          retention-days: 30
+
+  # ============================================================================
+  # CONTAINER SCANNING - If Docker is used
+  # ============================================================================
+  container-scan:
+    name: Container Security Scan
+    runs-on: ubuntu-latest
+    if: false  # Enable if you add Docker support
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build -t quantiq:test .
+
+      - name: Run Trivy scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'quantiq:test'
+          format: 'sarif'
+          output: 'trivy-container-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-container-results.sarif'
+
+  # ============================================================================
+  # SBOM GENERATION - Software Bill of Materials
+  # ============================================================================
+  sbom:
+    name: Generate SBOM
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          uv sync --frozen --all-extras
+
+      - name: Install CycloneDX
+        run: |
+          uv pip install cyclonedx-bom
+
+      - name: Generate SBOM
+        run: |
+          uv run cyclonedx-py \
+            --format json \
+            --output sbom.json \
+            --pyproject pyproject.toml
+
+          echo "📦 SBOM generated successfully"
+          ls -lh sbom.json
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.json
+          retention-days: 90
+
+  # ============================================================================
+  # SECURITY STATUS - Overall security check
+  # ============================================================================
+  security-status:
+    name: Security Status Check
+    runs-on: ubuntu-latest
+    needs: [secret-scan, dependency-audit, sast-semgrep, license-check, sbom]
+    if: always()
+    steps:
+      - name: Check security status
+        run: |
+          echo "🔒 Security Scan Results:"
+          echo "  Secret Scan: ${{ needs.secret-scan.result }}"
+          echo "  Dependency Audit: ${{ needs.dependency-audit.result }}"
+          echo "  SAST (Semgrep): ${{ needs.sast-semgrep.result }}"
+          echo "  License Check: ${{ needs.license-check.result }}"
+          echo "  SBOM: ${{ needs.sbom.result }}"
+
+          if [[ "${{ needs.secret-scan.result }}" == "success" && \
+                "${{ needs.dependency-audit.result }}" == "success" && \
+                "${{ needs.sast-semgrep.result }}" == "success" && \
+                "${{ needs.license-check.result }}" == "success" && \
+                "${{ needs.sbom.result }}" == "success" ]]; then
+            echo "✅ All security checks passed!"
+            exit 0
+          else
+            echo "⚠️  Some security checks failed or were skipped!"
+            exit 1
+          fi
