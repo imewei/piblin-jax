@@ -23,6 +23,16 @@ from typing import Any, TypeVar
 from quantiq.backend import is_jax_available
 from quantiq.backend.operations import jit
 
+# Import types for runtime isinstance checks
+# These imports are safe - no circular dependency issues
+from quantiq.data.collections import (
+    Experiment,
+    ExperimentSet,
+    Measurement,
+    MeasurementSet,
+)
+from quantiq.data.datasets import Dataset
+
 # Type variables for generic transforms
 T = TypeVar("T")
 
@@ -307,21 +317,6 @@ def jit_transform(func):
         return func
 
 
-# Import collection types for type hints
-# These are imported here to avoid circular imports
-def _get_collection_types():
-    """Lazy import of collection types to avoid circular imports."""
-    from quantiq.data.collections import (
-        Experiment,
-        ExperimentSet,
-        Measurement,
-        MeasurementSet,
-    )
-    from quantiq.data.datasets import Dataset
-
-    return Dataset, Measurement, MeasurementSet, Experiment, ExperimentSet
-
-
 class DatasetTransform(Transform):
     """
     Transform that operates on Dataset objects.
@@ -376,9 +371,6 @@ class DatasetTransform(Transform):
         TypeError
             If target is not a Dataset instance
         """
-        # Import here to avoid circular imports
-        from quantiq.data.datasets import Dataset
-
         if not isinstance(target, Dataset):
             raise TypeError(f"DatasetTransform requires Dataset, got {type(target).__name__}")
         return super().apply_to(target, make_copy, propagate_uncertainty)
@@ -426,9 +418,6 @@ class MeasurementTransform(Transform):
         TypeError
             If target is not a Measurement instance
         """
-        # Import here to avoid circular imports
-        from quantiq.data.collections import Measurement
-
         if not isinstance(target, Measurement):
             raise TypeError(
                 f"MeasurementTransform requires Measurement, got {type(target).__name__}"
@@ -486,9 +475,6 @@ class MeasurementSetTransform(Transform):
         TypeError
             If target is not a MeasurementSet instance
         """
-        # Import here to avoid circular imports
-        from quantiq.data.collections import MeasurementSet
-
         if not isinstance(target, MeasurementSet):
             raise TypeError(
                 f"MeasurementSetTransform requires MeasurementSet, got {type(target).__name__}"
@@ -542,9 +528,6 @@ class ExperimentTransform(Transform):
         TypeError
             If target is not an Experiment instance
         """
-        # Import here to avoid circular imports
-        from quantiq.data.collections import Experiment
-
         if not isinstance(target, Experiment):
             raise TypeError(f"ExperimentTransform requires Experiment, got {type(target).__name__}")
         return super().apply_to(target, make_copy)
@@ -602,9 +585,6 @@ class ExperimentSetTransform(Transform):
         TypeError
             If target is not an ExperimentSet instance
         """
-        # Import here to avoid circular imports
-        from quantiq.data.collections import ExperimentSet
-
         if not isinstance(target, ExperimentSet):
             raise TypeError(
                 f"ExperimentSetTransform requires ExperimentSet, got {type(target).__name__}"

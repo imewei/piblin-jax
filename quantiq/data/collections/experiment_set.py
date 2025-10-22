@@ -4,6 +4,7 @@ ExperimentSet class for quantiq.
 Top-level container for multiple Experiment objects representing a study or project.
 """
 
+from collections.abc import Iterator
 from typing import Any
 
 from .experiment import Experiment
@@ -201,7 +202,7 @@ class ExperimentSet:
         """
         return len(self._experiments)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Experiment]:
         """
         Iterate over experiments in this set.
 
@@ -220,7 +221,7 @@ class ExperimentSet:
         """
         return iter(self._experiments)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int | slice) -> Experiment | tuple[Experiment, ...]:
         """
         Get experiment by index.
 
@@ -243,7 +244,7 @@ class ExperimentSet:
         """
         return self._experiments[index]
 
-    def get_experiment_by_condition(self, **condition_filters) -> list[Experiment]:
+    def get_experiment_by_condition(self, **condition_filters: Any) -> list[Experiment]:
         """
         Get experiments matching specified conditions.
 

@@ -4,6 +4,7 @@ MeasurementSet base class for quantiq.
 Container for multiple Measurement objects representing a series of related measurements.
 """
 
+from collections.abc import Iterator
 from typing import Any
 
 from .measurement import Measurement
@@ -181,7 +182,7 @@ class MeasurementSet:
         """
         return len(self._measurements)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Measurement]:
         """
         Iterate over measurements in this set.
 
@@ -200,7 +201,7 @@ class MeasurementSet:
         """
         return iter(self._measurements)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int | slice) -> Measurement | tuple[Measurement, ...]:
         """
         Get measurement by index.
 

@@ -112,6 +112,9 @@ class ArrheniusModel(BayesianModel):
         """
         Define the NumPyro probabilistic model for Arrhenius viscosity.
 
+        This method is called internally by the MCMC inference engine and defines
+        the probabilistic generative process for temperature-dependent viscosity.
+
         Parameters
         ----------
         x : array_like
@@ -121,9 +124,17 @@ class ArrheniusModel(BayesianModel):
         **kwargs : dict
             Additional model parameters (unused)
 
+        Examples
+        --------
+        This method is typically not called directly. Instead, use the fit() method:
+
+        >>> model = ArrheniusModel()
+        >>> model.fit(temperature, rate_constant)  # Internally calls model()
+
         Notes
         -----
         This method is called internally by fit() and should not be called directly.
+        It defines the generative model η(T) = A * exp(Ea/(R*T)) + ε where ε ~ Normal(0, σ).
         """
         # Convert to JAX arrays
         x = jnp.asarray(x)

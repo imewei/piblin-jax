@@ -102,7 +102,7 @@ class LinearRegion:
         """
         return (x_data >= self.x_min) & (x_data <= self.x_max)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return string representation of LinearRegion."""
         return f"LinearRegion(x_min={self.x_min}, x_max={self.x_max})"
 
@@ -207,15 +207,15 @@ class CompoundRegion:
             combined_mask |= region.get_mask(x_data)
         return combined_mask
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Return number of regions."""
         return len(self.regions)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int) -> LinearRegion:
         """Get region by index."""
         return self.regions[index]
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return string representation of CompoundRegion."""
         return f"CompoundRegion({len(self.regions)} regions)"
 

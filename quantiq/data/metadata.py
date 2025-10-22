@@ -178,7 +178,7 @@ def separate_conditions_details(
 
 def validate_metadata(
     metadata: dict[str, Any],
-    schema: dict[str, type | Callable] | None = None,
+    schema: dict[str, type | Callable[[Any], bool]] | None = None,
     required_keys: list[str] | None = None,
 ) -> bool:
     """Validate metadata against a schema.
@@ -190,7 +190,7 @@ def validate_metadata(
     ----------
     metadata : dict[str, Any]
         Metadata to validate
-    schema : dict[str, type | Callable] | None, optional
+    schema : dict[str, type | Callable[[Any], bool]] | None, optional
         Schema defining expected types or validation functions.
         Keys are metadata field names, values are either:
 

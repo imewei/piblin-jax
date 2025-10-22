@@ -104,7 +104,7 @@ class TidyMeasurementSet(MeasurementSet):
         # No validation needed - any measurements can be tidy
         super().__init__(measurements, conditions, details)
 
-    def get_unique_conditions(self) -> dict[str, set]:
+    def get_unique_conditions(self) -> dict[str, set[Any]]:
         """
         Get all unique values for each condition across measurements.
 
@@ -146,7 +146,7 @@ class TidyMeasurementSet(MeasurementSet):
         >>> unique["temp"]
         {25, 30}
         """
-        unique_conditions: dict[str, set] = {}
+        unique_conditions: dict[str, set[Any]] = {}
 
         for measurement in self.measurements:
             for key, value in measurement.conditions.items():
@@ -161,7 +161,7 @@ class TidyMeasurementSet(MeasurementSet):
 
         return unique_conditions
 
-    def filter_by_conditions(self, **condition_filters) -> "TidyMeasurementSet":
+    def filter_by_conditions(self, **condition_filters: Any) -> "TidyMeasurementSet":
         """
         Create a new TidyMeasurementSet with measurements matching conditions.
 

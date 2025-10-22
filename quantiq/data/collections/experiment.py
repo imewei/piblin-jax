@@ -4,6 +4,7 @@ Experiment class for quantiq.
 Container for multiple MeasurementSet objects representing a single experiment.
 """
 
+from collections.abc import Iterator
 from typing import Any
 
 from .measurement_set import MeasurementSet
@@ -195,7 +196,7 @@ class Experiment:
         """
         return len(self._measurement_sets)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[MeasurementSet]:
         """
         Iterate over measurement sets in this experiment.
 
@@ -213,7 +214,7 @@ class Experiment:
         """
         return iter(self._measurement_sets)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int | slice) -> MeasurementSet | tuple[MeasurementSet, ...]:
         """
         Get measurement set by index.
 

@@ -6,7 +6,7 @@ Provides the abstract base class for all dataset types with metadata support.
 
 import copy
 from abc import ABC
-from typing import Any
+from typing import Any, Self
 
 
 class Dataset(ABC):
@@ -217,7 +217,7 @@ class Dataset(ABC):
         """
         return self._credible_intervals
 
-    def copy(self):
+    def copy(self) -> Self:
         """
         Create a deep copy of this dataset.
 

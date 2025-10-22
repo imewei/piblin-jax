@@ -10,6 +10,7 @@ jax.numpy or numpy depending on availability.
 """
 
 import sys
+import types
 import warnings
 from typing import Any, Union
 
@@ -18,7 +19,7 @@ import numpy as np
 # Backend detection
 _JAX_AVAILABLE = False
 BACKEND = "numpy"  # Default to NumPy
-jnp = np  # Default to NumPy
+jnp: types.ModuleType = np  # Default to NumPy
 
 
 def _detect_platform() -> str:

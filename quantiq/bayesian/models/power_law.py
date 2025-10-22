@@ -106,6 +106,9 @@ class PowerLawModel(BayesianModel):
         """
         Define the NumPyro probabilistic model for power-law viscosity.
 
+        This method is called internally by the MCMC inference engine and defines
+        the probabilistic generative process for power-law viscosity data.
+
         Parameters
         ----------
         x : array_like
@@ -115,9 +118,17 @@ class PowerLawModel(BayesianModel):
         **kwargs : dict
             Additional model parameters (unused)
 
+        Examples
+        --------
+        This method is typically not called directly. Instead, use the fit() method:
+
+        >>> model = PowerLawModel()
+        >>> model.fit(shear_rate, viscosity)  # Internally calls model()
+
         Notes
         -----
         This method is called internally by fit() and should not be called directly.
+        It defines the generative model η = K * γ̇^(n-1) + ε where ε ~ Normal(0, σ).
         """
         # Convert to JAX arrays
         x = jnp.asarray(x)

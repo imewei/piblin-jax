@@ -4,6 +4,7 @@ Measurement class for quantiq.
 Container for multiple Dataset objects representing a single measurement event.
 """
 
+from collections.abc import Iterator
 from typing import Any
 
 from quantiq.data.datasets import Dataset
@@ -169,7 +170,7 @@ class Measurement:
         """
         return len(self._datasets)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Dataset]:
         """
         Iterate over datasets in this measurement.
 
@@ -187,7 +188,7 @@ class Measurement:
         """
         return iter(self._datasets)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int | slice) -> Dataset | tuple[Dataset, ...]:
         """
         Get dataset by index.
 

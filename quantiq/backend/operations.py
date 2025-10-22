@@ -9,11 +9,15 @@ the NumPy backend.
 
 from collections.abc import Callable, Sequence
 from functools import wraps
-from typing import Any
+from typing import Any, ParamSpec, TypeVar
 
 import numpy as np
 
 from . import _JAX_AVAILABLE, jnp
+
+# Type variables for generic callable decorators
+P = ParamSpec("P")
+R = TypeVar("R")
 
 # Array Operations
 
@@ -134,7 +138,9 @@ def reshape(arr: Any, shape: int | Sequence[int]) -> Any:
 # JIT Compilation
 
 
-def jit(func: Callable | None = None, **kwargs) -> Callable:
+def jit[**P, R](
+    func: Callable[P, R] | None = None, **kwargs: Any
+) -> Callable[P, R] | Callable[[Callable[P, R]], Callable[P, R]]:
     """
     Just-in-time compilation decorator.
 
@@ -165,8 +171,26 @@ def jit(func: Callable | None = None, **kwargs) -> Callable:
     >>> result = compute(jnp.array([1.0, 2.0, 3.0]))
     """
 
-    def decorator(f: Callable) -> Callable:
-        """Apply JIT compilation or no-op depending on backend availability."""
+    def decorator(f: Callable[P, R]) -> Callable[P, R]:
+        """
+        Apply JIT compilation or no-op depending on backend availability.
+
+        Parameters
+        ----------
+        f : callable
+            Function to compile.
+
+        Returns
+        -------
+        callable
+            Compiled function or wrapper.
+
+        Examples
+        --------
+        >>> def my_func(x):
+        ...     return x + 1
+        >>> compiled = decorator(my_func)
+        """
         if _JAX_AVAILABLE:
             import jax
 
@@ -174,8 +198,19 @@ def jit(func: Callable | None = None, **kwargs) -> Callable:
         else:
             # No-op for NumPy backend
             @wraps(f)
-            def wrapper(*args, **kwargs):
-                """Wrapper function for NumPy backend compatibility."""
+            def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+                """
+                Wrapper function for NumPy backend compatibility.
+
+                Returns
+                -------
+                Any
+                    Result of wrapped function.
+
+                Examples
+                --------
+                >>> wrapper(1, 2, x=3)  # doctest: +SKIP
+                """
                 return f(*args, **kwargs)
 
             return wrapper
@@ -188,8 +223,11 @@ def jit(func: Callable | None = None, **kwargs) -> Callable:
 
 
 def vmap(
-    func: Callable, in_axes: int | Sequence[int | None] = 0, out_axes: int = 0, **kwargs
-) -> Callable:
+    func: Callable[..., Any],
+    in_axes: int | Sequence[int | None] = 0,
+    out_axes: int = 0,
+    **kwargs: Any,
+) -> Callable[..., Any]:
     """
     Vectorizing map decorator.
 
@@ -230,8 +268,19 @@ def vmap(
     else:
         # Simple NumPy implementation
         @wraps(func)
-        def wrapper(*args):
-            """Simplified vectorization wrapper for NumPy backend."""
+        def wrapper(*args: Any) -> Any:
+            """
+            Simplified vectorization wrapper for NumPy backend.
+
+            Returns
+            -------
+            array_like
+                Stacked results of function applied to each element.
+
+            Examples
+            --------
+            >>> wrapper([1, 2, 3])  # doctest: +SKIP
+            """
             # Basic implementation - map over first axis
             if not args:
                 return func()
@@ -252,7 +301,9 @@ def vmap(
         return wrapper
 
 
-def grad(func: Callable, argnums: int | Sequence[int] = 0, **kwargs) -> Callable:
+def grad(
+    func: Callable[..., Any], argnums: int | Sequence[int] = 0, **kwargs: Any
+) -> Callable[..., Any]:
     """
     Gradient computation decorator.
 
@@ -290,8 +341,27 @@ def grad(func: Callable, argnums: int | Sequence[int] = 0, **kwargs) -> Callable
         return jax.grad(func, argnums=argnums, **kwargs)
     else:
 
-        def not_implemented(*args, **kwargs):
-            """Raise error when automatic differentiation is unavailable."""
+        def not_implemented(*args: Any, **kwargs: Any) -> Any:
+            """
+            Raise error when automatic differentiation is unavailable.
+
+            Returns
+            -------
+            None
+                Never returns, always raises.
+
+            Raises
+            ------
+            NotImplementedError
+                Always raised when JAX is unavailable.
+
+            Examples
+            --------
+            >>> not_implemented()  # doctest: +SKIP
+            Traceback (most recent call last):
+                ...
+            NotImplementedError: Automatic differentiation requires JAX backend
+            """
             raise NotImplementedError(
                 "Automatic differentiation requires JAX backend. "
                 "Install JAX or use numerical differentiation."
