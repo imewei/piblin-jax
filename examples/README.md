@@ -8,10 +8,8 @@ This directory contains complete, runnable examples demonstrating key features o
 # Install quantiq with examples dependencies
 pip install -e ".[dev]"
 
-# For GPU examples (optional)
-pip install -e ".[gpu-cuda]"  # NVIDIA GPUs
-# or
-pip install -e ".[gpu-metal]"  # Apple Silicon
+# For GPU examples (Linux only, CUDA 12+)
+pip install -e ".[gpu-cuda]"
 ```
 
 ## Quick Start
@@ -133,8 +131,8 @@ python piblin_migration_example.py
 
 ---
 
-### 7. **gpu_acceleration_example.py** - GPU Performance 🆕
-**What it demonstrates:** Leveraging GPU acceleration with JAX.
+### 7. **gpu_acceleration_example.py** - GPU Performance
+**What it demonstrates:** Leveraging GPU acceleration with JAX on Linux.
 
 **Key concepts:**
 - Automatic GPU detection and usage
@@ -143,7 +141,7 @@ python piblin_migration_example.py
 - CPU vs GPU performance comparison
 - Memory management on GPU
 
-**Requirements:** CUDA, Metal, or ROCm compatible GPU
+**Requirements:** Linux with CUDA 12+ compatible GPU
 
 **Run time:** ~5 seconds (varies by hardware)
 
@@ -153,7 +151,7 @@ python gpu_acceleration_example.py
 
 ---
 
-### 8. **custom_transforms_example.py** - Extending quantiq 🆕
+### 8. **custom_transforms_example.py** - Extending quantiq
 **What it demonstrates:** Building custom transform classes.
 
 **Key concepts:**
@@ -211,12 +209,10 @@ All examples run efficiently on CPU. Expected performance on modern CPUs:
 - Large pipelines: 1-5 seconds
 
 ### GPU Acceleration
-GPU examples automatically detect and use available accelerators:
+GPU examples automatically detect and use available accelerators on Linux with CUDA 12+:
 - **NVIDIA CUDA**: 10-100x speedup for large datasets
-- **Apple Silicon (Metal)**: 5-20x speedup
-- **AMD ROCm**: 10-100x speedup
 
-If no GPU is available, examples fall back to CPU automatically.
+If no GPU is available or you're on macOS/Windows, examples fall back to CPU automatically with 5-10x JAX speedup.
 
 ## Customization
 
@@ -245,6 +241,8 @@ pip install -e ".[dev]"  # Install all dependencies
 from quantiq.backend import get_device_info
 print(get_device_info())  # Check available devices
 ```
+
+Note: GPU acceleration requires Linux with CUDA 12+. macOS and Windows use CPU backend.
 
 **Out of memory (GPU):**
 - Reduce batch sizes in GPU examples
@@ -281,7 +279,7 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 | bayesian_parameter | Advanced Bayesian | ~30s | ✅ |
 | uncertainty_propagation | UQ | ~10s | ✅ |
 | piblin_migration | Compatibility | <1s | ❌ |
-| gpu_acceleration | GPU performance | ~5s | ✅ Required |
+| gpu_acceleration | GPU performance | ~5s | ✅ Required (Linux+CUDA12+) |
 | custom_transforms | Extensibility | <1s | ✅ |
 
 ---

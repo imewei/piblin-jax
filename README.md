@@ -37,7 +37,7 @@ Built on JAX, quantiq delivers 5-10x CPU speedup and 50-100x GPU acceleration wh
 
 - **Modern Python 3.12+**: Type-safe, functional programming approach
   - Runtime: Python 3.12+ supported
-  - Development: Python 3.13 recommended (required for pre-commit hooks)
+  - Development: Python 3.13+ required for pre-commit hooks
   - Comprehensive type hints throughout
   - NumPy-style docstrings
   - Immutable data structures
@@ -58,7 +58,7 @@ Built on JAX, quantiq delivers 5-10x CPU speedup and 50-100x GPU acceleration wh
 
 ### Basic Installation
 
-Install quantiq with JAX CPU support:
+Install quantiq with JAX CPU support using pip:
 
 ```bash
 pip install quantiq
@@ -66,28 +66,35 @@ pip install quantiq
 
 ### GPU Support
 
-For NVIDIA CUDA GPUs:
+**Platform Constraints:**
+- **GPU support**: Linux with CUDA 12+ only
+- **macOS**: CPU backend only (5-10x speedup over piblin)
+- **Windows**: CPU backend only (5-10x speedup over piblin)
+- **Maximum performance**: Linux with NVIDIA GPU (50-100x speedup)
+
+To install with GPU support on Linux:
+
 ```bash
 pip install quantiq[gpu-cuda]
 ```
 
-For Apple Silicon (Metal):
-```bash
-pip install quantiq[gpu-metal]
-```
-
-For AMD ROCm GPUs:
-```bash
-pip install quantiq[gpu-rocm]
-```
-
 ### Development Installation
+
+**Prerequisites:**
+- **Runtime**: Python 3.12+ supported
+- **Development**: Python 3.13+ required (for pre-commit hooks)
+- **Package Manager**: uv recommended for development (not pip or conda)
 
 For development with all optional dependencies:
 
 ```bash
 git clone https://github.com/quantiq/quantiq.git
 cd quantiq
+
+# Using uv (recommended for development)
+uv pip install -e ".[dev]"
+
+# Or using pip
 pip install -e ".[dev]"
 ```
 
@@ -188,7 +195,7 @@ Explore complete, runnable examples in the [`examples/`](examples/) directory:
 - **bayesian_parameter_estimation.py** - Advanced Bayesian inference techniques
 - **uncertainty_propagation_example.py** - Propagating uncertainty through pipelines
 - **piblin_migration_example.py** - Migrating from piblin to quantiq
-- **gpu_acceleration_example.py** - Leveraging GPU for 10-100x speedups ⚡
+- **gpu_acceleration_example.py** - Leveraging GPU for 10-100x speedups (Linux + CUDA 12+ only)
 - **custom_transforms_example.py** - Building domain-specific transforms
 
 Each example is fully documented and can be run directly:
@@ -204,21 +211,29 @@ See [`examples/README.md`](examples/README.md) for detailed descriptions and usa
 
 ### Prerequisites
 
-- **Python 3.13+** (required for pre-commit hooks)
-- Python 3.12+ supported for runtime code execution
+**Python Version Requirements:**
+- **Runtime**: Python 3.12+ supported for using the library
+- **Development**: Python 3.13+ required for pre-commit hooks
+
+**Package Manager:**
+- **Recommended**: uv (not pip or conda) for development
+- **User Installation**: pip is fine for end users
 
 ### Setup Development Environment
 
 ```bash
-# Verify Python 3.13 is available
+# Verify Python 3.13+ is available
 python3.13 --version
 
-# Clone and install in development mode
+# Clone and install in development mode with uv (recommended)
 git clone https://github.com/quantiq/quantiq.git
 cd quantiq
+uv pip install -e ".[dev]"
+
+# Or with pip
 pip install -e ".[dev]"
 
-# Install pre-commit hooks
+# Install pre-commit hooks (requires Python 3.13+)
 pre-commit install
 ```
 

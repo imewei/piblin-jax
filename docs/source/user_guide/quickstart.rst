@@ -260,14 +260,19 @@ significant speedups::
 GPU Acceleration
 ^^^^^^^^^^^^^^^^
 
-For large datasets, quantiq can leverage GPU acceleration::
+For large datasets on Linux with CUDA 12+, quantiq can leverage GPU acceleration::
 
-    # Install GPU support
-    # pip install quantiq[gpu-cuda]  # For NVIDIA
-    # pip install quantiq[gpu-metal]  # For Apple Silicon
+    # Install GPU support (Linux only, CUDA 12+)
+    # pip install quantiq[gpu-cuda]
 
     # JAX automatically uses GPU when available
     # No code changes needed!
+
+**Platform Constraints:**
+
+- GPU acceleration requires Linux with CUDA 12+
+- macOS and Windows users benefit from 5-10x CPU speedup via JAX
+- Linux with NVIDIA GPU provides 50-100x speedup
 
 Batch Processing
 ^^^^^^^^^^^^^^^^

@@ -5,7 +5,7 @@ Requirements
 ------------
 
 * Python 3.12 or later
-* pip or conda package manager
+* uv package manager (recommended for development)
 
 Basic Installation
 ------------------
@@ -19,17 +19,15 @@ This will install quantiq with JAX CPU support and all core dependencies.
 GPU Support
 -----------
 
-For NVIDIA CUDA GPUs::
+GPU acceleration is available only on Linux with CUDA 12+::
 
     pip install quantiq[gpu-cuda]
 
-For Apple Silicon (Metal)::
+**Platform Constraints:**
 
-    pip install quantiq[gpu-metal]
-
-For AMD ROCm GPUs::
-
-    pip install quantiq[gpu-rocm]
+* GPU support requires Linux with CUDA 12+
+* macOS and Windows users can use CPU backend with 5-10x speedup
+* For maximum performance, use Linux with NVIDIA GPU (50-100x speedup)
 
 Development Installation
 ------------------------
@@ -43,6 +41,8 @@ Or clone from source::
     git clone https://github.com/quantiq/quantiq.git
     cd quantiq
     pip install -e ".[dev]"
+
+**Note:** Development requires Python 3.13+ for pre-commit hooks, though the package runs on Python 3.12+.
 
 Verification
 ------------

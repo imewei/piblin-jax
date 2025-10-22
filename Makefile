@@ -8,7 +8,7 @@
 #   make qa            Run full quality assurance
 #
 
-.PHONY: help init install install-dev install-test install-docs install-gpu-cuda install-gpu-metal install-gpu-rocm \
+.PHONY: help init install install-dev install-test install-docs install-gpu-cuda \
         format format-check lint type-check check \
         test test-fast test-cov test-slow test-gpu test-visual test-bench test-all coverage-html \
         qa pre-commit-install pre-commit-run security \
@@ -53,9 +53,7 @@ help:
 	@echo "  $(CYAN)install-dev$(RESET)       Install with dev extras"
 	@echo "  $(CYAN)install-test$(RESET)      Install with test extras"
 	@echo "  $(CYAN)install-docs$(RESET)      Install with docs extras"
-	@echo "  $(CYAN)install-gpu-cuda$(RESET)  Install with CUDA GPU support"
-	@echo "  $(CYAN)install-gpu-metal$(RESET) Install with Metal GPU support (macOS)"
-	@echo "  $(CYAN)install-gpu-rocm$(RESET)  Install with ROCm GPU support (AMD)"
+	@echo "  $(CYAN)install-gpu-cuda$(RESET)  Install with CUDA GPU support (Linux only)"
 	@echo ""
 	@echo "$(BOLD)$(GREEN)DEVELOPMENT$(RESET)"
 	@echo "  $(CYAN)format$(RESET)            Auto-format code with ruff"
@@ -157,35 +155,15 @@ install-docs:
 	uv sync --extra docs
 	@echo "$(BOLD)$(GREEN)✓ Docs dependencies installed!$(RESET)"
 
-## install-gpu-cuda: Install with CUDA GPU support
+## install-gpu-cuda: Install with CUDA GPU support (Linux only)
 install-gpu-cuda:
 	@if [ ! -d "$(VENV)" ]; then \
 		echo "$(BOLD)$(RED)Error: Virtual environment not found. Run 'make init' first.$(RESET)"; \
 		exit 1; \
 	fi
-	@echo "$(BOLD)$(BLUE)Installing CUDA GPU support...$(RESET)"
+	@echo "$(BOLD)$(BLUE)Installing CUDA GPU support (Linux only)...$(RESET)"
 	uv sync --extra gpu-cuda
 	@echo "$(BOLD)$(GREEN)✓ CUDA GPU support installed!$(RESET)"
-
-## install-gpu-metal: Install with Metal GPU support (macOS)
-install-gpu-metal:
-	@if [ ! -d "$(VENV)" ]; then \
-		echo "$(BOLD)$(RED)Error: Virtual environment not found. Run 'make init' first.$(RESET)"; \
-		exit 1; \
-	fi
-	@echo "$(BOLD)$(BLUE)Installing Metal GPU support...$(RESET)"
-	uv sync --extra gpu-metal
-	@echo "$(BOLD)$(GREEN)✓ Metal GPU support installed!$(RESET)"
-
-## install-gpu-rocm: Install with ROCm GPU support (AMD)
-install-gpu-rocm:
-	@if [ ! -d "$(VENV)" ]; then \
-		echo "$(BOLD)$(RED)Error: Virtual environment not found. Run 'make init' first.$(RESET)"; \
-		exit 1; \
-	fi
-	@echo "$(BOLD)$(BLUE)Installing ROCm GPU support...$(RESET)"
-	uv sync --extra gpu-rocm
-	@echo "$(BOLD)$(GREEN)✓ ROCm GPU support installed!$(RESET)"
 
 # ============================================================================
 # DEVELOPMENT

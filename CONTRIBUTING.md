@@ -27,13 +27,21 @@ By participating in this project, you agree to maintain a respectful, inclusive,
 
 ### Prerequisites
 
-- **Python 3.13 or higher** (required for development and pre-commit hooks)
-- Python 3.12+ supported for runtime execution
+**Python Version Requirements:**
+- **Runtime**: Python 3.12+ supported for using the library
+- **Development**: Python 3.13+ required for pre-commit hooks
+
+**Package Manager:**
+- **Recommended**: uv (not pip or conda) for development
+- **Why uv**: Faster dependency resolution, deterministic builds, better lock file management
+- **User Installation**: pip is fine for end users installing the package
+
+**Other Requirements:**
 - Git
 - Basic understanding of JAX and NumPy
 - Familiarity with scientific computing concepts
 
-> **Note**: As of the latest update, pre-commit hooks require Python 3.13 to align with CI/CD environments and ruff target version. While the package runs on Python 3.12+, development requires 3.13.
+> **Note**: Pre-commit hooks require Python 3.13 to align with CI/CD environments and ruff target version. While the package runs on Python 3.12+, development requires 3.13.
 
 ### Quick Contribution Checklist
 
@@ -58,6 +66,22 @@ cd quantiq
 
 ### 2. Install Development Dependencies
 
+**Using uv (Recommended):**
+
+```bash
+# Install uv if not already installed
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Create virtual environment and install dependencies
+uv venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install in development mode with all dependencies
+uv pip install -e ".[dev,test,docs]"
+```
+
+**Using pip (Alternative):**
+
 ```bash
 # Create virtual environment
 python -m venv venv
@@ -70,7 +94,7 @@ pip install -e ".[dev,test,docs]"
 ### 3. Install Pre-commit Hooks
 
 ```bash
-# Install pre-commit hooks
+# Install pre-commit hooks (requires Python 3.13+)
 pre-commit install
 
 # (Optional) Run against all files to verify setup
@@ -594,8 +618,26 @@ quantiq follows [Semantic Versioning](https://semver.org/):
 - [ ] Git tag created: `git tag v0.1.0`
 - [ ] Tag pushed: `git push --tags`
 - [ ] GitHub release created with release notes
-- [ ] Package built: `python -m build`
+- [ ] Package built: `uv build` (or `python -m build`)
 - [ ] Package uploaded to PyPI: `twine upload dist/*`
+
+## Platform Constraints Reference
+
+When documenting features or contributing code, ensure consistency with these platform constraints:
+
+**GPU Support:**
+- **Linux with CUDA 12+**: Full GPU support (50-100x speedup)
+- **macOS**: CPU backend only (5-10x speedup via JAX)
+- **Windows**: CPU backend only (5-10x speedup via JAX)
+- **No support**: AMD ROCm, Apple Metal (deprecated)
+
+**Python Versions:**
+- **Runtime**: Python 3.12+ supported for library usage
+- **Development**: Python 3.13+ required for pre-commit hooks
+
+**Package Manager:**
+- **Development**: uv recommended (not pip or conda)
+- **User Installation**: pip is standard for end users
 
 ## Additional Resources
 
