@@ -251,6 +251,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for Gitleaks commit range scanning
 
       - name: Install uv
         uses: astral-sh/setup-uv@v4
