@@ -31,14 +31,8 @@ build:
     python: "3.13"
   jobs:
     post_install:
-      # Verify installation and check JAX availability
-      - >-
-        python -c
-        'import quantiq; print("quantiq version:", quantiq.__version__)'
-      - >-
-        python -c
-        'from quantiq.backend import is_jax_available;
-        print("JAX available:", is_jax_available())'
+      # Verify quantiq installation
+      - python -c "import quantiq; print(quantiq.__version__)"
 
 # Search configuration
 search:
