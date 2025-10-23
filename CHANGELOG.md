@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.1] - 2025-10-23
+
 ### Changed
 - **BREAKING:** Removed `gpu-cuda` optional dependency extra from pyproject.toml
   - GPU installation now requires explicit manual installation or `make install-gpu-cuda`
@@ -155,10 +157,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated all badges (black → ruff) in README and documentation
 - Removed completed analysis and planning documents (kept in git history)
 
-## [0.1.0] - 2025-01-15
+---
+
+## Release Notes
+
+### Version 0.0.1 Notes
+
+This is the first pre-release of quantiq, a modern JAX-powered framework for measurement data science. quantiq is an enhanced fork of [piblin](https://github.com/3mcloud/piblin) by 3M, providing:
+
+- Dramatic performance improvements (5-10x CPU, 50-100x GPU)
+- Advanced Bayesian uncertainty quantification
+- 100% backward compatibility with piblin
+- Modern Python 3.12+ features
+
+For migration from piblin, simply change your import:
+```python
+import quantiq as piblin  # All your piblin code works!
+```
+
+Note: This is a pre-release version (0.0.1) intended for testing and evaluation. The API is stable but not yet considered production-ready. Full 0.1.0 release with additional features and documentation coming soon.
+
+---
+
+## [0.1.0] - Planned
 
 ### Added
-- Initial release of quantiq framework
+- Initial production release of quantiq framework
 - JAX-powered backend with automatic differentiation support
 - Complete data structures hierarchy (Dataset, Measurement, Experiment)
 - Transform pipeline system with composition support
@@ -203,24 +227,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Rheological models
 - Contributing guidelines
 - README with badges and examples
-
----
-
-## Release Notes
-
-### Version 0.1.0 Notes
-
-This is the initial release of quantiq, a modern JAX-powered framework for measurement data science. quantiq is an enhanced fork of [piblin](https://github.com/3mcloud/piblin) by 3M, providing:
-
-- Dramatic performance improvements (5-10x CPU, 50-100x GPU)
-- Advanced Bayesian uncertainty quantification
-- 100% backward compatibility with piblin
-- Modern Python 3.12+ features
-
-For migration from piblin, simply change your import:
-```python
-import quantiq as piblin  # All your piblin code works!
-```
 
 ### Acknowledgments
 
