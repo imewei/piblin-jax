@@ -25,7 +25,7 @@ class TestPackageDependencies:
 
     def test_gpu_metal_removed_from_dependencies(self, pyproject_toml_path):
         """Test that gpu-metal optional dependency has been completely removed."""
-        content = pyproject_toml_path.read_text()
+        content = pyproject_toml_path.read_text(encoding="utf-8")
 
         # Verify no gpu-metal section exists
         assert "gpu-metal" not in content, (
@@ -40,7 +40,7 @@ class TestPackageDependencies:
 
     def test_gpu_rocm_removed_from_dependencies(self, pyproject_toml_path):
         """Test that gpu-rocm optional dependency has been completely removed."""
-        content = pyproject_toml_path.read_text()
+        content = pyproject_toml_path.read_text(encoding="utf-8")
 
         # Verify no gpu-rocm section exists
         assert "gpu-rocm" not in content, (
@@ -61,7 +61,7 @@ class TestPackageDependencies:
         - make install-gpu-cuda (recommended)
         - Manual: pip uninstall -y jax jaxlib && pip install "jax[cuda12-local]>=0.8.0"
         """
-        content = pyproject_toml_path.read_text()
+        content = pyproject_toml_path.read_text(encoding="utf-8")
 
         # Extract optional dependencies section
         if "[project.optional-dependencies]" in content:
@@ -85,7 +85,7 @@ class TestPackageDependencies:
         The gpu-cuda extra was removed in v0.1.0. This test now verifies
         that no gpu-cuda extra exists, reflecting the manual-only installation approach.
         """
-        content = pyproject_toml_path.read_text()
+        content = pyproject_toml_path.read_text(encoding="utf-8")
 
         # Verify gpu-cuda extra does not exist
         lines = content.split("\n")
@@ -129,7 +129,7 @@ class TestPackageDependencies:
         that no gpu-cuda extra exists, reflecting the manual-only approach
         that is required for all platforms.
         """
-        content = pyproject_toml_path.read_text()
+        content = pyproject_toml_path.read_text(encoding="utf-8")
 
         # Extract optional dependencies section
         if "[project.optional-dependencies]" in content:
@@ -155,7 +155,7 @@ class TestPackageDependencies:
         The gpu-cuda, gpu-metal, and gpu-rocm extras were all removed.
         GPU installation is now manual-only to prevent silent CPU/GPU conflicts.
         """
-        content = pyproject_toml_path.read_text()
+        content = pyproject_toml_path.read_text(encoding="utf-8")
 
         # Extract optional dependencies section
         if "[project.optional-dependencies]" in content:
@@ -181,7 +181,7 @@ class TestPackageDependencies:
 
     def test_no_references_to_legacy_gpu_backends(self, pyproject_toml_path):
         """Test that no references to Metal or ROCm remain in dependencies."""
-        content = pyproject_toml_path.read_text()
+        content = pyproject_toml_path.read_text(encoding="utf-8")
 
         # Extract the dependencies sections (both regular and optional)
         if "[project]" in content:
