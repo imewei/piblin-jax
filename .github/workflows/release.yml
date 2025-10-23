@@ -117,6 +117,7 @@ jobs:
     name: Full Test Suite
     needs: validate
     uses: ./.github/workflows/ci.yml
+    secrets: inherit  # Pass secrets to reusable workflow
 
   # ==========================================
   # Job 3: Build Distribution
