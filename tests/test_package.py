@@ -7,7 +7,7 @@ def test_package_import():
     """Test that quantiq package can be imported."""
     import quantiq
 
-    assert quantiq.__version__ == "0.0.1"
+    assert quantiq.__version__ == "0.0.2"
 
 
 def test_package_has_version():

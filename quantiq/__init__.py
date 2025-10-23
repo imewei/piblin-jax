@@ -22,7 +22,7 @@ Usage:
     import quantiq as piblin
 """
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
 # Import core submodules (JAX-independent)
 from . import backend, data, dataio, transform

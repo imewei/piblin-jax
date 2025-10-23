@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "quantiq-jax"
-version = "0.0.1"
+version = "0.0.2"
 description = "Modern JAX-Powered Framework for Measurement Data Science"
 readme = "README.md"
 license = {text = "MIT"}

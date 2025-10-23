@@ -271,7 +271,7 @@ This project uses **uv** (not pip or conda) for all package management:
   - **Rationale**: pip extras cause silent CPU/GPU conflicts
   - **Documentation**: See README.md GPU Installation section
 
-Note: This is a pre-release version (0.0.1) intended for testing and evaluation. The API is stable but not yet considered production-ready. Full 0.1.0 release with additional features planned.
+Note: This is a pre-release version (0.0.2) intended for testing and evaluation. The API is stable but not yet considered production-ready. Full 0.1.0 release with additional features planned.
 
 ## Known Issues & Limitations
 

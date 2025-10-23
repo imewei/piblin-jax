@@ -15,8 +15,8 @@ sys.path.insert(0, os.path.abspath("../.."))
 project = "quantiq"
 copyright = "2025, quantiq developers"
 author = "quantiq developers"
-release = "0.0.1"
-version = "0.0.1"
+release = "0.0.2"
+version = "0.0.2"
 
 # -- General configuration ---------------------------------------------------
 extensions = [
