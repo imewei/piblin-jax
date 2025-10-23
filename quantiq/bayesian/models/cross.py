@@ -146,7 +146,7 @@ class CrossModel(BayesianModel):
         if y is not None:
             sigma_scale = jnp.maximum(jnp.std(y) * 0.1, 0.01)
         else:
-            sigma_scale = 1.0
+            sigma_scale = jnp.array(1.0)
         sigma = numpyro.sample("sigma", dist.HalfNormal(sigma_scale))
 
         # Model: η(γ̇) = η∞ + (η₀ - η∞) / (1 + (λγ̇)^m)
@@ -158,7 +158,7 @@ class CrossModel(BayesianModel):
 
     @staticmethod
     @jit
-    def _compute_predictions(eta0_samples, eta_inf_samples, lambda_samples, m_samples, shear_rate):
+    def _compute_predictions(eta0_samples, eta_inf_samples, lambda_samples, m_samples, shear_rate):  # type: ignore[no-untyped-def]
         """
         JIT-compiled prediction computation for 5-10x speedup.
 

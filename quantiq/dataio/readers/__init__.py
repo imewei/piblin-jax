@@ -15,12 +15,15 @@ The auto-detection system uses four layers:
 
 from collections.abc import Callable
 from pathlib import Path
+from typing import Any
+
+from quantiq.data.collections import Measurement
 
 from .csv import GenericCSVReader
 from .txt import GenericTXTReader
 
 # Reader registry mapping file extensions to reader classes or factory functions
-_READER_REGISTRY: dict[str, type | Callable] = {
+_READER_REGISTRY: dict[str, type | Callable[[], Any]] = {
     ".csv": GenericCSVReader,
     ".txt": GenericTXTReader,
     ".tsv": lambda: GenericCSVReader(delimiter="\t"),
@@ -29,7 +32,7 @@ _READER_REGISTRY: dict[str, type | Callable] = {
 }
 
 
-def register_reader(extension: str, reader_class: type | Callable):
+def register_reader(extension: str, reader_class: type | Callable[[], Any]) -> None:
     """Register a custom reader for a file extension.
 
     This allows users to add support for custom file formats without modifying
@@ -66,7 +69,7 @@ def register_reader(extension: str, reader_class: type | Callable):
     _READER_REGISTRY[extension.lower()] = reader_class
 
 
-def detect_reader(filepath: str | Path):
+def detect_reader(filepath: str | Path) -> GenericCSVReader | GenericTXTReader:
     """Auto-detect appropriate reader for file.
 
     Uses a multi-layer detection strategy:
@@ -110,10 +113,10 @@ def detect_reader(filepath: str | Path):
         reader_class = _READER_REGISTRY[ext]
         if callable(reader_class) and not isinstance(reader_class, type):
             # Factory function
-            return reader_class()
+            return reader_class()  # type: ignore[no-any-return]
         else:
             # Class constructor
-            return reader_class()
+            return reader_class()  # type: ignore[no-any-return]
 
     # Layer 2: Header-based detection (future implementation)
     # Could read first few lines and check for instrument signatures
@@ -132,7 +135,7 @@ def detect_reader(filepath: str | Path):
         return GenericCSVReader()
 
 
-def read_file(filepath: str | Path):
+def read_file(filepath: str | Path) -> Measurement:
     """Read file with automatic format detection.
 
     This is the main entry point for reading individual files. It automatically

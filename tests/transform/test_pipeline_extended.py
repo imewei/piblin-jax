@@ -131,9 +131,9 @@ class TestPipelineRepr:
         """Test __repr__ with empty pipeline (lines 325-327)."""
         pipeline = Pipeline([])
 
-        # Should show empty pipeline
+        # Should show 0 transforms
         repr_str = repr(pipeline)
-        assert "empty" in repr_str.lower()
+        assert repr_str == "Pipeline(0 transforms)"
 
     def test_repr_with_transforms(self):
         """Test __repr__ with transforms (lines 328-331)."""
@@ -143,23 +143,20 @@ class TestPipelineRepr:
 
         pipeline = Pipeline([t1, t2, t3])
 
-        # Should list all transforms
+        # Should show count of transforms
         repr_str = repr(pipeline)
-        assert "MultiplyTransform" in repr_str
-        assert "AddTransform" in repr_str
-        assert "GaussianSmooth" in repr_str
+        assert repr_str == "Pipeline(3 transforms)"
 
     def test_repr_shows_indices(self):
-        """Test that __repr__ shows transform indices."""
+        """Test that __repr__ shows transform count."""
         t1 = MultiplyTransform(2.0)
         t2 = AddTransform(1.0)
 
         pipeline = Pipeline([t1, t2])
 
         repr_str = repr(pipeline)
-        # Should show numbered list
-        assert "0." in repr_str
-        assert "1." in repr_str
+        # Should show count
+        assert repr_str == "Pipeline(2 transforms)"
 
 
 class TestPipelineComposition:

@@ -13,6 +13,7 @@ data itself, enabling adaptive processing.
 """
 
 from collections.abc import Callable
+from typing import Any
 
 from quantiq.backend import jnp
 from quantiq.backend.operations import jit
@@ -79,10 +80,10 @@ class LambdaTransform(DatasetTransform):
 
     def __init__(
         self,
-        func: Callable | None = None,
+        func: Callable[..., Any] | None = None,
         use_x: bool = False,
         jit_compile: bool = True,
-        lambda_func: Callable | None = None,
+        lambda_func: Callable[..., Any] | None = None,
     ):
         """
         Initialize lambda transform.
@@ -127,7 +128,7 @@ class LambdaTransform(DatasetTransform):
         self.jit_compile = jit_compile
 
         # Try to JIT compile if requested
-        self._compiled_func = None
+        self._compiled_func: Callable[..., Any]
         if jit_compile:
             try:
                 self._compiled_func = jit(func)
@@ -137,7 +138,7 @@ class LambdaTransform(DatasetTransform):
         else:
             self._compiled_func = func
 
-    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:
+    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:  # type: ignore[override]
         """
         Apply lambda function to dataset.
 
@@ -212,12 +213,12 @@ class DynamicTransform(DatasetTransform):
     - Only works with OneDimensionalDataset
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize dynamic transform."""
         super().__init__()
-        self._cached_params = None
+        self._cached_params: dict[str, Any] | None = None
 
-    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:
+    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:  # type: ignore[override]
         """
         Apply with dynamically computed parameters.
 
@@ -237,7 +238,7 @@ class DynamicTransform(DatasetTransform):
         # Apply transformation
         return self._apply_with_parameters(dataset, params)
 
-    def _compute_parameters(self, dataset):
+    def _compute_parameters(self, dataset: OneDimensionalDataset) -> dict[str, Any]:
         """
         Extract parameters from dataset.
 
@@ -255,7 +256,9 @@ class DynamicTransform(DatasetTransform):
         """
         raise NotImplementedError("Subclasses must implement _compute_parameters")
 
-    def _apply_with_parameters(self, dataset, params):
+    def _apply_with_parameters(
+        self, dataset: OneDimensionalDataset, params: dict[str, Any]
+    ) -> OneDimensionalDataset:
         """
         Apply transformation with parameters.
 
@@ -330,7 +333,7 @@ class AutoScaleTransform(DynamicTransform):
         self.target_min = target_min
         self.target_max = target_max
 
-    def _compute_parameters(self, dataset):
+    def _compute_parameters(self, dataset: OneDimensionalDataset) -> dict[str, Any]:
         """
         Compute scaling parameters from data.
 
@@ -359,7 +362,9 @@ class AutoScaleTransform(DynamicTransform):
 
         return {"scale": scale, "offset": offset}
 
-    def _apply_with_parameters(self, dataset, params):
+    def _apply_with_parameters(
+        self, dataset: OneDimensionalDataset, params: dict[str, Any]
+    ) -> OneDimensionalDataset:
         """
         Apply scaling transformation.
 
@@ -442,7 +447,7 @@ class AutoBaselineTransform(DynamicTransform):
         self.n_points = n_points
         self.method = method
 
-    def _compute_parameters(self, dataset):
+    def _compute_parameters(self, dataset: OneDimensionalDataset) -> dict[str, Any]:
         """
         Compute baseline from data.
 
@@ -474,7 +479,9 @@ class AutoBaselineTransform(DynamicTransform):
 
         return {"baseline": baseline}
 
-    def _apply_with_parameters(self, dataset, params):
+    def _apply_with_parameters(
+        self, dataset: OneDimensionalDataset, params: dict[str, Any]
+    ) -> OneDimensionalDataset:
         """
         Subtract baseline.
 

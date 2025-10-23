@@ -154,7 +154,7 @@ class PowerLawModel(BayesianModel):
 
     @staticmethod
     @jit
-    def _compute_predictions(K_samples, n_samples, shear_rate):
+    def _compute_predictions(K_samples, n_samples, shear_rate):  # type: ignore[no-untyped-def]
         """
         JIT-compiled prediction computation for 5-10x speedup.
 

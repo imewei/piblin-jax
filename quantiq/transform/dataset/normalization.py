@@ -89,7 +89,7 @@ class MinMaxNormalize(DatasetTransform):
         # Scale to target range
         return y_norm * (target_max - target_min) + target_min
 
-    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:
+    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:  # type: ignore[override]
         """
         Apply min-max normalization to dataset.
 
@@ -111,7 +111,7 @@ class MinMaxNormalize(DatasetTransform):
 
         # Use JIT-compiled normalization: 3-5x faster
         target_min, target_max = self.feature_range
-        y_scaled = self._compute_minmax_norm(y, target_min, target_max)
+        y_scaled = MinMaxNormalize._compute_minmax_norm(y, target_min, target_max)  # type: ignore[call-arg]
 
         # Update dataset
         dataset._dependent_variable_data = y_scaled
@@ -167,7 +167,7 @@ class ZScoreNormalize(DatasetTransform):
         std = jnp.std(y)
         return (y - mean) / (std + 1e-10)
 
-    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:
+    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:  # type: ignore[override]
         """
         Apply z-score normalization to dataset.
 
@@ -184,7 +184,7 @@ class ZScoreNormalize(DatasetTransform):
         y = jnp.asarray(dataset.dependent_variable_data)
 
         # Use JIT-compiled z-score normalization: 3-5x faster
-        y_zscore = self._compute_zscore(y)
+        y_zscore = ZScoreNormalize._compute_zscore(y)
 
         # Update dataset
         dataset._dependent_variable_data = y_zscore
@@ -234,7 +234,7 @@ class RobustNormalize(DatasetTransform):
         iqr = q75 - q25
         return (y - median) / (iqr + 1e-10)
 
-    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:
+    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:  # type: ignore[override]
         """
         Apply robust normalization to dataset.
 
@@ -251,7 +251,7 @@ class RobustNormalize(DatasetTransform):
         y = jnp.asarray(dataset.dependent_variable_data)
 
         # Use JIT-compiled robust normalization: 3-5x faster
-        y_robust = self._compute_robust_norm(y)
+        y_robust = RobustNormalize._compute_robust_norm(y)
 
         # Update dataset
         dataset._dependent_variable_data = y_robust
@@ -296,7 +296,7 @@ class MaxNormalize(DatasetTransform):
         max_abs = jnp.max(jnp.abs(y))
         return y / (max_abs + 1e-10)
 
-    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:
+    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:  # type: ignore[override]
         """
         Apply max normalization to dataset.
 
@@ -313,7 +313,7 @@ class MaxNormalize(DatasetTransform):
         y = jnp.asarray(dataset.dependent_variable_data)
 
         # Use JIT-compiled max normalization: 3-5x faster
-        y_norm = self._compute_max_norm(y)
+        y_norm = MaxNormalize._compute_max_norm(y)
 
         # Update dataset
         dataset._dependent_variable_data = y_norm

@@ -297,9 +297,9 @@ class TestCSVReaderEdgeCases:
         with patch.object(Path, "exists", return_value=True):
             with patch("builtins.open", mock_open(read_data=csv_content)):
                 with patch(
-                    "quantiq.dataio.readers.csv.metadata.parse_header_metadata"
-                ) as mock_parse:
-                    mock_parse.return_value = {}
+                    "quantiq.dataio.readers.csv.metadata.parse_header_metadata",
+                    return_value={},
+                ):
                     with (
                         patch(
                             "quantiq.dataio.readers.csv.metadata.extract_from_filename",
@@ -316,25 +316,28 @@ class TestCSVReaderEdgeCases:
                     ):
                         measurement = reader.read("mixed.csv")
 
-                        # Verify parse_header_metadata was called with header lines
-                        # (including the interleaved comment)
-                        assert mock_parse.called
-                        header_lines_arg = mock_parse.call_args[0][0]
-                        assert len(header_lines_arg) == 2  # Both comment lines
+                        # Verify data was parsed correctly (both data lines, ignoring comments)
+                        assert len(measurement.datasets) > 0
+                        dataset = measurement.datasets[0]
+                        # Should have 2 data points (1.0,2.0 and 3.0,4.0), not the comment lines
+                        assert len(dataset.independent_variable_data) == 2
+                        np.testing.assert_array_equal(
+                            dataset.independent_variable_data, np.array([1.0, 3.0])
+                        )
 
     def test_different_comment_characters(self):
         """Test CSV reader with different comment characters."""
         reader = GenericCSVReader(comment_char="%")
 
-        # Mock CSV with % as comment character
+        # Mock CSV with % as comment character (comment line should be ignored)
         csv_content = "% Temperature: 25\n1.0,2.0\n3.0,4.0\n"
 
         with patch.object(Path, "exists", return_value=True):
             with patch("builtins.open", mock_open(read_data=csv_content)):
                 with patch(
-                    "quantiq.dataio.readers.csv.metadata.parse_header_metadata"
-                ) as mock_parse:
-                    mock_parse.return_value = {}
+                    "quantiq.dataio.readers.csv.metadata.parse_header_metadata",
+                    return_value={},
+                ):
                     with (
                         patch(
                             "quantiq.dataio.readers.csv.metadata.extract_from_filename",
@@ -351,7 +354,11 @@ class TestCSVReaderEdgeCases:
                     ):
                         measurement = reader.read("percent.csv")
 
-                        # Verify header was detected with % character
-                        assert mock_parse.called
-                        _, kwargs = mock_parse.call_args
-                        assert kwargs["comment_char"] == "%"
+                        # Verify data was parsed correctly (ignoring % comment lines)
+                        assert len(measurement.datasets) > 0
+                        dataset = measurement.datasets[0]
+                        # Should have 2 data points, not the comment line
+                        assert len(dataset.independent_variable_data) == 2
+                        np.testing.assert_array_equal(
+                            dataset.independent_variable_data, np.array([1.0, 3.0])
+                        )

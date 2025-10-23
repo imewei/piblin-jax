@@ -190,6 +190,13 @@ nitpick_ignore = [
     ("py:class", "TidyMeasurementSet"),
     ("py:class", "quantiq.data.collections.measurement_set.MeasurementSet"),
     ("py:class", "quantiq.data.collections.experiment.Experiment"),
+    # Additional patterns from recent Sphinx warnings
+    ("py:class", "quantiq.data.collections.experiment_set.ExperimentSet"),
+    ("py:class", "quantiq.transform.pipeline.T"),
+    ("py:class", "quantiq.transform.base.T"),
+    # Complex union type fragments from metadata module
+    ("py:class", "type | Callable[[Any]"),
+    ("py:class", "bool]] | None"),
 ]
 
 # Suppress warnings (for development builds)

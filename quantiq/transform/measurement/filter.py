@@ -9,6 +9,7 @@ This module provides transforms that operate on collections:
 """
 
 from collections.abc import Callable
+from typing import Any
 
 from quantiq.backend import jnp
 from quantiq.data.collections import Measurement, MeasurementSet
@@ -84,9 +85,9 @@ class FilterDatasets(MeasurementTransform):
             raise ValueError("Provide only one of predicate or dataset_type")
 
         if dataset_type is not None:
-            self.predicate = lambda ds: isinstance(ds, dataset_type)
+            self.predicate: Callable[[Dataset], bool] = lambda ds: isinstance(ds, dataset_type)
         else:
-            self.predicate = predicate
+            self.predicate = predicate  # type: ignore[assignment]
 
     def _apply(self, measurement: Measurement) -> Measurement:
         """
@@ -152,7 +153,7 @@ class FilterMeasurements(MeasurementSetTransform):
     - Empty measurement list is allowed if no measurements match
     """
 
-    def __init__(self, predicate: Callable):
+    def __init__(self, predicate: Callable[[Measurement], bool]):
         """
         Initialize FilterMeasurements transform.
 
@@ -279,7 +280,9 @@ class SplitByRegion(MeasurementTransform):
                         new_datasets.append(new_ds)
 
         return Measurement(
-            datasets=new_datasets, conditions=measurement.conditions, details=measurement.details
+            datasets=new_datasets,  # type: ignore[arg-type]
+            conditions=measurement.conditions,
+            details=measurement.details,
         )
 
 
@@ -322,7 +325,7 @@ class MergeReplicates(MeasurementSetTransform):
     - Single measurements (no replicates) are returned unchanged
     """
 
-    def __init__(self, strategy="average"):
+    def __init__(self, strategy: str = "average"):
         """
         Initialize MergeReplicates transform.
 
@@ -351,7 +354,7 @@ class MergeReplicates(MeasurementSetTransform):
             New measurement set with merged measurements
         """
         # Group by conditions
-        groups = {}
+        groups: dict[tuple[tuple[str, Any], ...], list[Measurement]] = {}
         for measurement in measurement_set.measurements:
             # Create hashable key from conditions
             key = tuple(sorted(measurement.conditions.items()))
@@ -401,7 +404,9 @@ class MergeReplicates(MeasurementSetTransform):
                     y_values = []
                     for measurement in measurements:
                         if i < len(measurement.datasets):
-                            y_values.append(measurement.datasets[i].dependent_variable_data)
+                            ds = measurement.datasets[i]
+                            if isinstance(ds, OneDimensionalDataset):
+                                y_values.append(ds.dependent_variable_data)
 
                     # Average
                     y_avg = jnp.mean(jnp.stack(y_values), axis=0)
@@ -415,7 +420,9 @@ class MergeReplicates(MeasurementSetTransform):
                     averaged_datasets.append(averaged_ds)
 
             return Measurement(
-                datasets=averaged_datasets, conditions=first.conditions, details=first.details
+                datasets=averaged_datasets,  # type: ignore[arg-type]
+                conditions=first.conditions,
+                details=first.details,
             )
         else:
             # Concatenate not implemented yet

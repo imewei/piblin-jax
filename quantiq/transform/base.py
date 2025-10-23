@@ -18,6 +18,7 @@ Transforms support:
 
 import copy
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from typing import Any, TypeVar
 
 from quantiq.backend import is_jax_available
@@ -170,8 +171,8 @@ class Transform[T](ABC):
         """
         Deep copy an object using appropriate method for backend.
 
-        For JAX backend, uses tree mapping for efficient copying.
-        For NumPy backend, uses standard deep copy.
+        For all backends, uses standard deep copy to ensure proper object copying.
+        Previous JAX tree mapping approach didn't work for custom dataset objects.
 
         Parameters
         ----------
@@ -187,19 +188,13 @@ class Transform[T](ABC):
         -----
         JAX arrays are immutable, so copying creates new DeviceArrays
         with the same data. This is safe and efficient.
-        """
-        if is_jax_available():
-            # For JAX, use tree mapping to copy pytrees
-            try:
-                import jax
 
-                return jax.tree_map(lambda x: x, obj)
-            except Exception:
-                # Fallback to deep copy if tree mapping fails
-                return copy.deepcopy(obj)
-        else:
-            # For NumPy, use standard deep copy
-            return copy.deepcopy(obj)
+        Dataset objects contain JAX/NumPy arrays as internal data, but the
+        object itself needs proper deep copying to maintain immutability.
+        """
+        # Always use deep copy for reliable object copying
+        # JAX tree mapping doesn't work for custom dataset classes
+        return copy.deepcopy(obj)
 
     def _propagate_uncertainty(self, target: T) -> T:
         """
@@ -270,7 +265,7 @@ class Transform[T](ABC):
         )
 
 
-def jit_transform(func):
+def jit_transform(func: Callable[..., Any]) -> Callable[..., Any]:
     """
     Decorator to enable JIT compilation for transform _apply methods.
 
@@ -307,8 +302,8 @@ def jit_transform(func):
     if is_jax_available():
         # Compile with JAX if available
         try:
-            compiled = jit(func)
-            return compiled
+            compiled_func: Callable[..., Any] = jit(func)
+            return compiled_func
         except Exception:
             # If compilation fails, fall back to uncompiled
             return func
@@ -317,7 +312,7 @@ def jit_transform(func):
         return func
 
 
-class DatasetTransform(Transform):
+class DatasetTransform(Transform[Dataset]):
     """
     Transform that operates on Dataset objects.
 
@@ -348,7 +343,9 @@ class DatasetTransform(Transform):
     >>> smoothed = transform.apply_to(dataset)
     """
 
-    def apply_to(self, target, make_copy: bool = True, propagate_uncertainty: bool = False):
+    def apply_to(
+        self, target: Dataset, make_copy: bool = True, propagate_uncertainty: bool = False
+    ) -> Dataset:
         """
         Apply transform to Dataset.
 
@@ -376,7 +373,7 @@ class DatasetTransform(Transform):
         return super().apply_to(target, make_copy, propagate_uncertainty)
 
 
-class MeasurementTransform(Transform):
+class MeasurementTransform(Transform[Measurement]):
     """
     Transform that operates on Measurement objects.
 
@@ -397,7 +394,9 @@ class MeasurementTransform(Transform):
     ...         return measurement
     """
 
-    def apply_to(self, target, make_copy: bool = True):
+    def apply_to(
+        self, target: Measurement, make_copy: bool = True, propagate_uncertainty: bool = False
+    ) -> Measurement:
         """
         Apply transform to Measurement.
 
@@ -407,6 +406,8 @@ class MeasurementTransform(Transform):
             Measurement to transform
         make_copy : bool, default=True
             If True, create copy before transforming
+        propagate_uncertainty : bool, default=False
+            If True, propagate uncertainty through transform
 
         Returns
         -------
@@ -422,10 +423,10 @@ class MeasurementTransform(Transform):
             raise TypeError(
                 f"MeasurementTransform requires Measurement, got {type(target).__name__}"
             )
-        return super().apply_to(target, make_copy)
+        return super().apply_to(target, make_copy, propagate_uncertainty)
 
 
-class MeasurementSetTransform(Transform):
+class MeasurementSetTransform(Transform[MeasurementSet]):
     """
     Transform that operates on MeasurementSet objects.
 
@@ -454,7 +455,9 @@ class MeasurementSetTransform(Transform):
     ...         return measurement_set
     """
 
-    def apply_to(self, target, make_copy: bool = True):
+    def apply_to(
+        self, target: MeasurementSet, make_copy: bool = True, propagate_uncertainty: bool = False
+    ) -> MeasurementSet:
         """
         Apply transform to MeasurementSet.
 
@@ -464,6 +467,8 @@ class MeasurementSetTransform(Transform):
             MeasurementSet to transform
         make_copy : bool, default=True
             If True, create copy before transforming
+        propagate_uncertainty : bool, default=False
+            If True, propagate uncertainty through transform
 
         Returns
         -------
@@ -479,10 +484,10 @@ class MeasurementSetTransform(Transform):
             raise TypeError(
                 f"MeasurementSetTransform requires MeasurementSet, got {type(target).__name__}"
             )
-        return super().apply_to(target, make_copy)
+        return super().apply_to(target, make_copy, propagate_uncertainty)
 
 
-class ExperimentTransform(Transform):
+class ExperimentTransform(Transform[Experiment]):
     """
     Transform that operates on Experiment objects.
 
@@ -507,7 +512,9 @@ class ExperimentTransform(Transform):
     ...         return experiment
     """
 
-    def apply_to(self, target, make_copy: bool = True):
+    def apply_to(
+        self, target: Experiment, make_copy: bool = True, propagate_uncertainty: bool = False
+    ) -> Experiment:
         """
         Apply transform to Experiment.
 
@@ -517,6 +524,8 @@ class ExperimentTransform(Transform):
             Experiment to transform
         make_copy : bool, default=True
             If True, create copy before transforming
+        propagate_uncertainty : bool, default=False
+            If True, propagate uncertainty through transform
 
         Returns
         -------
@@ -530,10 +539,10 @@ class ExperimentTransform(Transform):
         """
         if not isinstance(target, Experiment):
             raise TypeError(f"ExperimentTransform requires Experiment, got {type(target).__name__}")
-        return super().apply_to(target, make_copy)
+        return super().apply_to(target, make_copy, propagate_uncertainty)
 
 
-class ExperimentSetTransform(Transform):
+class ExperimentSetTransform(Transform[ExperimentSet]):
     """
     Transform that operates on ExperimentSet objects.
 
@@ -564,7 +573,9 @@ class ExperimentSetTransform(Transform):
     ...         return experiment_set
     """
 
-    def apply_to(self, target, make_copy: bool = True):
+    def apply_to(
+        self, target: ExperimentSet, make_copy: bool = True, propagate_uncertainty: bool = False
+    ) -> ExperimentSet:
         """
         Apply transform to ExperimentSet.
 
@@ -574,6 +585,8 @@ class ExperimentSetTransform(Transform):
             ExperimentSet to transform
         make_copy : bool, default=True
             If True, create copy before transforming
+        propagate_uncertainty : bool, default=False
+            If True, propagate uncertainty through transform
 
         Returns
         -------
@@ -589,7 +602,7 @@ class ExperimentSetTransform(Transform):
             raise TypeError(
                 f"ExperimentSetTransform requires ExperimentSet, got {type(target).__name__}"
             )
-        return super().apply_to(target, make_copy)
+        return super().apply_to(target, make_copy, propagate_uncertainty)
 
 
 __all__ = [

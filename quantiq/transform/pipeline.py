@@ -13,15 +13,15 @@ Pipelines support:
 - JIT compilation (entire pipeline)
 """
 
-from collections.abc import MutableSequence
-from typing import Any, TypeVar
+from collections.abc import Iterable, MutableSequence
+from typing import Any, TypeVar, overload
 
 from .base import Transform
 
 T = TypeVar("T")
 
 
-class Pipeline(Transform[T], MutableSequence):
+class Pipeline(Transform[T], MutableSequence[Transform[T]]):
     """
     Pipeline for composing multiple transforms sequentially.
 
@@ -75,7 +75,7 @@ class Pipeline(Transform[T], MutableSequence):
     - Use lazy evaluation for even better performance with JAX
     """
 
-    def __init__(self, transforms: list[Transform] | None = None):
+    def __init__(self, transforms: list[Transform[T]] | None = None):
         """
         Initialize pipeline.
 
@@ -85,7 +85,7 @@ class Pipeline(Transform[T], MutableSequence):
             Initial transforms to include in pipeline
         """
         super().__init__()
-        self._transforms: list[Transform] = list(transforms) if transforms else []
+        self._transforms: list[Transform[T]] = list(transforms) if transforms else []
         self._lazy = False  # Standard pipeline is eager by default
 
     def _apply(self, target: T, propagate_uncertainty: bool = False) -> T:
@@ -161,7 +161,13 @@ class Pipeline(Transform[T], MutableSequence):
     # MutableSequence interface implementation
     # This allows Pipeline to be used like a list
 
-    def __getitem__(self, index: int | slice) -> Transform | list[Transform]:
+    @overload
+    def __getitem__(self, index: int) -> Transform[T]: ...
+
+    @overload
+    def __getitem__(self, index: slice) -> list[Transform[T]]: ...
+
+    def __getitem__(self, index: int | slice) -> Transform[T] | list[Transform[T]]:
         """
         Get transform(s) at index.
 
@@ -181,9 +187,19 @@ class Pipeline(Transform[T], MutableSequence):
         >>> pipeline[0]  # Get first transform
         >>> pipeline[1:3]  # Get slice of transforms
         """
+        if isinstance(index, slice):
+            # For slices, return list of transforms
+            return self._transforms[index]
+        # For single index, return single transform
         return self._transforms[index]
 
-    def __setitem__(self, index: int | slice, value: Transform | list[Transform]) -> None:
+    @overload
+    def __setitem__(self, index: int, value: Transform[T]) -> None: ...
+
+    @overload
+    def __setitem__(self, index: slice, value: Iterable[Transform[T]]) -> None: ...
+
+    def __setitem__(self, index: int | slice, value: Transform[T] | Iterable[Transform[T]]) -> None:
         """
         Set transform(s) at index.
 
@@ -206,13 +222,15 @@ class Pipeline(Transform[T], MutableSequence):
         """
         if isinstance(index, slice):
             # For slices, validate all values are transforms
-            if not all(isinstance(v, Transform) for v in value):
+            value_list = list(value) if not isinstance(value, Transform) else [value]
+            if not all(isinstance(v, Transform) for v in value_list):
                 raise TypeError("Pipeline can only contain Transform objects")
+            self._transforms[index] = value_list
         else:
             # For single index, validate value is a transform
             if not isinstance(value, Transform):
                 raise TypeError("Pipeline can only contain Transform objects")
-        self._transforms[index] = value
+            self._transforms[index] = value
 
     def __delitem__(self, index: int | slice) -> None:
         """
@@ -248,7 +266,7 @@ class Pipeline(Transform[T], MutableSequence):
         """
         return len(self._transforms)
 
-    def insert(self, index: int, value: Transform) -> None:
+    def insert(self, index: int, value: Transform[T]) -> None:
         """
         Insert transform at index.
 
@@ -273,7 +291,7 @@ class Pipeline(Transform[T], MutableSequence):
             raise TypeError("Pipeline can only contain Transform objects")
         self._transforms.insert(index, value)
 
-    def append(self, transform: Transform) -> None:
+    def append(self, transform: Transform[T]) -> None:
         """
         Add transform to end of pipeline.
 
@@ -331,7 +349,7 @@ class Pipeline(Transform[T], MutableSequence):
         return "\n".join(lines)
 
 
-class LazyPipeline(Pipeline):
+class LazyPipeline(Pipeline[T]):
     """
     Pipeline with lazy evaluation support.
 
@@ -373,7 +391,7 @@ class LazyPipeline(Pipeline):
     - More efficient than eager evaluation for complex pipelines
     """
 
-    def __init__(self, transforms: list[Transform] | None = None):
+    def __init__(self, transforms: list[Transform[T]] | None = None):
         """
         Initialize lazy pipeline.
 
@@ -387,9 +405,11 @@ class LazyPipeline(Pipeline):
         self._target: T | None = None
         self._result_cache: T | None = None
         self._dirty = True  # Flag indicating computation needed
-        self._propagate_uncertainty = False  # Store uncertainty propagation flag
+        self._propagate_unc = False  # Store uncertainty propagation flag
 
-    def apply_to(self, target: T, make_copy: bool = True, propagate_uncertainty: bool = False) -> T:
+    def apply_to(
+        self, target: T, make_copy: bool = True, propagate_uncertainty: bool = False
+    ) -> Any:
         """
         Apply lazy pipeline to target.
 
@@ -423,12 +443,12 @@ class LazyPipeline(Pipeline):
         # Store target and mark as dirty (needs computation)
         self._target = target
         self._dirty = True
-        self._propagate_uncertainty = propagate_uncertainty
+        self._propagate_unc = propagate_uncertainty
 
         # Return lazy wrapper that triggers computation on access
         return LazyResult(self)
 
-    def _compute(self) -> T:
+    def _compute(self) -> T | None:
         """
         Execute the pipeline computation.
 
@@ -437,7 +457,7 @@ class LazyPipeline(Pipeline):
 
         Returns
         -------
-        T
+        T | None
             Computed result
 
         Notes
@@ -447,7 +467,7 @@ class LazyPipeline(Pipeline):
         if self._dirty and self._target is not None:
             # Perform computation with uncertainty propagation if requested
             self._result_cache = self._apply(
-                self._target, propagate_uncertainty=self._propagate_uncertainty
+                self._target, propagate_uncertainty=self._propagate_unc
             )
             self._dirty = False
 
@@ -501,7 +521,7 @@ class LazyResult:
     first access.
     """
 
-    def __init__(self, pipeline: LazyPipeline):
+    def __init__(self, pipeline: LazyPipeline[Any]):
         """
         Initialize lazy result wrapper.
 

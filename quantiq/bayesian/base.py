@@ -217,6 +217,7 @@ class BayesianModel(ABC):
 
         # Run MCMC sampling
         rng_key = random.PRNGKey(self.random_seed)
+        assert self._mcmc is not None  # Initialized above
         self._mcmc.run(rng_key, x=x, y=y, **kwargs)
 
         # Store posterior samples

@@ -16,13 +16,13 @@ import numpy as np
 
 
 def fit_curve(
-    func: Callable,
+    func: Callable[..., np.ndarray],
     x: np.ndarray,
     y: np.ndarray,
     p0: np.ndarray | None = None,
     sigma: np.ndarray | None = None,
     absolute_sigma: bool = False,
-    **kwargs,
+    **kwargs: Any,
 ) -> dict[str, Any]:
     """
     Fit a curve using NLSQ or scipy fallback.
@@ -118,7 +118,7 @@ def fit_curve(
         from scipy.optimize import curve_fit
 
         # Prepare arguments for scipy
-        scipy_kwargs = {}
+        scipy_kwargs: dict[str, Any] = {}
         if sigma is not None:
             scipy_kwargs["sigma"] = sigma
             scipy_kwargs["absolute_sigma"] = absolute_sigma
@@ -151,7 +151,10 @@ def fit_curve(
 
 
 def estimate_initial_parameters(
-    func: Callable, x: np.ndarray, y: np.ndarray, bounds: tuple | None = None
+    func: Callable[..., np.ndarray],
+    x: np.ndarray,
+    y: np.ndarray,
+    bounds: tuple[np.ndarray, np.ndarray] | None = None,
 ) -> np.ndarray:
     """
     Estimate initial parameters for curve fitting.

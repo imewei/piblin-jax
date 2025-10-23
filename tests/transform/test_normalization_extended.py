@@ -23,9 +23,12 @@ from quantiq.transform.dataset import (
 
 def create_test_dataset(y_data=None):
     """Create simple test dataset."""
-    x = np.linspace(0, 10, 50)
     if y_data is None:
-        y_data = np.random.randn(50) * 10 + 50
+        n_points = 50
+        y_data = np.random.randn(n_points) * 10 + 50
+    else:
+        n_points = len(y_data)
+    x = np.linspace(0, 10, n_points)
     return OneDimensionalDataset(
         independent_variable_data=x,
         dependent_variable_data=y_data,

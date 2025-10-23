@@ -161,7 +161,7 @@ class CarreauYasudaModel(BayesianModel):
         if y is not None:
             sigma_scale = jnp.maximum(jnp.std(y) * 0.1, 0.01)
         else:
-            sigma_scale = 1.0
+            sigma_scale = jnp.array(1.0)
         sigma = numpyro.sample("sigma", dist.HalfNormal(sigma_scale))
 
         # Model: η = η∞ + (η₀ - η∞) * [1 + (λγ̇)^a]^((n-1)/a)
@@ -173,7 +173,7 @@ class CarreauYasudaModel(BayesianModel):
 
     @staticmethod
     @jit
-    def _compute_predictions(
+    def _compute_predictions(  # type: ignore[no-untyped-def]
         eta0_samples, eta_inf_samples, lambda_samples, a_samples, n_samples, shear_rate
     ):
         """

@@ -120,7 +120,7 @@ class Derivative(DatasetTransform):
         dy = jnp.diff(y) / jnp.diff(x)
         return jnp.concatenate([jnp.array([dy[0]]), dy])
 
-    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:
+    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:  # type: ignore[override]
         """
         Apply derivative computation to dataset.
 
@@ -145,19 +145,19 @@ class Derivative(DatasetTransform):
         # Compute first derivative using JIT-compiled methods
         if self.method == "gradient":
             # Central differences (2nd order accurate)
-            dy = self._compute_gradient(y, x)
+            dy = Derivative._compute_gradient(y, x)  # type: ignore[call-arg]
         elif self.method == "forward":
             # Forward differences
-            dy = self._compute_forward_diff(y, x)
+            dy = Derivative._compute_forward_diff(y, x)  # type: ignore[call-arg]
         elif self.method == "backward":
             # Backward differences
-            dy = self._compute_backward_diff(y, x)
+            dy = Derivative._compute_backward_diff(y, x)  # type: ignore[call-arg]
         else:
             raise ValueError(f"Unknown method: {self.method}")
 
         # Compute second derivative if requested
         if self.order == 2:
-            dy = self._compute_gradient(dy, x)
+            dy = Derivative._compute_gradient(dy, x)  # type: ignore[call-arg]
 
         # Update dataset
         dataset._dependent_variable_data = dy
@@ -235,7 +235,7 @@ class CumulativeIntegral(DatasetTransform):
         y_avg = (y[1:] + y[:-1]) / 2.0
         return jnp.concatenate([jnp.array([0.0]), jnp.cumsum(y_avg * dx)])
 
-    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:
+    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:  # type: ignore[override]
         """
         Apply cumulative integration to dataset.
 
@@ -259,7 +259,7 @@ class CumulativeIntegral(DatasetTransform):
 
         if self.method == "trapezoid":
             # Use JIT-compiled trapezoidal rule
-            cumsum = self._compute_trapezoid_cumsum(x, y)
+            cumsum = CumulativeIntegral._compute_trapezoid_cumsum(x, y)  # type: ignore[call-arg]
         else:
             raise ValueError(f"Unknown method: {self.method}")
 
@@ -345,7 +345,7 @@ class DefiniteIntegral(DatasetTransform):
         y_avg = (y_region[1:] + y_region[:-1]) / 2.0
         return jnp.sum(y_avg * dx)
 
-    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:
+    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:  # type: ignore[override]
         """
         Apply definite integration to dataset.
 
@@ -378,7 +378,7 @@ class DefiniteIntegral(DatasetTransform):
                 integral_value = 0.0
             else:
                 # Use JIT-compiled trapezoidal integration: 3-5x faster
-                integral_value = float(self._compute_trapezoid_sum(x_region, y_region))
+                integral_value = float(DefiniteIntegral._compute_trapezoid_sum(x_region, y_region))  # type: ignore[call-arg,arg-type]
         else:
             raise ValueError(f"Unknown method: {self.method}")
 

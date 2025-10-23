@@ -55,6 +55,7 @@ dev = [
     "ruff>=0.14.1",
     "pre-commit>=4.3.0",
     "build>=1.3.0",
+    "interrogate>=1.7.0",
 ]
 
 test = [
@@ -269,7 +270,8 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 "conftest.py" = ["F401", "E402"]
 "tests/conftest.py" = ["E402"]
 # Allow all in tests, plus unescaped regex metacharacters (intentional patterns)
-"tests/**/*.py" = ["F841", "F401", "RUF043"]
+# SIM117: Nested with statements are often clearer in test mocking contexts
+"tests/**/*.py" = ["F841", "F401", "RUF043", "SIM117"]
 # Allow late imports in examples (for demonstration purposes)
 "examples/**/*.py" = ["E402"]
 # Allow abstract classes without abstract methods (valid design choice)
@@ -295,3 +297,24 @@ quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
+
+[tool.interrogate]
+# Docstring coverage configuration
+ignore-init-method = true
+ignore-init-module = false
+ignore-magic = false
+ignore-module = false
+ignore-nested-functions = false
+ignore-nested-classes = false
+ignore-private = false
+ignore-property-decorators = false
+ignore-semiprivate = false
+ignore-setters = false
+fail-under = 95.0
+exclude = ["setup.py", "docs", "tests", "build", "dist", ".venv", ".eggs"]
+verbose = 1
+quiet = false
+whitelist-regex = []
+color = true
+generate-badge = "."
+badge-format = "svg"

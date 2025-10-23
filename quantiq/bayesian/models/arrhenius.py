@@ -155,7 +155,7 @@ class ArrheniusModel(BayesianModel):
         if y is not None:
             sigma_scale = jnp.maximum(jnp.mean(y) * 0.1, 0.01)
         else:
-            sigma_scale = 1.0
+            sigma_scale = jnp.array(1.0)
         sigma = numpyro.sample("sigma", dist.HalfNormal(sigma_scale))
 
         # Model: η(T) = A * exp(Ea / (R*T))
@@ -167,7 +167,7 @@ class ArrheniusModel(BayesianModel):
 
     @staticmethod
     @jit
-    def _compute_predictions(A_samples, Ea_samples, temperature, R):
+    def _compute_predictions(A_samples, Ea_samples, temperature, R):  # type: ignore[no-untyped-def]
         """
         JIT-compiled prediction computation for 5-10x speedup.
 

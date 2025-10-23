@@ -90,7 +90,7 @@ class Interpolate1D(DatasetTransform):
                 "Currently only 'linear' is implemented."
             )
 
-    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:
+    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:  # type: ignore[override]
         """
         Apply interpolation to dataset.
 

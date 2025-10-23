@@ -264,8 +264,15 @@ class TestDefiniteIntegral:
 
     def test_definite_integral_adds_to_existing_details(self):
         """Test that definite integral adds to existing details."""
-        dataset = create_sine_dataset()
-        dataset.details = {"existing_key": "existing_value"}
+        # Create dataset with existing details
+        x = np.linspace(0, 2 * np.pi, 100)
+        y = np.sin(x)
+        dataset = OneDimensionalDataset(
+            independent_variable_data=x,
+            dependent_variable_data=y,
+            conditions={"temperature": 25.0},
+            details={"existing_key": "existing_value"},
+        )
 
         # Apply integration
         transform = DefiniteIntegral(x_min=None, x_max=None, method="trapezoid")

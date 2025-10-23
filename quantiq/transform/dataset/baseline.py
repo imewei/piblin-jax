@@ -79,7 +79,7 @@ class PolynomialBaseline(DatasetTransform):
         super().__init__()
         self.degree = degree
 
-    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:
+    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:  # type: ignore[override]
         """
         Fit and subtract polynomial baseline from dataset.
 
@@ -191,7 +191,7 @@ class AsymmetricLeastSquaresBaseline(DatasetTransform):
         self.p = p
         self.max_iter = max_iter
 
-    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:
+    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:  # type: ignore[override]
         """
         Apply ALS baseline correction.
 

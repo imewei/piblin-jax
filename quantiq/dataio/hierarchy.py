@@ -64,7 +64,7 @@ def build_hierarchy(measurements: list[Measurement]) -> ExperimentSet:
         return ExperimentSet([])
 
     # Extract all condition keys across all measurements
-    all_condition_keys = set()
+    all_condition_keys: set[str] = set()
     for m in measurements:
         all_condition_keys.update(m.conditions.keys())
 
@@ -144,7 +144,7 @@ def group_by_conditions(
     algorithm that may want to create separate Experiments or MeasurementSets
     based on specific conditions.
     """
-    groups = {}
+    groups: dict[tuple[Any, ...], list[Measurement]] = {}
 
     for measurement in measurements:
         # Extract values for grouping keys
@@ -186,7 +186,7 @@ def identify_varying_conditions(measurements: list[Measurement]) -> set[str]:
         return set()
 
     # Collect all condition keys
-    all_keys = set()
+    all_keys: set[str] = set()
     for m in measurements:
         all_keys.update(m.conditions.keys())
 

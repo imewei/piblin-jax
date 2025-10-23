@@ -5,6 +5,8 @@ This module provides various smoothing/filtering transforms to reduce
 noise in time series and spectral data.
 """
 
+from typing import Any
+
 from quantiq.backend import jnp
 from quantiq.backend.operations import jit
 from quantiq.data.datasets import OneDimensionalDataset
@@ -85,11 +87,11 @@ class MovingAverageSmooth(DatasetTransform):
 
     @staticmethod
     @jit
-    def _convolve(y, kernel):
+    def _convolve(y: Any, kernel: Any) -> Any:
         """JIT-compiled convolution for 3-5x speedup."""
         return jnp.convolve(y, kernel, mode="same")
 
-    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:
+    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:  # type: ignore[override]
         """
         Apply moving average smoothing to dataset.
 
@@ -115,7 +117,7 @@ class MovingAverageSmooth(DatasetTransform):
         kernel = jnp.ones(self.window_size) / self.window_size
 
         # Apply JIT-compiled convolution: 3-5x faster
-        y_smooth = self._convolve(y, kernel)
+        y_smooth = MovingAverageSmooth._convolve(y, kernel)  # type: ignore[call-arg]
 
         # Update dataset with smoothed data
         dataset._dependent_variable_data = y_smooth
@@ -174,11 +176,11 @@ class GaussianSmooth(DatasetTransform):
 
     @staticmethod
     @jit
-    def _convolve(y, kernel):
+    def _convolve(y: Any, kernel: Any) -> Any:
         """JIT-compiled convolution for 3-5x speedup."""
         return jnp.convolve(y, kernel, mode="same")
 
-    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:
+    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:  # type: ignore[override]
         """
         Apply Gaussian smoothing to dataset.
 
@@ -202,7 +204,7 @@ class GaussianSmooth(DatasetTransform):
         kernel = kernel / jnp.sum(kernel)  # Normalize
 
         # Apply JIT-compiled convolution: 3-5x faster
-        y_smooth = self._convolve(y, kernel)
+        y_smooth = GaussianSmooth._convolve(y, kernel)  # type: ignore[call-arg]
 
         # Update dataset
         dataset._dependent_variable_data = y_smooth

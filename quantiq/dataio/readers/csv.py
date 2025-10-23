@@ -5,6 +5,7 @@ extract metadata from file headers, and create appropriate Dataset objects.
 """
 
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 
@@ -50,7 +51,7 @@ class GenericCSVReader:
         2.0,4.0
     """
 
-    def __init__(self, delimiter: str = ",", comment_char: str = "#"):
+    def __init__(self, delimiter: str | None = ",", comment_char: str = "#"):
         """Initialize GenericCSVReader.
 
         See class docstring for parameter details.
@@ -122,7 +123,7 @@ class GenericCSVReader:
         datasets = self._create_datasets(data_array, conditions, details)
 
         # Create measurement
-        measurement = Measurement(datasets=datasets, conditions=conditions, details=details)
+        measurement = Measurement(datasets=datasets, conditions=conditions, details=details)  # type: ignore[arg-type]
 
         return measurement
 
@@ -144,7 +145,7 @@ class GenericCSVReader:
         ValueError
             If data cannot be parsed or has inconsistent columns
         """
-        data_array = []
+        data_list: list[list[float]] = []
         for line in data_lines:
             if self.delimiter is None:
                 # Whitespace-delimited
@@ -152,11 +153,11 @@ class GenericCSVReader:
             else:
                 # Specific delimiter
                 values = [float(v.strip()) for v in line.split(self.delimiter) if v.strip()]
-            data_array.append(values)
+            data_list.append(values)
 
         # Convert to numpy array and validate
         try:
-            data_array = np.array(data_array)
+            data_array = np.array(data_list)
         except ValueError as e:
             raise ValueError(f"Inconsistent number of columns in data: {e}") from e
 
@@ -169,7 +170,7 @@ class GenericCSVReader:
         return data_array
 
     def _create_datasets(
-        self, data_array: np.ndarray, conditions: dict, details: dict
+        self, data_array: np.ndarray, conditions: dict[str, Any], details: dict[str, Any]
     ) -> list[OneDimensionalDataset]:
         """Create Dataset objects from data array.
 

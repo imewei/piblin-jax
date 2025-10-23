@@ -77,7 +77,7 @@ class RegionTransform(DatasetTransform):
         super().__init__()
         self.region = region
 
-    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:
+    def _apply(self, dataset: OneDimensionalDataset) -> OneDimensionalDataset:  # type: ignore[override]
         """
         Apply transform within region, preserve outside.
 
