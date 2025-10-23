@@ -95,7 +95,7 @@ security = [
 # See README.md GPU Installation section for instructions
 
 all = [
-    "quantiq[dev,test,docs]",
+    "quantiq-jax[dev,test,docs]",
 ]
 
 [project.urls]
