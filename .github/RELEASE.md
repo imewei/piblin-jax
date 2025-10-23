@@ -153,7 +153,7 @@ If you set up environment protection (recommended):
 
 2. **Check PyPI** (after approval):
    ```bash
-   pip install quantiq==0.0.1
+   pip install quantiq-jax==0.0.1
    python -c "import quantiq; print(quantiq.__version__)"
    ```
 

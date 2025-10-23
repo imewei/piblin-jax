@@ -283,7 +283,7 @@ quantiq supports several optional dependency groups:
 
 .. code-block:: bash
 
-    pip install quantiq[dev]
+    pip install quantiq-jax[dev]
 
 Includes: ruff, mypy, pre-commit hooks, pytest
 
@@ -291,7 +291,7 @@ Includes: ruff, mypy, pre-commit hooks, pytest
 
 .. code-block:: bash
 
-    pip install quantiq[test]
+    pip install quantiq-jax[test]
 
 Includes: pytest, pytest-cov, pytest-benchmark
 
@@ -299,7 +299,7 @@ Includes: pytest, pytest-cov, pytest-benchmark
 
 .. code-block:: bash
 
-    pip install quantiq[docs]
+    pip install quantiq-jax[docs]
 
 Includes: Sphinx, sphinx-rtd-theme, sphinx-autodoc-typehints
 
@@ -307,7 +307,7 @@ Includes: Sphinx, sphinx-rtd-theme, sphinx-autodoc-typehints
 
 .. code-block:: bash
 
-    pip install quantiq[security]
+    pip install quantiq-jax[security]
 
 Includes: pip-audit, bandit, safety
 
@@ -315,7 +315,7 @@ Includes: pip-audit, bandit, safety
 
 .. code-block:: bash
 
-    pip install quantiq[all]
+    pip install quantiq-jax[all]
 
 Docker Installation
 -------------------

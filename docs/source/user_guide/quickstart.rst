@@ -263,7 +263,7 @@ GPU Acceleration
 For large datasets on Linux with CUDA 12+, quantiq can leverage GPU acceleration::
 
     # Install GPU support (Linux only, CUDA 12+)
-    # pip install quantiq[gpu-cuda]
+    # pip install quantiq-jax[gpu-cuda]
 
     # JAX automatically uses GPU when available
     # No code changes needed!
