@@ -2,6 +2,17 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+**Last Updated**: 2025-10-23
+
+## Recent Updates
+
+**Major changes since last version:**
+- **GPU Installation Overhaul (BREAKING)**: Removed pip extras (`gpu-cuda`), now requires explicit installation via Makefile or manual process. Eliminates silent CPU/GPU conflicts across package managers.
+- **Type Safety Achievement**: 100% mypy strict mode compliance (eliminated 130+ type errors)
+- **Test Suite Expansion**: 97.14% coverage with 617+ tests (5,317 new test lines added)
+- **Critical Bug Fixes**: Fixed Transform._copy_tree immutability issue using copy.deepcopy()
+- **Documentation Improvements**: Enhanced GPU installation guide, restructured README
+
 ## Project Overview
 
 **quantiq** is a modern JAX-powered framework for measurement data science, providing a high-performance reimplementation of the [piblin](https://github.com/3mcloud/piblin) library. Key characteristics:
@@ -25,6 +36,12 @@ make install-test            # Test dependencies only
 make install-gpu-cuda        # CUDA GPU support (Linux only)
 ```
 
+**IMPORTANT - GPU Installation (Breaking Change)**:
+- The `quantiq[gpu-cuda]` pip extra has been removed
+- GPU installation now requires `make install-gpu-cuda` (recommended) or manual installation
+- Reason: pip extras cause silent CPU/GPU conflicts across package managers
+- See README.md GPU Installation section for details
+
 ### Testing
 ```bash
 # Run tests
@@ -42,13 +59,15 @@ uv run pytest tests/path/to/test_file.py::test_function_name -v
 uv run pytest -k "pattern" -v
 ```
 
+**Test Coverage**: Currently at **97.14%** with **617+ tests** passing.
+
 ### Code Quality
 ```bash
 # Formatting and linting
 make format                  # Auto-format with ruff
 make format-check            # Check formatting without changes
 make lint                    # Run ruff linter
-make type-check              # Run mypy type checker
+make type-check              # Run mypy type checker (100% strict compliance)
 make check                   # Run all checks (format + lint + type)
 
 # Quick iteration (format + fast tests)
@@ -136,12 +155,18 @@ All transforms support:
 - Immutability via `make_copy` parameter
 - Pipeline composition
 
+**CRITICAL - Transform Immutability**:
+- Use `copy.deepcopy()` for copying tree structures (NOT JAX tree operations)
+- See `Transform._copy_tree()` in `transform/base.py:188-200`
+- JAX tree operations don't preserve non-JAX-compatible types
+
 ## Important Implementation Details
 
 ### JAX Backend Requirements
 - **Platform restrictions**: GPU acceleration requires Linux + CUDA 12+
 - **Platform detection**: Use `backend._detect_platform()` to check OS
 - **CUDA validation**: `backend._validate_cuda_version()` checks for CUDA 12+
+- **Installation**: Use `make install-gpu-cuda` (auto-detects uv/conda/mamba/pip)
 
 ### Testing Markers
 ```python
@@ -153,19 +178,21 @@ All transforms support:
 ```
 
 ### Type Hints
-- **Strict mypy**: All code must pass `mypy --strict`
+- **Strict mypy**: All code must pass `mypy --strict` (100% compliance achieved)
 - **Modern Python**: Uses Python 3.12+ syntax (generics via `class Transform[T]`)
 - **Type stubs**: External libraries (JAX, NumPyro) have `ignore_missing_imports = true`
 
 ### Code Style
 - **Line length**: 100 characters
 - **Ruff rules**: E, W, F, I, N, UP, B, C4, SIM, RUF enabled
+- **Explicit imports**: Zero star imports (`from X import *`) allowed in codebase
 - **Scientific naming**: Allow single-letter math names (N802, N803, N806, N816 ignored)
 - **Unicode support**: Greek letters allowed in code/docs (RUF001, RUF002, RUF003 ignored)
 - **NumPy-style docstrings**: All public APIs must have complete docstrings
 
 ### Coverage Requirements
 - **Minimum coverage**: 95% required (`--cov-fail-under=95`)
+- **Current coverage**: 97.14% (617+ tests)
 - **Exclusions**: Tests, `__init__.py`, setup.py, abstract methods
 - **Reports**: term-missing, HTML, and XML formats
 
@@ -194,6 +221,7 @@ quantiq maintains 100% behavioral compatibility with piblin:
 5. **Document with NumPy style**: Include Parameters, Returns, Examples sections
 6. **Test coverage**: Add tests to maintain >95% coverage
 7. **Platform awareness**: Consider Linux/macOS/Windows differences for GPU code
+8. **Use copy.deepcopy()**: For transform tree copying (not JAX tree operations)
 
 ## Common Workflows
 
@@ -203,6 +231,7 @@ quantiq maintains 100% behavioral compatibility with piblin:
 3. Add type hints and NumPy-style docstring
 4. Add tests with >95% coverage
 5. Update `transform/__init__.py` exports
+6. Use `copy.deepcopy()` if copying tree structures
 
 ### Adding a Bayesian Model
 1. Create model in `bayesian/models/`
@@ -210,6 +239,7 @@ quantiq maintains 100% behavioral compatibility with piblin:
 3. Implement `_model()` method with NumPyro syntax
 4. Add GPU and slow test markers
 5. Ensure conditional import handling (JAX-dependent)
+6. Use `@jit` + `@staticmethod` pattern for performance
 
 ### Fixing Backend Issues
 - Check platform detection first: `backend._detect_platform()`
@@ -224,6 +254,7 @@ This project uses **uv** (not pip or conda) for all package management:
 - **Sync dependencies**: `uv sync --frozen` (CI) or `uv sync` (local)
 - **Run commands**: `uv run pytest`, `uv run ruff`, etc.
 - **Build**: `uv build` (not `python -m build`)
+- **GPU installation**: `make install-gpu-cuda` auto-detects uv/conda/mamba/pip
 
 ## Security and Quality
 
@@ -231,3 +262,26 @@ This project uses **uv** (not pip or conda) for all package management:
 - **SBOM generation**: CycloneDX software bill of materials
 - **Dependency review**: Automated on pull requests
 - **License restrictions**: GPL-3.0 and AGPL-3.0 denied
+
+## Breaking Changes
+
+### v0.1.0 (Current Development)
+- **GPU Installation**: Removed `quantiq[gpu-cuda]` pip extra
+  - **Migration**: Use `make install-gpu-cuda` or manual installation
+  - **Rationale**: pip extras cause silent CPU/GPU conflicts
+  - **Documentation**: See README.md GPU Installation section
+
+## Known Issues & Limitations
+
+1. **GPU Support Platform Constraints**:
+   - Linux + CUDA 12+ only
+   - macOS: CPU-only (no NVIDIA GPU support)
+   - Windows: CPU-only (JAX CUDA support experimental/unstable)
+
+2. **Type Checking**:
+   - Some JAX/NumPyro types require `ignore_missing_imports`
+   - Generics require Python 3.12+ syntax
+
+3. **Transform Immutability**:
+   - Must use `copy.deepcopy()` for tree copying
+   - JAX tree operations don't preserve non-JAX types

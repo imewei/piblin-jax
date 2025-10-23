@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **BREAKING:** Removed `gpu-cuda` optional dependency extra from pyproject.toml
+  - GPU installation now requires explicit manual installation or `make install-gpu-cuda`
+  - Reason: pip extras are unreliable for mutually exclusive dependency variants (CPU vs GPU jaxlib)
+  - Migration path: Use `make install-gpu-cuda` (recommended) or manual installation (see README)
+  - This eliminates silent CPU/GPU jaxlib conflicts across all package managers
+- **JAX Version Constraint**: Updated to `jax>=0.8.0,<0.9.0` for stability
+  - Allows bugfix releases within 0.8.x
+  - Blocks potentially breaking changes in 0.9.0+
+  - GPU installation uses same constraint for consistency
+
+### Improved
+- **GPU Installation Reliability**: Enhanced Makefile with automatic package manager detection
+  - Automatically detects and uses uv, conda/mamba, or pip
+  - Platform validation with clear error messages for macOS/Windows
+  - 4-step installation process with progress indicators
+  - Automated GPU verification after installation
+  - Comprehensive troubleshooting guidance on failure
+- **GPU Documentation**: Complete README restructuring for clarity
+  - Makefile installation prominently featured as recommended method
+  - Clear explanation of why CPU JAX must be uninstalled first
+  - Expanded troubleshooting section with common issues
+  - Platform support matrix and requirements upfront
+  - Separate sections for pip, uv, and conda/mamba workflows
+
 ### Added
 - **CLAUDE.md**: Comprehensive 233-line development guide for code assistants and developers
   - Complete project overview and architecture

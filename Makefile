@@ -29,6 +29,31 @@ SRC_DIR := quantiq
 TEST_DIR := tests
 DOCS_DIR := docs
 
+# Package manager detection (prioritize uv > conda/mamba > pip)
+UV_AVAILABLE := $(shell command -v uv 2>/dev/null)
+CONDA_PREFIX_VAR := $(shell echo $$CONDA_PREFIX)
+MAMBA_AVAILABLE := $(shell command -v mamba 2>/dev/null)
+
+# Determine active package manager and installation commands
+ifdef UV_AVAILABLE
+    PKG_MANAGER := uv
+    PIP_INSTALL := uv pip install
+    PIP_UNINSTALL := uv pip uninstall -y
+else ifdef CONDA_PREFIX_VAR
+    # In conda environment - use pip within conda
+    ifdef MAMBA_AVAILABLE
+        PKG_MANAGER := mamba (using pip for JAX)
+    else
+        PKG_MANAGER := conda (using pip for JAX)
+    endif
+    PIP_INSTALL := pip install
+    PIP_UNINSTALL := pip uninstall -y
+else
+    PKG_MANAGER := pip
+    PIP_INSTALL := pip install
+    PIP_UNINSTALL := pip uninstall -y
+endif
+
 # Colors for output
 BOLD := \033[1m
 RESET := \033[0m
@@ -157,12 +182,22 @@ install-docs:
 
 ## install-gpu-cuda: Install with CUDA GPU support (Linux only)
 ## This uninstalls CPU-only JAX, installs GPU-enabled JAX with CUDA 12, and verifies GPU detection
+## Automatically detects package manager (uv, conda/mamba, or pip)
 install-gpu-cuda:
+	@echo "$(BOLD)$(BLUE)Installing JAX with GPU support...$(RESET)"
+	@echo "===================================="
+	@echo "$(BOLD)Platform:$(RESET) $$(uname -s)"
+	@echo "$(BOLD)Package manager:$(RESET) $(PKG_MANAGER)"
+	@echo ""
 	@# Validate platform (GPU support requires Linux)
 	@if [ "$$(uname -s)" != "Linux" ]; then \
-		echo "$(BOLD)$(RED)Error: GPU support requires Linux. Current platform: $$(uname -s)$(RESET)"; \
-		echo "macOS and Windows only support CPU backend (5-10x speedup over piblin)."; \
-		echo "For maximum performance (50-100x), use Linux with NVIDIA GPU."; \
+		echo "$(BOLD)$(RED)✗ GPU acceleration only available on Linux with CUDA 12+$(RESET)"; \
+		echo "  Current platform: $$(uname -s) (CPU-only)"; \
+		echo ""; \
+		echo "$(BOLD)Platform support:$(RESET)"; \
+		echo "  ✅ Linux + NVIDIA GPU + CUDA 12: Full GPU acceleration (50-100x speedup)"; \
+		echo "  ❌ macOS: CPU-only (no NVIDIA GPU support, still 5-10x faster than piblin)"; \
+		echo "  ❌ Windows: CPU-only (CUDA support experimental/unstable in JAX)"; \
 		exit 1; \
 	fi
 	@# Validate virtual environment
@@ -170,16 +205,38 @@ install-gpu-cuda:
 		echo "$(BOLD)$(RED)Error: Virtual environment not found. Run 'make init' first.$(RESET)"; \
 		exit 1; \
 	fi
-	@echo "$(BOLD)$(BLUE)Installing CUDA GPU support...$(RESET)"
-	@echo "  $(BOLD)1/3$(RESET) Uninstalling CPU-only JAX..."
-	@uv pip uninstall -y jax jaxlib 2>/dev/null || true
-	@echo "  $(BOLD)2/3$(RESET) Installing GPU-enabled JAX with CUDA 12 support..."
-	@uv sync --extra gpu-cuda
-	@echo "  $(BOLD)3/3$(RESET) Verifying GPU detection..."
-	@uv run python -c "from quantiq.backend import get_device_info; info = get_device_info(); print(f'  Backend: {info[\"backend\"]}'); print(f'  Device: {info[\"device_type\"]}'); assert info['device_type'] == 'gpu', 'GPU not detected!'" && \
-		echo "$(BOLD)$(GREEN)✓ GPU support verified!$(RESET)" || \
-		(echo "$(BOLD)$(RED)✗ GPU not detected. Check your CUDA installation.$(RESET)" && \
-		echo "  Requirements: Linux with CUDA 12+ and compatible NVIDIA GPU" && exit 1)
+	@# Step 1: Uninstall CPU-only JAX
+	@echo "$(BOLD)Step 1/4:$(RESET) Uninstalling CPU-only JAX..."
+	@$(PIP_UNINSTALL) jax jaxlib 2>/dev/null || true
+	@echo "  ✓ CPU JAX uninstalled"
+	@echo ""
+	@# Step 2: Install GPU-enabled JAX
+	@echo "$(BOLD)Step 2/4:$(RESET) Installing GPU-enabled JAX (CUDA 12)..."
+	@echo "  Command: $(PIP_INSTALL) \"jax[cuda12-local]>=0.8.0,<0.9.0\""
+	@$(PIP_INSTALL) "jax[cuda12-local]>=0.8.0,<0.9.0"
+	@echo "  ✓ GPU JAX installed"
+	@echo ""
+	@# Step 3: Verify GPU detection
+	@echo "$(BOLD)Step 3/4:$(RESET) Verifying GPU detection..."
+	@$(PYTHON_VENV) -c "from quantiq.backend import get_device_info; info = get_device_info(); print(f'  Backend: {info[\"backend\"]}'); print(f'  Device type: {info[\"device_type\"]}'); print(f'  Device count: {info[\"device_count\"]}'); assert info['device_type'] == 'gpu', 'GPU not detected!'" && \
+		echo "  ✓ GPU detected successfully" || \
+		(echo "  $(BOLD)$(RED)✗ GPU not detected$(RESET)" && \
+		echo "" && \
+		echo "$(BOLD)Troubleshooting:$(RESET)" && \
+		echo "  1. Check GPU hardware: nvidia-smi" && \
+		echo "  2. Check CUDA version: nvcc --version (need 12.1-12.9)" && \
+		echo "  3. Check JAX devices: python -c 'import jax; print(jax.devices())'" && \
+		echo "  4. See README.md GPU Troubleshooting section" && \
+		exit 1)
+	@echo ""
+	@# Step 4: Success summary
+	@echo "$(BOLD)Step 4/4:$(RESET) Installation complete!"
+	@echo "$(BOLD)$(GREEN)✓ GPU support successfully installed and verified$(RESET)"
+	@echo ""
+	@echo "$(BOLD)Summary:$(RESET)"
+	@echo "  Package manager: $(PKG_MANAGER)"
+	@echo "  JAX version: $$($(PYTHON_VENV) -c 'import jax; print(jax.__version__)')"
+	@echo "  GPU devices: $$($(PYTHON_VENV) -c 'import jax; print(len([d for d in jax.devices() if \"gpu\" in str(d).lower() or \"cuda\" in str(d).lower()]))')"
 
 # ============================================================================
 # DEVELOPMENT

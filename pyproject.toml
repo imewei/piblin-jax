@@ -35,10 +35,18 @@ keywords = [
 ]
 
 dependencies = [
-    "jax>=0.8.0",
+    "jax>=0.8.0,<0.9.0",
     # Note: jaxlib is intentionally not listed here to avoid conflicts with GPU installation
     # jax will automatically install the appropriate jaxlib (CPU by default)
-    # For GPU support on Linux, use: pip install quantiq[gpu-cuda]
+    #
+    # For GPU acceleration (Linux + CUDA 12.1-12.9 ONLY):
+    #   Recommended: make install-gpu-cuda (from repository)
+    #   Manual: See README.md GPU Installation section
+    #
+    # Platform support:
+    #   ✅ Linux + NVIDIA GPU + CUDA 12: Full GPU acceleration (50-100x speedup)
+    #   ❌ macOS: CPU-only (no NVIDIA GPU support, still 5-10x faster than piblin)
+    #   ❌ Windows: CPU-only (CUDA support experimental/unstable in JAX)
     "numpyro>=0.19.0",
     "numpy>=2.3.4",
     "scipy>=1.16.2",
@@ -81,9 +89,10 @@ security = [
     "bandit[toml]>=1.8.6",
 ]
 
-gpu-cuda = [
-    "jax[cuda12-local]>=0.8.0; sys_platform == 'linux'",
-]
+# GPU support removed from optional dependencies for reliability
+# GPU installation now requires explicit manual/Makefile installation
+# Reason: pip extras are unreliable for mutually exclusive dependency variants (CPU vs GPU jaxlib)
+# See README.md GPU Installation section for instructions
 
 all = [
     "quantiq[dev,test,docs]",

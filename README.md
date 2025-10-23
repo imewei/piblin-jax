@@ -64,55 +64,74 @@ Install quantiq with JAX CPU support using pip:
 pip install quantiq
 ```
 
-### GPU Support
+### GPU Support (Linux + CUDA 12+ Only)
 
 **Platform Constraints:**
-- **GPU support**: Linux with CUDA 12+ only
-- **macOS**: CPU backend only (5-10x speedup over piblin)
-- **Windows**: CPU backend only (5-10x speedup over piblin)
-- **Maximum performance**: Linux with NVIDIA GPU (50-100x speedup)
+- ✅ **Linux + NVIDIA GPU + CUDA 12**: Full GPU acceleration (50-100x speedup)
+- ❌ **macOS**: CPU backend only (no NVIDIA GPU support, still 5-10x faster than piblin)
+- ❌ **Windows**: CPU backend only (CUDA support experimental/unstable in JAX)
 
 **Requirements for GPU Acceleration:**
 - Linux operating system
 - NVIDIA GPU with CUDA Compute Capability 7.5 or newer
-- CUDA 12.1+ installed on system (for `-local` installation)
+- CUDA 12.1-12.9 installed on system
+- NVIDIA driver >= 525
 
-#### Option 1: pip (Recommended for Most Users)
+**Performance Impact:** 50-100x speedup for large datasets (>1M points)
 
-**Fresh Installation:**
+---
+
+#### ✅ Recommended: Makefile Installation (All Package Managers)
+
+**From repository (works with pip, uv, conda/mamba):**
+
 ```bash
-pip install quantiq[gpu-cuda]
-```
-
-**Upgrading from CPU to GPU:**
-```bash
-# Uninstall CPU-only JAX first to avoid conflicts
-pip uninstall jax jaxlib
-pip install quantiq[gpu-cuda]
-```
-
-#### Option 2: uv (Recommended for Developers)
-
-**Using Makefile (Automated):**
-```bash
-# Clone the repository and initialize environment
 git clone https://github.com/quantiq/quantiq.git
 cd quantiq
 make init
-
-# Install GPU support (includes platform check, uninstall, install, verification)
-make install-gpu-cuda
+make install-gpu-cuda  # Handles everything automatically
 ```
 
-**Manual Installation:**
+This single command:
+- ✓ Validates platform (Linux only)
+- ✓ Detects package manager (uv/conda/pip)
+- ✓ Uninstalls CPU-only JAX
+- ✓ Installs GPU-enabled JAX with CUDA 12
+- ✓ Verifies GPU detection
+- ✓ Shows installation summary
+
+---
+
+#### ⚙️ Manual Installation (Advanced Users)
+
+**Why manual installation requires uninstall:** JAX has separate CPU and GPU builds. You MUST remove the CPU build before installing GPU to prevent silent failures where you think you have GPU but are actually using CPU.
+
+**Using pip:**
+```bash
+# Step 1: Uninstall CPU-only version (REQUIRED - prevents conflicts)
+pip uninstall -y jax jaxlib
+
+# Step 2: Install GPU-enabled JAX
+pip install "jax[cuda12-local]>=0.8.0,<0.9.0"
+
+# Step 3: Install quantiq (if not already installed)
+pip install quantiq
+
+# Step 4: Verify GPU detection
+python -c "import jax; print('Devices:', jax.devices())"
+# Expected: [cuda(id=0)] NOT [CpuDevice(id=0)]
+```
+
+**Using uv:**
 ```bash
 uv pip uninstall -y jax jaxlib
-uv sync --extra gpu-cuda
+uv pip install "jax[cuda12-local]>=0.8.0,<0.9.0"
+python -c "import jax; print(jax.devices())"
 ```
 
-#### Option 3: conda/mamba (For Scientific Computing Environments)
+**Using conda/mamba:**
 
-**Using environment file (Recommended):**
+Option A: Using environment file (recommended):
 ```bash
 # Using conda
 conda env create -f environment-gpu.yml
@@ -123,17 +142,18 @@ mamba env create -f environment-gpu.yml
 mamba activate quantiq-gpu
 ```
 
-**Manual Installation:**
+Option B: Manual within conda environment:
 ```bash
-# Install quantiq first, then upgrade jaxlib to CUDA version
-conda install quantiq -c conda-forge
-conda install "jaxlib=*=*cuda*" -c conda-forge --force-reinstall
-
-# Or use CUDA override
-CONDA_OVERRIDE_CUDA="12.2" conda install jax jaxlib -c conda-forge
+conda activate your-env
+pip uninstall -y jax jaxlib
+pip install "jax[cuda12-local]>=0.8.0,<0.9.0"
 ```
 
-#### Verify GPU Installation
+**Note:** Conda's extras syntax (`conda install quantiq[gpu-cuda]`) is not supported. Always use pip within your conda environment for JAX GPU installation.
+
+---
+
+#### 🔍 Verify GPU Installation
 
 After installation, verify GPU is detected:
 
@@ -141,26 +161,61 @@ After installation, verify GPU is detected:
 python -c "from quantiq.backend import get_device_info; print(get_device_info())"
 ```
 
-Expected output:
+**Expected output:**
 ```python
 {'backend': 'jax', 'device_type': 'gpu', 'device_count': 1, ...}
 ```
 
-#### Troubleshooting
+**If you see `'device_type': 'cpu'`**, GPU installation failed. See troubleshooting below.
 
-**GPU not detected:**
-1. Ensure CUDA 12.1+ is installed: `nvidia-smi`
-2. Check JAX can see GPU: `python -c "import jax; print(jax.devices())"`
-3. Verify environment variable: `echo $LD_LIBRARY_PATH` (should be empty or point to correct CUDA)
-4. Reinstall following the upgrade instructions above
+---
 
-**Package conflicts:**
-- Always uninstall CPU JAX before installing GPU version
-- For conda: Use `--force-reinstall` flag when switching to CUDA jaxlib
+#### 🔧 Troubleshooting
 
-**Platform errors:**
-- GPU acceleration only works on Linux
-- macOS and Windows will always use CPU backend (which is still 5-10x faster than piblin)
+**Issue: "GPU not detected" warning or `device_type: 'cpu'`**
+
+```bash
+# 1. Check GPU hardware
+nvidia-smi  # Should show your GPU
+
+# 2. Check CUDA version (need 12.1-12.9)
+nvcc --version
+
+# 3. Verify JAX sees GPU
+python -c "import jax; print(jax.devices())"
+# Expected: [cuda(id=0)]
+# If showing: [CpuDevice(id=0)] → JAX is using CPU
+
+# 4. If still CPU, reinstall with explicit uninstall:
+pip uninstall -y jax jaxlib
+pip install "jax[cuda12-local]>=0.8.0,<0.9.0"
+```
+
+**Issue: ImportError or "CUDA library not found"**
+
+```bash
+# Set CUDA library path
+export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+
+# Make permanent (add to ~/.bashrc)
+echo 'export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH' >> ~/.bashrc
+source ~/.bashrc
+```
+
+**Issue: "An NVIDIA GPU may be present... but a CUDA-enabled jaxlib is not installed"**
+
+This means you have GPU hardware but CPU-only JAX. Solution:
+```bash
+pip uninstall -y jax jaxlib
+pip install "jax[cuda12-local]>=0.8.0,<0.9.0"
+```
+
+**Issue: Works in one environment but not another**
+
+Different package managers may install different versions. Always use the same installation method:
+- **Development**: `make install-gpu-cuda` (recommended)
+- **Production**: Docker with explicit JAX version
+- **Notebooks**: Manual pip installation with version pinning
 
 ### Development Installation
 
