@@ -111,20 +111,13 @@ jobs:
           echo "✅ All version numbers are consistent: $VERSION"
 
   # ==========================================
-  # Job 2: Run Full Test Suite
+  # Job 2: Build Distribution
   # ==========================================
-  test:
-    name: Full Test Suite
-    needs: validate
-    uses: ./.github/workflows/ci.yml
-    secrets: inherit  # Pass secrets to reusable workflow
-
-  # ==========================================
-  # Job 3: Build Distribution
-  # ==========================================
+  # Note: Skipping full test suite - releases should only be created
+  # from commits that have already passed CI/CD pipeline
   build:
     name: Build Distribution
-    needs: test
+    needs: validate
     runs-on: ubuntu-latest
 
     steps:
@@ -169,7 +162,7 @@ jobs:
           if-no-files-found: error
 
   # ==========================================
-  # Job 4: Publish to TestPyPI
+  # Job 3: Publish to TestPyPI
   # ==========================================
   publish-testpypi:
     name: Publish to TestPyPI
@@ -204,7 +197,7 @@ jobs:
           echo "  pip install --index-url https://test.pypi.org/simple/ quantiq"
 
   # ==========================================
-  # Job 5: Publish to PyPI
+  # Job 4: Publish to PyPI
   # ==========================================
   publish-pypi:
     name: Publish to PyPI
@@ -237,7 +230,7 @@ jobs:
           echo "  pip install quantiq"
 
   # ==========================================
-  # Job 6: Create GitHub Release
+  # Job 5: Create GitHub Release
   # ==========================================
   github-release:
     name: Create GitHub Release
