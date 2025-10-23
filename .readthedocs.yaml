@@ -17,7 +17,6 @@ formats:
 
 # Python configuration
 python:
-  version: "3.13"
   install:
     # Install quantiq package with documentation dependencies
     - method: pip
