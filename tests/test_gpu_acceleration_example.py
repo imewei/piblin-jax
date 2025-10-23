@@ -126,9 +126,10 @@ class TestGPUAccelerationExample:
 
     def test_example_no_metal_or_rocm_references(self):
         """Test example script has no Metal or ROCm references."""
-        import os
+        from pathlib import Path
 
-        example_path = "/Users/b80985/Projects/quantiq/examples/gpu_acceleration_example.py"
+        # Get path relative to project root (tests/../examples/)
+        example_path = Path(__file__).parent.parent / "examples" / "gpu_acceleration_example.py"
 
         # Read the example file
         with open(example_path) as f:
