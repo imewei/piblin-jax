@@ -53,44 +53,52 @@ class TestPackageDependencies:
         )
 
     def test_gpu_cuda_has_linux_platform_marker(self, pyproject_toml_path):
-        """Test that gpu-cuda dependency includes Linux platform marker."""
+        """Test that gpu-cuda optional extra has been removed (breaking change v0.1.0).
+
+        As documented in CHANGELOG.md, the gpu-cuda extra was removed because pip
+        extras are unreliable for mutually exclusive dependency variants (CPU vs GPU jaxlib).
+        GPU installation now requires explicit manual installation via:
+        - make install-gpu-cuda (recommended)
+        - Manual: pip uninstall -y jax jaxlib && pip install "jax[cuda12-local]>=0.8.0"
+        """
         content = pyproject_toml_path.read_text()
 
-        # Verify gpu-cuda exists
-        assert "gpu-cuda" in content, "gpu-cuda optional dependency should exist"
+        # Extract optional dependencies section
+        if "[project.optional-dependencies]" in content:
+            deps_section = content.split("[project.optional-dependencies]")[1]
+            next_section_idx = deps_section.find("\n[")
+            if next_section_idx > 0:
+                deps_section = deps_section[:next_section_idx]
 
-        # Verify platform marker is present
-        assert "sys_platform == 'linux'" in content, (
-            "gpu-cuda should include sys_platform == 'linux' marker"
-        )
-
-        # Verify jax[cuda12-local] is specified
-        assert "jax[cuda12-local]" in content, (
-            "gpu-cuda should specify jax[cuda12-local] dependency"
-        )
+            # Check if gpu-cuda is defined as an optional dependency
+            for line in deps_section.split("\n"):
+                if line.strip() and not line.strip().startswith("#"):
+                    if "gpu-cuda" in line and "=" in line:
+                        pytest.fail(
+                            "gpu-cuda optional extra should be removed as of v0.1.0 "
+                            "(see CHANGELOG.md - breaking change)"
+                        )
 
     def test_gpu_cuda_platform_marker_syntax(self, pyproject_toml_path):
-        """Test that platform marker syntax is correct for pip installation."""
+        """Test that manual GPU installation is documented (gpu-cuda extra removed).
+
+        The gpu-cuda extra was removed in v0.1.0. This test now verifies
+        that no gpu-cuda extra exists, reflecting the manual-only installation approach.
+        """
         content = pyproject_toml_path.read_text()
 
-        # Extract the gpu-cuda section
+        # Verify gpu-cuda extra does not exist
         lines = content.split("\n")
-        gpu_cuda_section = []
-        in_section = False
-
         for line in lines:
-            if "gpu-cuda" in line and "=" in line:
-                in_section = True
-            elif in_section:
-                if line.strip().startswith("[") and not line.strip().startswith('["'):
-                    break
-                if line.strip() and not line.strip().startswith("#"):
-                    gpu_cuda_section.append(line.strip())
-
-        # Verify at least one line has the platform marker
-        assert any("sys_platform == 'linux'" in line for line in gpu_cuda_section), (
-            "Platform marker should be in gpu-cuda dependency specification"
-        )
+            if (
+                "gpu-cuda" in line
+                and "=" in line
+                and "[project.optional-dependencies]" in content[: content.index(line)]
+            ):
+                pytest.fail(
+                    "gpu-cuda extra should not exist. GPU installation is now manual-only "
+                    "(see CHANGELOG.md v0.1.0 breaking change)"
+                )
 
     @pytest.mark.skipif(
         sys.platform != "linux", reason="Platform marker enforcement only testable on Linux"
@@ -115,20 +123,38 @@ class TestPackageDependencies:
         sys.platform == "linux", reason="Non-Linux platform marker test only on non-Linux systems"
     )
     def test_gpu_cuda_platform_marker_on_non_linux(self, pyproject_toml_path):
-        """Test that platform marker correctly identifies non-Linux systems."""
-        # This test verifies that the marker syntax is correct
-        # by checking that sys_platform would evaluate correctly
+        """Test that GPU installation is manual-only on non-Linux (gpu-cuda extra removed).
 
+        The gpu-cuda extra was removed in v0.1.0. This test verifies
+        that no gpu-cuda extra exists, reflecting the manual-only approach
+        that is required for all platforms.
+        """
         content = pyproject_toml_path.read_text()
 
-        # The marker should be present
-        assert "sys_platform == 'linux'" in content, "Platform marker should restrict to Linux only"
+        # Extract optional dependencies section
+        if "[project.optional-dependencies]" in content:
+            deps_section = content.split("[project.optional-dependencies]")[1]
+            next_section_idx = deps_section.find("\n[")
+            if next_section_idx > 0:
+                deps_section = deps_section[:next_section_idx]
+
+            # Check if gpu-cuda is defined as an optional dependency
+            for line in deps_section.split("\n"):
+                if line.strip() and not line.strip().startswith("#"):
+                    if "gpu-cuda" in line and "=" in line:
+                        pytest.fail(
+                            "gpu-cuda optional extra should not exist. GPU installation is manual-only"
+                        )
 
         # Verify current platform is not Linux (test assumption)
         assert sys.platform != "linux", "This test should only run on non-Linux platforms"
 
     def test_only_gpu_cuda_extra_exists(self, pyproject_toml_path):
-        """Test that gpu-cuda is the only GPU optional dependency."""
+        """Test that NO GPU optional extras exist (all removed in v0.1.0).
+
+        The gpu-cuda, gpu-metal, and gpu-rocm extras were all removed.
+        GPU installation is now manual-only to prevent silent CPU/GPU conflicts.
+        """
         content = pyproject_toml_path.read_text()
 
         # Extract optional dependencies section
@@ -149,8 +175,8 @@ class TestPackageDependencies:
                 elif "gpu-rocm" in line and "=" in line:
                     gpu_extras.append("gpu-rocm")
 
-            assert gpu_extras == ["gpu-cuda"], (
-                f"Only gpu-cuda should exist as GPU extra, found: {gpu_extras}"
+            assert gpu_extras == [], (
+                f"No GPU extras should exist (all removed in v0.1.0), found: {gpu_extras}"
             )
 
     def test_no_references_to_legacy_gpu_backends(self, pyproject_toml_path):
