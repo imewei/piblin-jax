@@ -12,13 +12,41 @@ Prerequisites
 -------------
 
 - :doc:`basic_workflow` - Basic quantiq usage
-- JAX with GPU support installed:
-
-  - **NVIDIA CUDA**: ``pip install 'jax[cuda12]'``
-  - **Apple Silicon**: ``pip install 'jax[metal]'``
-  - **AMD ROCm**: ``pip install 'jax[rocm]'``
-
+- **Linux with NVIDIA GPU + CUDA 12+** (GPU acceleration is Linux-only)
+- JAX with GPU support installed (see :doc:`../user_guide/installation`)
 - Basic understanding of GPU computing concepts
+
+.. warning::
+
+   **GPU Support Platform Constraints:**
+
+   * ✅ **Linux + NVIDIA GPU + CUDA 12**: Full GPU acceleration (50-100x speedup)
+   * ❌ **macOS**: CPU-only (no NVIDIA GPU support)
+   * ❌ **Windows**: CPU-only (CUDA support experimental/unstable in JAX)
+
+   **Deprecated backends removed:** Apple Metal and AMD ROCm are no longer supported.
+
+Installation for GPU Support
+-----------------------------
+
+If you haven't already installed GPU support, see the detailed installation
+guide in :doc:`../user_guide/installation`. Quick summary:
+
+**Recommended (from repository):**
+
+.. code-block:: bash
+
+    git clone https://github.com/quantiq/quantiq.git
+    cd quantiq
+    make install-gpu-cuda
+
+**Manual installation:**
+
+.. code-block:: bash
+
+    pip uninstall -y jax jaxlib
+    pip install "jax[cuda12-local]>=0.8.0,<0.9.0"
+    pip install quantiq
 
 Overview
 --------
@@ -50,13 +78,19 @@ First, verify GPU access:
     # Check device info
     if is_jax_available():
         info = get_device_info()
-        print(f"Platform: {info['platform']}")  # 'cpu', 'gpu', or 'tpu'
+        print(f"Device Type: {info['device_type']}")  # 'cpu', 'gpu', or 'tpu'
+        print(f"Platform: {info['os_platform']}")     # 'linux', 'macos', 'windows'
+        print(f"GPU Supported: {info['gpu_supported']}")  # True/False
         print(f"Devices: {info['devices']}")
 
-        if info['platform'] == 'gpu':
+        if info['device_type'] == 'gpu':
             print("✓ GPU acceleration available!")
+            print(f"CUDA version: {info['cuda_version']}")
         else:
             print("⚠ No GPU detected, using CPU")
+
+            if not info['gpu_supported']:
+                print(f"  Reason: GPU not supported on {info['os_platform']}")
     else:
         print("⚠ JAX not installed, using NumPy backend")
 
@@ -65,9 +99,24 @@ First, verify GPU access:
 .. code-block:: text
 
     Backend: jax
-    Platform: gpu
-    Devices: ['cuda:0']
+    Device Type: gpu
+    Platform: linux
+    GPU Supported: True
+    Devices: ['cuda(id=0)']
     ✓ GPU acceleration available!
+    CUDA version: (12, 3)
+
+**Expected output on macOS/Windows:**
+
+.. code-block:: text
+
+    Backend: jax
+    Device Type: cpu
+    Platform: macos
+    GPU Supported: False
+    Devices: ['CpuDevice(id=0)']
+    ⚠ No GPU detected, using CPU
+      Reason: GPU not supported on macos
 
 Understanding Performance Characteristics
 ------------------------------------------
@@ -338,7 +387,7 @@ Measuring GPU Speedup
         end = time.time()
 
         avg_time = (end - start) / n_iterations
-        device = get_device_info()['platform']
+        device = get_device_info()['device_type']
 
         print(f"Device: {device}")
         print(f"Average time: {avg_time*1000:.2f} ms")
@@ -397,16 +446,23 @@ Issue: GPU Not Detected
 
     # Symptom: JAX reports 'cpu' instead of 'gpu'
 
-    # Solution 1: Verify JAX GPU installation
+    # Solution 1: Verify platform support
+    from quantiq.backend import get_device_info
+    info = get_device_info()
+    if not info['gpu_supported']:
+        print(f"GPU not supported on {info['os_platform']}")
+        print("GPU acceleration requires Linux + CUDA 12+")
+
+    # Solution 2: Verify JAX GPU installation
     import jax
     print(jax.devices())  # Should show GPU devices
 
-    # Solution 2: Check CUDA/drivers (NVIDIA)
+    # Solution 3: Check CUDA/drivers (NVIDIA)
     # Run: nvidia-smi (command line)
 
-    # Solution 3: Reinstall JAX with GPU support
-    # pip uninstall jax jaxlib
-    # pip install --upgrade "jax[cuda12]"  # or cuda11, metal, rocm
+    # Solution 4: Reinstall JAX with GPU support
+    # pip uninstall -y jax jaxlib
+    # pip install "jax[cuda12-local]>=0.8.0,<0.9.0"
 
 Issue: Out of Memory Errors
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -452,18 +508,19 @@ Issue: Slow First Execution
 Best Practices Summary
 ----------------------
 
-1. **Use GPU for large datasets** (>10,000 elements) and repeated operations
-2. **Apply JIT to performance-critical functions** - first call compiles, subsequent calls are fast
-3. **Process in batches** - stack datasets and process together
-4. **Use vmap for vectorization** - automatic parallelization
-5. **Monitor memory** - chunk large datasets, delete unused arrays
-6. **Warm up pipelines** - run once before benchmarking
-7. **Leverage Bayesian GPU acceleration** - massive speedup for MCMC
+1. **Use GPU on Linux with CUDA 12+** - Only platform with full GPU support
+2. **Use GPU for large datasets** (>10,000 elements) and repeated operations
+3. **Apply JIT to performance-critical functions** - first call compiles, subsequent calls are fast
+4. **Process in batches** - stack datasets and process together
+5. **Use vmap for vectorization** - automatic parallelization
+6. **Monitor memory** - chunk large datasets, delete unused arrays
+7. **Warm up pipelines** - run once before benchmarking
+8. **Leverage Bayesian GPU acceleration** - massive speedup for MCMC
 
 Performance Comparison Table
 -----------------------------
 
-Expected speedups (GPU vs CPU):
+Expected speedups (GPU vs CPU on Linux with CUDA 12+):
 
 ===============================  ============  ===============
 Operation                        Dataset Size  GPU Speedup
@@ -476,12 +533,18 @@ Bayesian MCMC (10K samples)      50 points     50-100x
 Batch processing (100 datasets)  10K each      40-80x
 ===============================  ============  ===============
 
+.. note::
+
+   Performance results are from benchmarks on Linux with NVIDIA A100 GPU and
+   CUDA 12.3. Your results may vary based on hardware and workload.
+
 Next Steps
 ----------
 
 - See the ``examples/gpu_acceleration_example.py`` file in the repository for complete runnable code
 - Explore :doc:`advanced_pipelines` for complex workflows
 - Read :doc:`uncertainty_quantification` for Bayesian GPU usage
+- Review :doc:`../user_guide/installation` for detailed GPU installation instructions
 
 .. seealso::
 
