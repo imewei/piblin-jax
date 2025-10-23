@@ -33,19 +33,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Full history to verify tags
-
-      - name: Validate tag format
+      - name: Determine tag
+        id: determine_tag
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             TAG="${{ inputs.tag }}"
           else
             TAG="${GITHUB_REF#refs/tags/}"
           fi
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "Determined tag: $TAG"
 
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.determine_tag.outputs.tag }}
+          fetch-depth: 0  # Full history to verify tags
+
+      - name: Validate tag format
+        run: |
+          TAG="${{ steps.determine_tag.outputs.tag }}"
           echo "Validating tag: $TAG"
 
           if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -239,9 +246,21 @@ jobs:
       contents: write
 
     steps:
+      - name: Determine tag
+        id: determine_tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ inputs.tag }}"
+          else
+            TAG="${GITHUB_REF#refs/tags/}"
+          fi
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "Determined tag: $TAG"
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          ref: ${{ steps.determine_tag.outputs.tag }}
           fetch-depth: 0
 
       - name: Download build artifacts
@@ -253,11 +272,7 @@ jobs:
       - name: Extract version from tag
         id: version
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            TAG="${{ inputs.tag }}"
-          else
-            TAG="${GITHUB_REF#refs/tags/}"
-          fi
+          TAG="${{ steps.determine_tag.outputs.tag }}"
           VERSION=${TAG#v}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "tag=$TAG" >> $GITHUB_OUTPUT
