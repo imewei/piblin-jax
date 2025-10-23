@@ -99,10 +99,10 @@ all = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/quantiq/quantiq"
+Homepage = "https://github.com/quantiq/quantiq-jax"
 Documentation = "https://quantiq.readthedocs.io"
-Repository = "https://github.com/quantiq/quantiq"
-"Bug Tracker" = "https://github.com/quantiq/quantiq/issues"
+Repository = "https://github.com/quantiq/quantiq-jax"
+"Bug Tracker" = "https://github.com/quantiq/quantiq-jax/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]

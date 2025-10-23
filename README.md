@@ -86,8 +86,8 @@ pip install quantiq
 **From repository (works with pip, uv, conda/mamba):**
 
 ```bash
-git clone https://github.com/quantiq/quantiq.git
-cd quantiq
+git clone https://github.com/quantiq/quantiq-jax.git
+cd quantiq-jax
 make init
 make install-gpu-cuda  # Handles everything automatically
 ```
@@ -227,8 +227,8 @@ Different package managers may install different versions. Always use the same i
 For development with all optional dependencies:
 
 ```bash
-git clone https://github.com/quantiq/quantiq.git
-cd quantiq
+git clone https://github.com/quantiq/quantiq-jax.git
+cd quantiq-jax
 
 # Using uv (recommended for development)
 uv pip install -e ".[dev]"
@@ -435,7 +435,7 @@ If you use quantiq in your research, please cite:
   author = {Chen, Wei},
   title = {quantiq: Modern JAX-Powered Framework for Measurement Data Science},
   year = {2025},
-  url = {https://github.com/quantiq/quantiq}
+  url = {https://github.com/quantiq/quantiq-jax}
 }
 ```
 
@@ -452,8 +452,8 @@ quantiq is licensed under the [MIT License](LICENSE).
 ## Support
 
 - **Documentation**: [quantiq.readthedocs.io](https://quantiq.readthedocs.io)
-- **Issues**: [GitHub Issues](https://github.com/quantiq/quantiq/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/quantiq/quantiq/discussions)
+- **Issues**: [GitHub Issues](https://github.com/quantiq/quantiq-jax/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/quantiq/quantiq-jax/discussions)
 
 ---
 

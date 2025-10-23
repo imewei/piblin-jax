@@ -9,7 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.1] - 2025-10-23
 
+### Summary
+
+Initial pre-release of **quantiq** - a modern JAX-powered framework for measurement data science. This release provides a complete reimplementation of [piblin](https://github.com/3mcloud/piblin) with dramatic performance improvements (5-10x CPU, 50-100x GPU), advanced Bayesian inference capabilities, and 100% backward compatibility.
+
+**Status**: Pre-release version for testing and evaluation. The API is stable but not yet considered production-ready.
+
+**Repository**: The GitHub repository has been renamed to `quantiq-jax` to avoid name conflicts. PyPI package name remains `quantiq`.
+
 ### Changed
+- **Repository Rename**: GitHub repository renamed from `quantiq` to `quantiq-jax`
+  - Repository URL: https://github.com/quantiq/quantiq-jax
+  - PyPI package name unchanged: `quantiq`
+  - No code changes required for users
 - **BREAKING:** Removed `gpu-cuda` optional dependency extra from pyproject.toml
   - GPU installation now requires explicit manual installation or `make install-gpu-cuda`
   - Reason: pip extras are unreliable for mutually exclusive dependency variants (CPU vs GPU jaxlib)
@@ -236,7 +248,7 @@ quantiq gratefully acknowledges the original [piblin](https://github.com/3mcloud
 
 ## Links
 
-- [GitHub Repository](https://github.com/quantiq/quantiq)
+- [GitHub Repository](https://github.com/quantiq/quantiq-jax)
 - [Documentation](https://quantiq.readthedocs.io)
-- [Issue Tracker](https://github.com/quantiq/quantiq/issues)
-- [Discussions](https://github.com/quantiq/quantiq/discussions)
+- [Issue Tracker](https://github.com/quantiq/quantiq-jax/issues)
+- [Discussions](https://github.com/quantiq/quantiq-jax/discussions)
