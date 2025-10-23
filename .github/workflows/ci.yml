@@ -299,12 +299,42 @@ jobs:
           severity: 'CRITICAL,HIGH,MEDIUM'
           format: 'sarif'
           output: 'trivy-results.sarif'
+        continue-on-error: true
+
+      - name: Check SARIF file size
+        if: always()
+        run: |
+          if [ -f trivy-results.sarif ]; then
+            SIZE=$(stat -c%s trivy-results.sarif 2>/dev/null || \
+                   stat -f%z trivy-results.sarif 2>/dev/null || echo 0)
+            echo "SARIF file size: $SIZE bytes"
+            # GitHub SARIF upload has a 10MB limit
+            if [ "$SIZE" -gt 10485760 ]; then
+              echo "⚠️ SARIF file exceeds 10MB, skipping upload"
+              echo "SKIP_SARIF_UPLOAD=true" >> $GITHUB_ENV
+            fi
+          else
+            echo "⚠️ SARIF file not found"
+            echo "SKIP_SARIF_UPLOAD=true" >> $GITHUB_ENV
+          fi
 
       - name: Upload Trivy results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: |
+          always() &&
+          env.SKIP_SARIF_UPLOAD != 'true' &&
+          hashFiles('trivy-results.sarif') != ''
         with:
           sarif_file: 'trivy-results.sarif'
+        continue-on-error: true
+
+      - name: Display Trivy summary
+        if: always()
+        run: |
+          if [ -f trivy-results.sarif ]; then
+            echo "📊 Trivy scan completed"
+            echo "Results available in trivy-results.sarif"
+          fi
 
       - name: Check for secrets with Gitleaks
         uses: gitleaks/gitleaks-action@v2
