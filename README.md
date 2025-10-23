@@ -72,11 +72,95 @@ pip install quantiq
 - **Windows**: CPU backend only (5-10x speedup over piblin)
 - **Maximum performance**: Linux with NVIDIA GPU (50-100x speedup)
 
-To install with GPU support on Linux:
+**Requirements for GPU Acceleration:**
+- Linux operating system
+- NVIDIA GPU with CUDA Compute Capability 7.5 or newer
+- CUDA 12.1+ installed on system (for `-local` installation)
 
+#### Option 1: pip (Recommended for Most Users)
+
+**Fresh Installation:**
 ```bash
 pip install quantiq[gpu-cuda]
 ```
+
+**Upgrading from CPU to GPU:**
+```bash
+# Uninstall CPU-only JAX first to avoid conflicts
+pip uninstall jax jaxlib
+pip install quantiq[gpu-cuda]
+```
+
+#### Option 2: uv (Recommended for Developers)
+
+**Using Makefile (Automated):**
+```bash
+# Clone the repository and initialize environment
+git clone https://github.com/quantiq/quantiq.git
+cd quantiq
+make init
+
+# Install GPU support (includes platform check, uninstall, install, verification)
+make install-gpu-cuda
+```
+
+**Manual Installation:**
+```bash
+uv pip uninstall -y jax jaxlib
+uv sync --extra gpu-cuda
+```
+
+#### Option 3: conda/mamba (For Scientific Computing Environments)
+
+**Using environment file (Recommended):**
+```bash
+# Using conda
+conda env create -f environment-gpu.yml
+conda activate quantiq-gpu
+
+# Using mamba (faster)
+mamba env create -f environment-gpu.yml
+mamba activate quantiq-gpu
+```
+
+**Manual Installation:**
+```bash
+# Install quantiq first, then upgrade jaxlib to CUDA version
+conda install quantiq -c conda-forge
+conda install "jaxlib=*=*cuda*" -c conda-forge --force-reinstall
+
+# Or use CUDA override
+CONDA_OVERRIDE_CUDA="12.2" conda install jax jaxlib -c conda-forge
+```
+
+#### Verify GPU Installation
+
+After installation, verify GPU is detected:
+
+```bash
+python -c "from quantiq.backend import get_device_info; print(get_device_info())"
+```
+
+Expected output:
+```python
+{'backend': 'jax', 'device_type': 'gpu', 'device_count': 1, ...}
+```
+
+#### Troubleshooting
+
+**GPU not detected:**
+1. Ensure CUDA 12.1+ is installed: `nvidia-smi`
+2. Check JAX can see GPU: `python -c "import jax; print(jax.devices())"`
+3. Verify environment variable: `echo $LD_LIBRARY_PATH` (should be empty or point to correct CUDA)
+4. Reinstall following the upgrade instructions above
+
+**Package conflicts:**
+- Always uninstall CPU JAX before installing GPU version
+- For conda: Use `--force-reinstall` flag when switching to CUDA jaxlib
+
+**Platform errors:**
+- GPU acceleration only works on Linux
+- macOS and Windows will always use CPU backend (which is still 5-10x faster than piblin)
 
 ### Development Installation
 

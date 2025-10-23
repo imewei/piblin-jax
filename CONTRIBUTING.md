@@ -101,6 +101,78 @@ pre-commit install
 pre-commit run --all-files
 ```
 
+### 4. GPU Development Setup (Linux Only)
+
+**Note**: GPU acceleration is only available on Linux with NVIDIA GPUs. macOS and Windows will use CPU backend (which still provides 5-10x speedup over piblin).
+
+**Requirements:**
+- Linux operating system
+- NVIDIA GPU with CUDA Compute Capability 7.5 or newer
+- CUDA 12.1+ installed on system
+
+**Quick Installation via Makefile:**
+
+```bash
+# Automated installation (recommended)
+make install-gpu-cuda
+```
+
+This command will:
+1. Validate you're running on Linux (fails on macOS/Windows with clear message)
+2. Check that virtual environment exists
+3. Uninstall CPU-only JAX to avoid conflicts
+4. Install GPU-enabled JAX with CUDA 12 support
+5. Verify GPU detection
+
+**Manual Installation:**
+
+```bash
+# Uninstall CPU-only JAX first
+uv pip uninstall -y jax jaxlib
+
+# Install with GPU support
+uv sync --extra gpu-cuda
+```
+
+**Verification:**
+
+After installation, verify GPU is detected:
+
+```bash
+python -c "from quantiq.backend import get_device_info; print(get_device_info())"
+```
+
+Expected output:
+```python
+{'backend': 'jax', 'device_type': 'gpu', 'device_count': 1, ...}
+```
+
+**Troubleshooting:**
+
+If GPU is not detected:
+1. Check CUDA version: `nvidia-smi` (should show CUDA 12.1+)
+2. Verify JAX sees GPU: `python -c "import jax; print(jax.devices())"`
+3. Ensure `LD_LIBRARY_PATH` is not set or points to correct CUDA libraries
+4. Reinstall following the manual instructions above
+
+**Testing GPU Code:**
+
+Run GPU-specific tests:
+
+```bash
+# Run only GPU tests
+make test-gpu
+
+# Or with pytest directly
+uv run pytest tests/ -m gpu -v
+```
+
+**Important Notes:**
+- JAX CPU and GPU versions use different `jaxlib` packages - they cannot coexist
+- Always uninstall CPU version before installing GPU version
+- The `make install-gpu-cuda` target handles this automatically
+- CI/CD runs on CPU even for GPU tests (uses JAX CPU fallback)
+
 ### Migrating from Python 3.12 or 3.14
 
 If you previously had the repository set up with a different Python version:

@@ -156,14 +156,30 @@ install-docs:
 	@echo "$(BOLD)$(GREEN)✓ Docs dependencies installed!$(RESET)"
 
 ## install-gpu-cuda: Install with CUDA GPU support (Linux only)
+## This uninstalls CPU-only JAX, installs GPU-enabled JAX with CUDA 12, and verifies GPU detection
 install-gpu-cuda:
+	@# Validate platform (GPU support requires Linux)
+	@if [ "$$(uname -s)" != "Linux" ]; then \
+		echo "$(BOLD)$(RED)Error: GPU support requires Linux. Current platform: $$(uname -s)$(RESET)"; \
+		echo "macOS and Windows only support CPU backend (5-10x speedup over piblin)."; \
+		echo "For maximum performance (50-100x), use Linux with NVIDIA GPU."; \
+		exit 1; \
+	fi
+	@# Validate virtual environment
 	@if [ ! -d "$(VENV)" ]; then \
 		echo "$(BOLD)$(RED)Error: Virtual environment not found. Run 'make init' first.$(RESET)"; \
 		exit 1; \
 	fi
-	@echo "$(BOLD)$(BLUE)Installing CUDA GPU support (Linux only)...$(RESET)"
-	uv sync --extra gpu-cuda
-	@echo "$(BOLD)$(GREEN)✓ CUDA GPU support installed!$(RESET)"
+	@echo "$(BOLD)$(BLUE)Installing CUDA GPU support...$(RESET)"
+	@echo "  $(BOLD)1/3$(RESET) Uninstalling CPU-only JAX..."
+	@uv pip uninstall -y jax jaxlib 2>/dev/null || true
+	@echo "  $(BOLD)2/3$(RESET) Installing GPU-enabled JAX with CUDA 12 support..."
+	@uv sync --extra gpu-cuda
+	@echo "  $(BOLD)3/3$(RESET) Verifying GPU detection..."
+	@uv run python -c "from quantiq.backend import get_device_info; info = get_device_info(); print(f'  Backend: {info[\"backend\"]}'); print(f'  Device: {info[\"device_type\"]}'); assert info['device_type'] == 'gpu', 'GPU not detected!'" && \
+		echo "$(BOLD)$(GREEN)✓ GPU support verified!$(RESET)" || \
+		(echo "$(BOLD)$(RED)✗ GPU not detected. Check your CUDA installation.$(RESET)" && \
+		echo "  Requirements: Linux with CUDA 12+ and compatible NVIDIA GPU" && exit 1)
 
 # ============================================================================
 # DEVELOPMENT

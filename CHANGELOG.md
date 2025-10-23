@@ -29,8 +29,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive usage examples for key workflows
 - Development automation Makefile with targets for testing, formatting, linting, and documentation
 - `.nlsq_cache` directory to gitignore for JAX compilation cache
+- **environment-gpu.yml**: Conda/mamba environment file for GPU installation
+  - Comprehensive configuration for GPU-enabled JAX on Linux
+  - Explicit CUDA-enabled jaxlib specification
+  - Complete dependency specifications matching pyproject.toml
+  - Includes installation, verification, and troubleshooting instructions
 
 ### Changed
+- **GPU Installation Improvements**: Fixed critical dependency conflict issues
+  - Removed `jaxlib>=0.8.0` from base dependencies in pyproject.toml to prevent CPU/GPU conflicts
+  - jax package now automatically installs appropriate jaxlib (CPU by default)
+  - GPU extra (`gpu-cuda`) now correctly replaces CPU jaxlib with CUDA version
+  - Works correctly across pip, uv, and conda/mamba package managers
+- **Makefile GPU Target Enhancement**: `install-gpu-cuda` now includes full automation
+  - Platform validation (Linux-only, fails gracefully on macOS/Windows)
+  - Explicit CPU JAX uninstallation to prevent package conflicts
+  - Automated GPU detection verification after installation
+  - Clear error messages and installation progress indicators
+- **Documentation Expansion**: Comprehensive GPU installation guide across all package managers
+  - README.md: Added detailed pip, uv, and conda/mamba installation instructions
+  - CONTRIBUTING.md: Added GPU development setup section with verification steps
+  - Included troubleshooting guides for common GPU installation issues
+  - Added verification commands and expected outputs
 - **BREAKING:** Migrated from black/isort/flake8 to unified ruff tooling (10-100x faster)
   - Updated all development dependencies
   - Updated pre-commit hooks configuration

@@ -1640,7 +1640,6 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "jax" },
-    { name = "jaxlib" },
     { name = "matplotlib" },
     { name = "numpy" },
     { name = "numpyro" },
@@ -1708,7 +1707,6 @@ requires-dist = [
     { name = "interrogate", marker = "extra == 'dev'", specifier = ">=1.7.0" },
     { name = "jax", specifier = ">=0.8.0" },
     { name = "jax", extras = ["cuda12-local"], marker = "sys_platform == 'linux' and extra == 'gpu-cuda'", specifier = ">=0.8.0" },
-    { name = "jaxlib", specifier = ">=0.8.0" },
     { name = "matplotlib", specifier = ">=3.10.7" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.18.2" },
     { name = "numpy", specifier = ">=2.3.4" },

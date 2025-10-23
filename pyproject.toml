@@ -36,7 +36,9 @@ keywords = [
 
 dependencies = [
     "jax>=0.8.0",
-    "jaxlib>=0.8.0",
+    # Note: jaxlib is intentionally not listed here to avoid conflicts with GPU installation
+    # jax will automatically install the appropriate jaxlib (CPU by default)
+    # For GPU support on Linux, use: pip install quantiq[gpu-cuda]
     "numpyro>=0.19.0",
     "numpy>=2.3.4",
     "scipy>=1.16.2",

@@ -1,0 +1,76 @@
+---
+# Conda/Mamba Environment for quantiq with GPU Support
+# ========================================================
+#
+# This environment file installs quantiq with GPU acceleration support.
+#
+# REQUIREMENTS:
+# - Linux operating system
+# - NVIDIA GPU with CUDA Compute Capability 7.5 or newer
+# - CUDA 12.1+ installed on the system
+# - conda or mamba package manager
+#
+# INSTALLATION:
+#
+#   Using conda:
+#     conda env create -f environment-gpu.yml
+#     conda activate quantiq-gpu
+#
+#   Using mamba (faster):
+#     mamba env create -f environment-gpu.yml
+#     mamba activate quantiq-gpu
+#
+# VERIFICATION:
+#
+#   python -c "from quantiq.backend import get_device_info;
+#              print(get_device_info())"
+#
+#   Expected output should show:
+#     {'backend': 'jax', 'device_type': 'gpu', ...}
+#
+# NOTES:
+# - This uses conda-forge channel for all dependencies
+# - jaxlib explicitly specified with CUDA support (*cuda* selector)
+# - quantiq installed via pip after conda dependencies resolved
+# - For CPU-only installation, use standard pip: pip install quantiq
+#
+# ========================================================
+
+name: quantiq-gpu
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  # Python version (3.12 or 3.13)
+  - python>=3.12,<3.14
+
+  # JAX with GPU support (CRITICAL: *cuda* selector ensures GPU-enabled build)
+  - "jaxlib=*=*cuda*"
+  - jax>=0.8.0
+
+  # Scientific computing stack
+  - numpy>=2.3.4
+  - scipy>=1.16.2
+  - matplotlib>=3.10.7
+  - pandas>=2.3.3
+
+  # Bayesian inference (requires JAX)
+  - numpyro>=0.19.0
+
+  # CUDA libraries (managed by conda)
+  # Typically auto-installed with jaxlib=*cuda*, but can be explicit
+  # - cuda-libraries
+  # - cudnn>=9.8,<10.0
+
+  # Package managers
+  - pip
+
+  # Install quantiq from PyPI via pip after conda deps resolved
+  # This ensures conda's CUDA-enabled jaxlib is preserved
+  - pip:
+      - quantiq
+
+# Environment variables (optional, usually not needed with proper conda setup)
+# If JAX detects wrong CUDA version, ensure LD_LIBRARY_PATH is NOT set
+# variables:
+#   LD_LIBRARY_PATH: ""
