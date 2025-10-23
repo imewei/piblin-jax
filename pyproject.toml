@@ -3,7 +3,7 @@ requires = ["setuptools>=80.9.0", "wheel>=0.45.1"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "quantiq"
+name = "quantiq-jax"
 version = "0.0.1"
 description = "Modern JAX-Powered Framework for Measurement Data Science"
 readme = "README.md"

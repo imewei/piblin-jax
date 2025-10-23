@@ -58,10 +58,18 @@ Built on JAX, quantiq delivers 5-10x CPU speedup and 50-100x GPU acceleration wh
 
 ### Basic Installation
 
-Install quantiq with JAX CPU support using pip:
+Install quantiq-jax with JAX CPU support using pip:
 
 ```bash
-pip install quantiq
+pip install quantiq-jax
+```
+
+**Note**: The package name is `quantiq-jax` on PyPI, but you can still import it as `quantiq` for piblin compatibility:
+
+```python
+import quantiq  # Package installation: pip install quantiq-jax
+# or for piblin compatibility:
+import quantiq as piblin
 ```
 
 ### GPU Support (Linux + CUDA 12+ Only)
@@ -114,8 +122,8 @@ pip uninstall -y jax jaxlib
 # Step 2: Install GPU-enabled JAX
 pip install "jax[cuda12-local]>=0.8.0,<0.9.0"
 
-# Step 3: Install quantiq (if not already installed)
-pip install quantiq
+# Step 3: Install quantiq-jax (if not already installed)
+pip install quantiq-jax
 
 # Step 4: Verify GPU detection
 python -c "import jax; print('Devices:', jax.devices())"
@@ -216,6 +224,8 @@ Different package managers may install different versions. Always use the same i
 - **Development**: `make install-gpu-cuda` (recommended)
 - **Production**: Docker with explicit JAX version
 - **Notebooks**: Manual pip installation with version pinning
+
+**Note**: The package name on PyPI is `quantiq-jax`, but the import name remains `quantiq` for backward compatibility with piblin.
 
 ### Development Installation
 

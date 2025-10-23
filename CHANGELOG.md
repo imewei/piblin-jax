@@ -15,13 +15,18 @@ Initial pre-release of **quantiq** - a modern JAX-powered framework for measurem
 
 **Status**: Pre-release version for testing and evaluation. The API is stable but not yet considered production-ready.
 
-**Repository**: The GitHub repository has been renamed to `quantiq-jax` to avoid name conflicts. PyPI package name remains `quantiq`.
+**Repository**: The GitHub repository has been renamed to `quantiq-jax` to avoid name conflicts.
+
+**Package Name**: Changed from `quantiq` to `quantiq-jax` on PyPI due to existing package with same name. The Python import name remains `quantiq` for backward compatibility.
 
 ### Changed
 - **Repository Rename**: GitHub repository renamed from `quantiq` to `quantiq-jax`
   - Repository URL: https://github.com/quantiq/quantiq-jax
-  - PyPI package name unchanged: `quantiq`
-  - No code changes required for users
+- **Package Name Change**: PyPI package name changed from `quantiq` to `quantiq-jax`
+  - Reason: Name `quantiq` already taken on PyPI by another project
+  - Installation: `pip install quantiq-jax` (was: `pip install quantiq`)
+  - Import name unchanged: `import quantiq` still works
+  - No code changes required for users (only installation command changes)
 - **BREAKING:** Removed `gpu-cuda` optional dependency extra from pyproject.toml
   - GPU installation now requires explicit manual installation or `make install-gpu-cuda`
   - Reason: pip extras are unreliable for mutually exclusive dependency variants (CPU vs GPU jaxlib)

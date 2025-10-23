@@ -170,7 +170,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/quantiq
+      url: https://test.pypi.org/p/quantiq-jax
     permissions:
       id-token: write  # Required for trusted publishing
 
@@ -191,10 +191,10 @@ jobs:
       - name: Verify TestPyPI upload
         run: |
           echo "✅ Package published to TestPyPI"
-          echo "🔗 https://test.pypi.org/project/quantiq/"
+          echo "🔗 https://test.pypi.org/project/quantiq-jax/"
           echo ""
           echo "Test installation with:"
-          echo "  pip install --index-url https://test.pypi.org/simple/ quantiq"
+          echo "  pip install --index-url https://test.pypi.org/simple/ quantiq-jax"
 
   # ==========================================
   # Job 4: Publish to PyPI
@@ -205,7 +205,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/quantiq
+      url: https://pypi.org/p/quantiq-jax
     permissions:
       id-token: write  # Required for trusted publishing
 
@@ -224,10 +224,10 @@ jobs:
       - name: Verify PyPI upload
         run: |
           echo "✅ Package published to PyPI"
-          echo "🔗 https://pypi.org/project/quantiq/"
+          echo "🔗 https://pypi.org/project/quantiq-jax/"
           echo ""
           echo "Install with:"
-          echo "  pip install quantiq"
+          echo "  pip install quantiq-jax"
 
   # ==========================================
   # Job 5: Create GitHub Release
@@ -313,8 +313,8 @@ jobs:
 
           echo "🎉 Release $VERSION published!"
           echo ""
-          echo "📦 PyPI: https://pypi.org/project/quantiq/$VERSION/"
+          echo "📦 PyPI: https://pypi.org/project/quantiq-jax/$VERSION/"
           REPO="${{ github.server_url }}/${{ github.repository }}"
           echo "🏷️ GitHub: $REPO/releases/tag/$TAG"
           echo ""
-          echo "Install with: pip install quantiq==$VERSION"
+          echo "Install with: pip install quantiq-jax==$VERSION"
