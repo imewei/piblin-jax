@@ -168,6 +168,9 @@ jobs:
     name: Publish to TestPyPI
     needs: build
     runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/quantiq-jax
     permissions:
       id-token: write  # Required for trusted publishing
 
@@ -200,6 +203,9 @@ jobs:
     name: Publish to PyPI
     needs: publish-testpypi
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/quantiq-jax
     permissions:
       id-token: write  # Required for trusted publishing
 

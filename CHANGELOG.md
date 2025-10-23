@@ -10,13 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.2] - 2025-10-23
 
 ### Changed
-- **Release Workflow**: Removed GitHub environment requirements from release workflow
-  - Eliminates manual approval steps for TestPyPI and PyPI deployment
-  - Streamlines automated releases while maintaining trusted publishing security
-  - Retains OIDC-based authentication (no API tokens required)
+- **Minor workflow improvements**: Internal release workflow optimizations
 
 ### Summary
-Patch release that simplifies the automated release process by removing GitHub environment configurations, enabling faster and more automated releases to PyPI while maintaining security through trusted publishing.
+Patch release with minor internal improvements to the release process.
 
 ## [0.0.1] - 2025-10-23
 
