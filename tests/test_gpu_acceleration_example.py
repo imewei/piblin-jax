@@ -131,8 +131,8 @@ class TestGPUAccelerationExample:
         # Get path relative to project root (tests/../examples/)
         example_path = Path(__file__).parent.parent / "examples" / "gpu_acceleration_example.py"
 
-        # Read the example file
-        with open(example_path) as f:
+        # Read the example file (explicit UTF-8 for cross-platform compatibility)
+        with open(example_path, encoding="utf-8") as f:
             content = f.read().lower()
 
         # Verify no references to Metal or ROCm
