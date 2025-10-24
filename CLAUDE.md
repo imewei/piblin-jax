@@ -15,11 +15,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**quantiq** is a modern JAX-powered framework for measurement data science, providing a high-performance reimplementation of the [piblin](https://github.com/3mcloud/piblin) library. Key characteristics:
+**piblin-jax** is a modern JAX-powered framework for measurement data science, providing a high-performance reimplementation of the [piblin](https://github.com/3mcloud/piblin) library. Key characteristics:
 
 - **Performance**: 5-10x CPU speedup, 50-100x GPU acceleration over piblin
 - **Backend abstraction**: Dual JAX/NumPy backend with automatic fallback
-- **piblin compatibility**: 100% API behavioral compatibility (import quantiq as piblin)
+- **piblin compatibility**: 100% API behavioral compatibility (import piblin_jax as piblin)
 - **Bayesian inference**: NumPyro integration for uncertainty quantification
 - **Functional design**: Immutable data structures, lazy evaluation, JIT compilation
 
@@ -97,7 +97,7 @@ The project uses GitHub Actions with a multi-stage pipeline:
 ### Module Structure
 
 ```
-quantiq/
+piblin_jax/
 ├── backend/               # JAX/NumPy abstraction layer
 ├── data/
 │   ├── datasets/         # Core dataset classes (0D, 1D, 2D, 3D, composite, distributions)
@@ -124,14 +124,14 @@ quantiq/
 ### Key Design Patterns
 
 #### Backend Abstraction
-- `quantiq.backend` provides a unified interface (`jnp`) that maps to either `jax.numpy` or `numpy`
+- `piblin_jax.backend` provides a unified interface (`jnp`) that maps to either `jax.numpy` or `numpy`
 - **Platform detection**: GPU support only on Linux with CUDA 12+
 - **Auto-fallback**: Automatically uses NumPy if JAX unavailable
 - **Conditional imports**: Bayesian module only imported when JAX available
 - Check backend: `backend.is_jax_available()`, `backend.get_backend()`, `backend.get_device_info()`
 
 ```python
-from quantiq.backend import jnp  # Either jax.numpy or numpy
+from piblin_jax.backend import jnp  # Either jax.numpy or numpy
 ```
 
 #### Dataset Hierarchy
@@ -201,20 +201,20 @@ When testing backend functionality that needs to simulate JAX unavailable:
 ```python
 # Use pytest-mock to patch JAX availability
 def test_numpy_fallback(monkeypatch):
-    monkeypatch.setattr("quantiq.backend._JAX_AVAILABLE", False)
+    monkeypatch.setattr("piblin_jax.backend._JAX_AVAILABLE", False)
     # Test NumPy fallback behavior
 ```
 
 ## piblin Compatibility
 
 quantiq maintains 100% behavioral compatibility with piblin:
-- Users can `import quantiq as piblin` and existing code works unchanged
+- Users can `import piblin_jax as piblin` and existing code works unchanged
 - Same API surface, same behavior, dramatically better performance
 - All dataset types, transforms, and I/O operations are compatible
 
 ## Development Best Practices
 
-1. **Always use the backend abstraction**: Import from `quantiq.backend` not directly from JAX/NumPy
+1. **Always use the backend abstraction**: Import from `piblin_jax.backend` not directly from JAX/NumPy
 2. **Test both backends**: Ensure code works with JAX and NumPy fallback
 3. **Immutable design**: Datasets should not be modified in-place (use `make_copy=True`)
 4. **Type everything**: Add type hints to all functions, use `TypeVar` for generics

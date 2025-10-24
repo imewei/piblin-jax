@@ -17,7 +17,7 @@ We'll walk through a typical rheology experiment workflow:
 6. Perform statistical analysis
 7. Generate publication-quality plots
 
-This tutorial assumes you have quantiq installed. See :doc:`../user_guide/installation`
+This tutorial assumes you have piblin-jax installed. See :doc:`../user_guide/installation`
 if you need to install it first.
 
 Step 1: Loading Data
@@ -33,7 +33,7 @@ Creating Sample Data
 
     import numpy as np
     import matplotlib.pyplot as plt
-    from quantiq.data import OneDimensionalDataset
+    from piblin_jax.data import OneDimensionalDataset
 
     # Generate synthetic flow curve data
     # (shear rate vs viscosity for a shear-thinning fluid)
@@ -70,13 +70,13 @@ Loading from File
 
 In real applications, you'd load data from files::
 
-    import quantiq
+    import piblin_jax
 
     # Load CSV file
-    dataset = quantiq.read_file('flow_curve.csv')
+    dataset = piblin_jax.read_file('flow_curve.csv')
 
     # Or use specific reader
-    from quantiq.dataio import CSVReader
+    from piblin_jax.dataio import CSVReader
 
     reader = CSVReader(x_column=0, y_column=1)
     dataset = reader.read('flow_curve.csv')
@@ -111,7 +111,7 @@ Step 3: Data Smoothing
 
 Apply Gaussian smoothing to reduce noise while preserving trends::
 
-    from quantiq.transform import GaussianSmoothing
+    from piblin_jax.transform import GaussianSmoothing
 
     # Create smoothing transform
     # sigma controls smoothness (higher = more smooth)
@@ -143,7 +143,7 @@ Step 4: Interpolation
 
 Interpolate to a regular grid for easier analysis::
 
-    from quantiq.transform import Interpolate1D
+    from piblin_jax.transform import Interpolate1D
 
     # Create regular grid on log scale
     new_shear_rate = np.logspace(-1, 2, 100)
@@ -163,7 +163,7 @@ Step 5: Building a Pipeline
 
 Combine multiple transforms into a reusable pipeline::
 
-    from quantiq.transform import Pipeline
+    from piblin_jax.transform import Pipeline
 
     # Create pipeline: smooth  ->  interpolate
     pipeline = Pipeline([
@@ -190,8 +190,8 @@ Combine multiple transforms into a reusable pipeline::
 
 Pipelines are reusable - apply to multiple datasets::
 
-    dataset1 = quantiq.read_file('sample1.csv')
-    dataset2 = quantiq.read_file('sample2.csv')
+    dataset1 = piblin_jax.read_file('sample1.csv')
+    dataset2 = piblin_jax.read_file('sample2.csv')
 
     result1 = pipeline.apply_to(dataset1)
     result2 = pipeline.apply_to(dataset2)
@@ -201,7 +201,7 @@ Step 6: Region of Interest
 
 Extract and analyze specific regions::
 
-    from quantiq.transform import SelectRegion
+    from piblin_jax.transform import SelectRegion
 
     # Extract low shear rate region (gamma_dot < 10 s^-1)
     low_shear_selector = SelectRegion(x_min=0.1, x_max=10.0)
@@ -243,7 +243,7 @@ Step 7: Numerical Derivatives
 
 Calculate shear stress from viscosity and shear rate::
 
-    from quantiq.transform import Derivative
+    from piblin_jax.transform import Derivative
 
     # Shear stress tau = eta * gamma_dot
     # In log-log space, this is addition: log(tau) = log(eta) + log(gamma_dot)
@@ -254,7 +254,7 @@ Calculate shear stress from viscosity and shear rate::
     log_shear_stress = log_viscosity + log_shear_rate
 
     # Create shear stress dataset
-    from quantiq.data import OneDimensionalDataset
+    from piblin_jax.data import OneDimensionalDataset
 
     stress_dataset = OneDimensionalDataset(
         x=processed.x,
@@ -394,7 +394,7 @@ Step 10: Working with Multiple Samples
 
 Analyze multiple samples using measurement sets::
 
-    from quantiq.data.collections import MeasurementSet
+    from piblin_jax.data.collections import MeasurementSet
 
     # Create multiple datasets (e.g., different temperatures)
     temperatures = [20, 40, 60]  #  degC

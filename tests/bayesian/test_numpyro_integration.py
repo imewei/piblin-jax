@@ -22,8 +22,8 @@ import numpyro.distributions as dist
 import pytest
 from numpy.testing import assert_allclose
 
-from quantiq.bayesian.base import BayesianModel
-from quantiq.data.datasets import OneDimensionalDataset
+from piblin_jax.bayesian.base import BayesianModel
+from piblin_jax.data.datasets import OneDimensionalDataset
 
 
 class SimpleBayesianLinearModel(BayesianModel):

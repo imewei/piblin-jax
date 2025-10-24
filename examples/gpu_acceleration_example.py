@@ -1,5 +1,5 @@
 """
-GPU Acceleration Example for quantiq.
+GPU Acceleration Example for piblin-jax.
 
 This example demonstrates how to leverage GPU acceleration with JAX
 for significant performance improvements in data processing and model fitting.
@@ -20,7 +20,7 @@ Run time: ~5 seconds (varies by hardware)
 Note: GPU acceleration is only available on Linux with CUDA 12+.
 On macOS and Windows, the example will run in CPU-only mode.
 
-Author: quantiq developers
+Author: piblin-jax developers
 Date: 2025-10-20
 """
 
@@ -28,11 +28,11 @@ import time
 
 import numpy as np
 
-# Import quantiq
-from quantiq.backend import get_backend, get_device_info, is_jax_available, jnp
-from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.transform.dataset.smoothing import GaussianSmooth
-from quantiq.transform.pipeline import Pipeline
+# Import piblin-jax
+from piblin_jax.backend import get_backend, get_device_info, is_jax_available, jnp
+from piblin_jax.data.datasets import OneDimensionalDataset
+from piblin_jax.transform.dataset.smoothing import GaussianSmooth
+from piblin_jax.transform.pipeline import Pipeline
 
 
 def print_device_info():
@@ -313,7 +313,7 @@ def main():
     print("\n")
     print("╔" + "=" * 68 + "╗")
     print("║" + " " * 15 + "GPU ACCELERATION EXAMPLE" + " " * 29 + "║")
-    print("║" + " " * 18 + "quantiq Framework" + " " * 33 + "║")
+    print("║" + " " * 18 + "piblin-jax Framework" + " " * 33 + "║")
     print("╚" + "=" * 68 + "╝")
     print()
 

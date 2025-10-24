@@ -12,11 +12,11 @@ import numpy as np
 import pytest
 from numpy.testing import assert_allclose
 
-from quantiq.backend import jnp
-from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.transform.base import DatasetTransform
-from quantiq.transform.dataset import GaussianSmooth, MinMaxNormalize, MovingAverageSmooth
-from quantiq.transform.pipeline import LazyPipeline, Pipeline
+from piblin_jax.backend import jnp
+from piblin_jax.data.datasets import OneDimensionalDataset
+from piblin_jax.transform.base import DatasetTransform
+from piblin_jax.transform.dataset import GaussianSmooth, MinMaxNormalize, MovingAverageSmooth
+from piblin_jax.transform.pipeline import LazyPipeline, Pipeline
 
 
 class MultiplyTransform(DatasetTransform):

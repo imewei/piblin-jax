@@ -1,7 +1,7 @@
 Performance Guide
 =================
 
-This guide covers performance optimization in quantiq, from basic best practices
+This guide covers performance optimization in piblin-jax, from basic best practices
 to advanced GPU acceleration and profiling techniques.
 
 Overview
@@ -32,7 +32,7 @@ Check Your Backend
 
 Verify which backend quantiq is using::
 
-    from quantiq.backend import get_backend, is_jax_available
+    from piblin_jax.backend import get_backend, is_jax_available
 
     print(f"Backend: {get_backend()}")
     print(f"JAX available: {is_jax_available()}")
@@ -80,7 +80,7 @@ JIT compilation happens on first call. Reusing transforms is fast::
 
 Pipelines optimize the entire sequence::
 
-    from quantiq.transform import Pipeline
+    from piblin_jax.transform import Pipeline
 
     pipeline = Pipeline([
         GaussianSmoothing(sigma=2.0),
@@ -95,7 +95,7 @@ Pipelines optimize the entire sequence::
 
 Process multiple datasets together::
 
-    from quantiq.data.collections import MeasurementSet
+    from piblin_jax.data.collections import MeasurementSet
 
     # Efficient: Single batch operation
     mset = MeasurementSet(datasets)
@@ -113,7 +113,7 @@ JAX's Just-In-Time compiler optimizes Python code to machine code:
     ::
 
         import time
-        from quantiq.transform.dataset import GaussianSmoothing
+        from piblin_jax.transform.dataset import GaussianSmoothing
 
         smoother = GaussianSmoothing(sigma=2.0)
 
@@ -139,7 +139,7 @@ Vectorization
 
 JAX automatically vectorizes operations::
 
-    from quantiq.backend import jnp
+    from piblin_jax.backend import jnp
 
     # Both are fast, but vectorized is cleaner
     # Manual loop (slower)
@@ -154,7 +154,7 @@ JAX automatically vectorizes operations::
 
 Apply function across array dimensions::
 
-    from quantiq.backend.operations import vmap
+    from piblin_jax.backend.operations import vmap
 
     def process_single(x):
         return x ** 2 + 2 * x + 1
@@ -212,10 +212,10 @@ Check if GPU is detected::
 Automatic GPU Usage
 ~~~~~~~~~~~~~~~~~~~
 
-quantiq automatically uses GPU when available - no code changes needed::
+piblin-jax automatically uses GPU when available - no code changes needed::
 
     # This code runs on GPU automatically if available
-    from quantiq.transform.dataset import GaussianSmoothing
+    from piblin_jax.transform.dataset import GaussianSmoothing
 
     smoother = GaussianSmoothing(sigma=2.0)
     result = smoother.apply_to(large_dataset)
@@ -292,12 +292,12 @@ Monitor memory usage::
 
 3. **Use float32** instead of float64 (half the memory)::
 
-       from quantiq.backend import jnp
+       from piblin_jax.backend import jnp
        data = jnp.array(data, dtype=jnp.float32)
 
 4. **Explicitly move to CPU** if needed::
 
-       from quantiq.backend.operations import device_get
+       from piblin_jax.backend.operations import device_get
        cpu_array = device_get(gpu_array)
 
 Performance Optimization
@@ -310,9 +310,9 @@ Transform Optimization
 
 Built-in transforms are already optimized. For custom transforms::
 
-    from quantiq.transform.base import DatasetTransform
-    from quantiq.backend.operations import jit
-    from quantiq.backend import jnp
+    from piblin_jax.transform.base import DatasetTransform
+    from piblin_jax.backend.operations import jit
+    from piblin_jax.backend import jnp
 
     class FastCustomTransform(DatasetTransform):
         @staticmethod
@@ -333,7 +333,7 @@ Pipeline Optimization
 
 Combine transforms into pipelines for optimization::
 
-    from quantiq.transform import Pipeline
+    from piblin_jax.transform import Pipeline
 
     # Optimized pipeline
     pipeline = Pipeline([
@@ -363,7 +363,7 @@ Process multiple datasets efficiently::
         results.append(transform.apply_to(dataset))
 
     # Efficient: Batch processing
-    from quantiq.data.collections import MeasurementSet
+    from piblin_jax.data.collections import MeasurementSet
 
     mset = MeasurementSet(datasets)
     # Transform applies optimizations across all datasets
@@ -531,7 +531,7 @@ Pattern 4: Array Reuse
 
 ::
 
-    from quantiq.backend import jnp
+    from piblin_jax.backend import jnp
 
     # Bad: Creates new arrays
     for i in range(1000):
@@ -601,8 +601,8 @@ Real-World Examples
 
     import numpy as np
     import time
-    from quantiq.data.datasets import OneDimensionalDataset
-    from quantiq.transform.dataset import GaussianSmoothing
+    from piblin_jax.data.datasets import OneDimensionalDataset
+    from piblin_jax.transform.dataset import GaussianSmoothing
 
     # Large dataset
     x = np.linspace(0, 100, 100000)
@@ -635,7 +635,7 @@ Results::
 
 ::
 
-    from quantiq.bayesian.models import PowerLawModel
+    from piblin_jax.bayesian.models import PowerLawModel
 
     # Generate data
     shear_rate = np.logspace(-1, 2, 30)

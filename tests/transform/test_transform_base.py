@@ -12,10 +12,10 @@ This module tests the foundation of the transform system including:
 import numpy as np
 import pytest
 
-from quantiq.backend import jnp
-from quantiq.data.collections import Experiment, ExperimentSet, Measurement, MeasurementSet
-from quantiq.data.datasets import Dataset, OneDimensionalDataset
-from quantiq.transform.base import (
+from piblin_jax.backend import jnp
+from piblin_jax.data.collections import Experiment, ExperimentSet, Measurement, MeasurementSet
+from piblin_jax.data.datasets import Dataset, OneDimensionalDataset
+from piblin_jax.transform.base import (
     DatasetTransform,
     ExperimentSetTransform,
     ExperimentTransform,
@@ -23,7 +23,7 @@ from quantiq.transform.base import (
     MeasurementTransform,
     Transform,
 )
-from quantiq.transform.pipeline import Pipeline
+from piblin_jax.transform.pipeline import Pipeline
 
 
 class ConcreteDatasetTransform(DatasetTransform):

@@ -1,5 +1,5 @@
 ---
-# Pre-commit hooks for quantiq
+# Pre-commit hooks for piblin-jax
 # Optimized for scientific Python with JAX, NumPy, and documentation
 #
 # To install: pre-commit install

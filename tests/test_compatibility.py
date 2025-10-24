@@ -1,28 +1,28 @@
 """
 Task Group 18: Compatibility Layer Tests
 
-Tests to ensure quantiq can be used as a drop-in replacement for piblin.
-This verifies that `import quantiq as piblin` works correctly.
+Tests to ensure piblin-jax can be used as a drop-in replacement for piblin.
+This verifies that `import piblin_jax as piblin` works correctly.
 """
 
 import numpy as np
 import pytest
 
-from quantiq.backend import is_jax_available
+from piblin_jax.backend import is_jax_available
 
 
 class TestPiblinCompatibility:
     """Test piblin compatibility layer."""
 
     def test_import_as_piblin(self):
-        """Test that quantiq can be imported as piblin."""
-        import quantiq as piblin
+        """Test that piblin-jax can be imported as piblin."""
+        import piblin_jax as piblin
 
         assert piblin is not None
 
     def test_core_classes_available(self):
         """Test that core classes are available."""
-        import quantiq as piblin
+        import piblin_jax as piblin
 
         # Core dataset classes
         assert hasattr(piblin, "OneDimensionalDataset")
@@ -31,7 +31,7 @@ class TestPiblinCompatibility:
 
     def test_measurement_classes_available(self):
         """Test that measurement/collection classes are available."""
-        import quantiq as piblin
+        import piblin_jax as piblin
 
         # Collection classes
         assert hasattr(piblin, "Measurement")
@@ -41,7 +41,7 @@ class TestPiblinCompatibility:
 
     def test_transform_classes_available(self):
         """Test that transform classes are available."""
-        import quantiq as piblin
+        import piblin_jax as piblin
 
         # Transform classes
         assert hasattr(piblin, "Pipeline")
@@ -50,7 +50,7 @@ class TestPiblinCompatibility:
     @pytest.mark.skipif(not is_jax_available(), reason="JAX required for Bayesian classes")
     def test_bayesian_classes_available(self):
         """Test that Bayesian classes are available."""
-        import quantiq as piblin
+        import piblin_jax as piblin
 
         # Bayesian classes
         assert hasattr(piblin, "BayesianModel")
@@ -61,7 +61,7 @@ class TestPiblinCompatibility:
 
     def test_dataio_available(self):
         """Test that dataio functions are available."""
-        import quantiq as piblin
+        import piblin_jax as piblin
 
         # Data IO
         assert hasattr(piblin, "read_files")
@@ -69,7 +69,7 @@ class TestPiblinCompatibility:
 
     def test_basic_workflow_as_piblin(self):
         """Test a basic workflow using piblin name."""
-        import quantiq as piblin
+        import piblin_jax as piblin
 
         # Create dataset
         x = np.linspace(0, 10, 50)
@@ -84,7 +84,7 @@ class TestPiblinCompatibility:
 
     def test_transform_workflow_as_piblin(self):
         """Test transform workflow using piblin name."""
-        import quantiq as piblin
+        import piblin_jax as piblin
 
         # Create dataset
         x = np.linspace(0, 10, 50)
@@ -106,7 +106,7 @@ class TestPiblinCompatibility:
 
     def test_pipeline_workflow_as_piblin(self):
         """Test pipeline workflow using piblin name."""
-        import quantiq as piblin
+        import piblin_jax as piblin
 
         x = np.linspace(0, 10, 50)
         y = np.sin(x)
@@ -131,7 +131,7 @@ class TestPiblinCompatibility:
 
     def test_measurement_workflow_as_piblin(self):
         """Test measurement workflow using piblin name."""
-        import quantiq as piblin
+        import piblin_jax as piblin
 
         x = np.linspace(0, 10, 20)
         y = np.random.randn(20)
@@ -155,11 +155,11 @@ class TestBackwardCompatibility:
     )
     def test_all_exports_present(self):
         """Test that __all__ contains key exports."""
-        import quantiq
+        import piblin_jax
 
         # Check __all__ is defined
-        assert hasattr(quantiq, "__all__")
-        assert isinstance(quantiq.__all__, list)
+        assert hasattr(piblin_jax, "__all__")
+        assert isinstance(piblin_jax.__all__, list)
 
         # Check key classes are in __all__
         key_classes = [
@@ -171,15 +171,15 @@ class TestBackwardCompatibility:
         ]
 
         for cls in key_classes:
-            assert cls in quantiq.__all__, f"{cls} not in __all__"
+            assert cls in piblin_jax.__all__, f"{cls} not in __all__"
 
     def test_version_available(self):
         """Test that version information is available."""
-        import quantiq
+        import piblin_jax
 
         # Version should be available
-        assert hasattr(quantiq, "__version__")
-        assert isinstance(quantiq.__version__, str)
+        assert hasattr(piblin_jax, "__version__")
+        assert isinstance(piblin_jax.__version__, str)
 
 
 class TestAPIStability:
@@ -187,7 +187,7 @@ class TestAPIStability:
 
     def test_dataset_interface(self):
         """Test that datasets have stable interface."""
-        import quantiq as piblin
+        import piblin_jax as piblin
 
         x = np.linspace(0, 10, 50)
         y = np.sin(x)
@@ -208,7 +208,7 @@ class TestAPIStability:
 
     def test_transform_interface(self):
         """Test that transforms have stable interface."""
-        import quantiq as piblin
+        import piblin_jax as piblin
 
         transform = piblin.LambdaTransform(lambda ds: ds.dependent_variable_data)
 
@@ -219,7 +219,7 @@ class TestAPIStability:
     @pytest.mark.skipif(not is_jax_available(), reason="JAX required for BayesianModel")
     def test_bayesian_model_interface(self):
         """Test that Bayesian models have stable interface."""
-        import quantiq as piblin
+        import piblin_jax as piblin
 
         # Just check the base class interface
         assert hasattr(piblin.BayesianModel, "fit")

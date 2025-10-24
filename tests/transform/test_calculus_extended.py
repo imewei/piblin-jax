@@ -12,9 +12,9 @@ import numpy as np
 import pytest
 from numpy.testing import assert_allclose
 
-from quantiq.backend import jnp
-from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.transform.dataset import CumulativeIntegral, DefiniteIntegral, Derivative
+from piblin_jax.backend import jnp
+from piblin_jax.data.datasets import OneDimensionalDataset
+from piblin_jax.transform.dataset import CumulativeIntegral, DefiniteIntegral, Derivative
 
 
 def create_polynomial_dataset():

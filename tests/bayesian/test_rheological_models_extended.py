@@ -18,7 +18,7 @@ import jax.numpy as jnp
 import numpy as np
 from numpy.testing import assert_allclose
 
-from quantiq.bayesian.models import (
+from piblin_jax.bayesian.models import (
     ArrheniusModel,
     CarreauYasudaModel,
     CrossModel,

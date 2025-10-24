@@ -2,7 +2,7 @@
 Uncertainty Propagation Example
 ================================
 
-This example demonstrates quantiq's uncertainty quantification and propagation:
+This example demonstrates piblin-jax's uncertainty quantification and propagation:
 - Creating datasets with measurement uncertainties
 - Propagating uncertainties through transform pipelines
 - Comparing Monte Carlo vs analytical uncertainty propagation
@@ -21,10 +21,10 @@ Expected output: Plots showing uncertainty bands through processing pipeline
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Import quantiq dataset and transform classes
-from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.transform import Pipeline
-from quantiq.transform.dataset import Derivative, GaussianSmooth, MinMaxNormalize
+# Import piblin-jax dataset and transform classes
+from piblin_jax.data.datasets import OneDimensionalDataset
+from piblin_jax.transform import Pipeline
+from piblin_jax.transform.dataset import Derivative, GaussianSmooth, MinMaxNormalize
 
 print("=" * 80)
 print("Uncertainty Propagation Example")
@@ -57,7 +57,7 @@ dataset = OneDimensionalDataset(
     details={"instrument": "Rheometer", "operator": "Scientist"},
 )
 
-# Store uncertainty as metadata (quantiq pattern)
+# Store uncertainty as metadata (piblin-jax pattern)
 # Note: Future versions may have dedicated uncertainty field
 dataset.details["dependent_variable_uncertainty"] = uncertainty_y
 
@@ -304,7 +304,7 @@ Key Takeaways:
    - Analytical (linear approximation): Fast but limited
    - For complex pipelines, Monte Carlo is more reliable
 
-5. quantiq Features Used:
+5. piblin-jax Features Used:
    - Metadata for uncertainty storage (dataset.details)
    - Pipeline for consistent transform application
    - make_copy=True for immutability (safe sampling)

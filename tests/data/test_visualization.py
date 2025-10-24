@@ -14,8 +14,8 @@ import pytest
 matplotlib.use("Agg")  # Use non-interactive backend for testing
 import matplotlib.pyplot as plt
 
-from quantiq.backend import is_jax_available
-from quantiq.data.datasets import OneDimensionalDataset
+from piblin_jax.backend import is_jax_available
+from piblin_jax.data.datasets import OneDimensionalDataset
 
 
 class TestOneDimensionalVisualization:

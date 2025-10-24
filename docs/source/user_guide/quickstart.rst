@@ -1,18 +1,18 @@
 Quick Start Guide
 =================
 
-This guide will help you get started with quantiq in just a few minutes.
+This guide will help you get started with piblin-jax in just a few minutes.
 
 Installation Reminder
 ---------------------
 
-If you haven't installed quantiq yet, see the :doc:`installation` guide.
+If you haven't installed piblin-jax yet, see the :doc:`installation` guide.
 
 Quick install::
 
-    pip install quantiq
+    pip install piblin-jax
 
-Your First quantiq Program
+Your First piblin-jax Program
 ---------------------------
 
 Let's create a simple program that loads data, applies transformations,
@@ -21,13 +21,13 @@ and visualizes the results.
 Loading Data
 ^^^^^^^^^^^^
 
-quantiq provides several ways to create and load data::
+piblin-jax provides several ways to create and load data::
 
-    import quantiq
+    import piblin_jax
     import numpy as np
 
     # Create a 1D dataset from arrays
-    from quantiq.data import OneDimensionalDataset
+    from piblin_jax.data import OneDimensionalDataset
 
     x = np.linspace(0, 10, 100)
     y = np.sin(x) + 0.1 * np.random.randn(100)  # Noisy sine wave
@@ -37,14 +37,14 @@ quantiq provides several ways to create and load data::
 Alternatively, load from a file::
 
     # Load from CSV file
-    dataset = quantiq.read_file('experiment.csv')
+    dataset = piblin_jax.read_file('experiment.csv')
 
 Applying Transformations
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-quantiq provides a rich set of transformations for data processing::
+piblin-jax provides a rich set of transformations for data processing::
 
-    from quantiq.transform import GaussianSmoothing, Normalization
+    from piblin_jax.transform import GaussianSmoothing, Normalization
 
     # Smooth the data
     smoother = GaussianSmoothing(sigma=2.0)
@@ -59,7 +59,7 @@ Building a Pipeline
 
 For multiple transformations, use a pipeline::
 
-    from quantiq.transform import Pipeline, GaussianSmoothing, Normalization
+    from piblin_jax.transform import Pipeline, GaussianSmoothing, Normalization
 
     pipeline = Pipeline([
         GaussianSmoothing(sigma=2.0),
@@ -70,8 +70,8 @@ For multiple transformations, use a pipeline::
 
 Pipelines are reusable and can be applied to multiple datasets::
 
-    dataset1 = quantiq.read_file('experiment1.csv')
-    dataset2 = quantiq.read_file('experiment2.csv')
+    dataset1 = piblin_jax.read_file('experiment1.csv')
+    dataset2 = piblin_jax.read_file('experiment2.csv')
 
     result1 = pipeline.apply_to(dataset1)
     result2 = pipeline.apply_to(dataset2)
@@ -79,7 +79,7 @@ Pipelines are reusable and can be applied to multiple datasets::
 Visualization
 ^^^^^^^^^^^^^
 
-quantiq datasets have built-in visualization capabilities::
+piblin-jax datasets have built-in visualization capabilities::
 
     import matplotlib.pyplot as plt
 
@@ -101,11 +101,11 @@ Complete Example
 
 Here's a complete example putting it all together::
 
-    import quantiq
+    import piblin_jax
     import numpy as np
     import matplotlib.pyplot as plt
-    from quantiq.data import OneDimensionalDataset
-    from quantiq.transform import Pipeline, GaussianSmoothing, Normalization
+    from piblin_jax.data import OneDimensionalDataset
+    from piblin_jax.transform import Pipeline, GaussianSmoothing, Normalization
 
     # Generate noisy data
     x = np.linspace(0, 10, 100)
@@ -138,14 +138,14 @@ Here's a complete example putting it all together::
 Working with Collections
 -------------------------
 
-quantiq provides hierarchical data structures for organizing multiple datasets.
+piblin-jax provides hierarchical data structures for organizing multiple datasets.
 
 Measurements
 ^^^^^^^^^^^^
 
 A Measurement contains multiple related datasets::
 
-    from quantiq.data.collections import Measurement
+    from piblin_jax.data.collections import Measurement
 
     # Create measurement from datasets
     measurement = Measurement(name='Trial 1')
@@ -161,7 +161,7 @@ Measurement Sets
 
 Group related measurements together::
 
-    from quantiq.data.collections import MeasurementSet
+    from piblin_jax.data.collections import MeasurementSet
 
     measurement_set = MeasurementSet(name='Daily Experiments')
     measurement_set.add_measurement(measurement1)
@@ -175,7 +175,7 @@ Group related measurements together::
 Bayesian Parameter Estimation
 ------------------------------
 
-quantiq includes built-in Bayesian models for parameter estimation with
+piblin-jax includes built-in Bayesian models for parameter estimation with
 uncertainty quantification.
 
 Basic Fitting
@@ -183,7 +183,7 @@ Basic Fitting
 
 Fit a power-law model to rheological data::
 
-    from quantiq.bayesian import PowerLawModel
+    from piblin_jax.bayesian import PowerLawModel
     import numpy as np
 
     # Experimental data
@@ -219,7 +219,7 @@ Use the fitted model to make predictions with uncertainty::
 Available Models
 ^^^^^^^^^^^^^^^^
 
-quantiq provides several built-in rheological models:
+piblin-jax provides several built-in rheological models:
 
 - **PowerLawModel**: :math:`\\eta = K \\dot{\\gamma}^{n-1}`
 - **ArrheniusModel**: :math:`\\eta = A \\exp(E_a / RT)`
@@ -231,10 +231,10 @@ See :doc:`../tutorials/rheological_models` for detailed examples.
 piblin Compatibility
 --------------------
 
-Migrating from piblin? quantiq is 100% backward compatible::
+Migrating from piblin? piblin-jax is 100% backward compatible::
 
     # Just change your import
-    import quantiq as piblin
+    import piblin_jax as piblin
 
     # All your existing piblin code works!
     data = piblin.read_file('experiment.csv')
@@ -249,10 +249,10 @@ Performance Tips
 JAX Backend
 ^^^^^^^^^^^
 
-quantiq automatically uses JAX for numerical operations, providing
+piblin-jax automatically uses JAX for numerical operations, providing
 significant speedups::
 
-    from quantiq.backend import get_backend
+    from piblin_jax.backend import get_backend
 
     # Check which backend is being used
     print(f"Backend: {get_backend()}")  # 'jax' (default)
@@ -260,10 +260,10 @@ significant speedups::
 GPU Acceleration
 ^^^^^^^^^^^^^^^^
 
-For large datasets on Linux with CUDA 12+, quantiq can leverage GPU acceleration::
+For large datasets on Linux with CUDA 12+, piblin-jax can leverage GPU acceleration::
 
     # Install GPU support (Linux only, CUDA 12+)
-    # pip install quantiq-jax[gpu-cuda]
+    # pip install piblin-jax[gpu-cuda]
 
     # JAX automatically uses GPU when available
     # No code changes needed!
@@ -314,5 +314,5 @@ If you encounter issues or have questions:
 
 - Check the :doc:`../api/index` for detailed API documentation
 - Browse :doc:`../tutorials/index` for more examples
-- Search `GitHub Issues <https://github.com/quantiq/quantiq/issues>`_
-- Ask on `GitHub Discussions <https://github.com/quantiq/quantiq/discussions>`_
+- Search `GitHub Issues <https://github.com/piblin/piblin-jax/issues>`_
+- Ask on `GitHub Discussions <https://github.com/piblin/piblin-jax/discussions>`_

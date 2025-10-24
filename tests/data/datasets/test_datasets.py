@@ -1,5 +1,5 @@
 """
-Tests for quantiq dataset classes.
+Tests for piblin-jax dataset classes.
 
 Tests cover all 7 dataset types with focus on:
 - Dataset ABC interface
@@ -12,8 +12,8 @@ Tests cover all 7 dataset types with focus on:
 import numpy as np
 import pytest
 
-from quantiq.backend import get_backend, is_jax_available, jnp
-from quantiq.data.datasets import (
+from piblin_jax.backend import get_backend, is_jax_available, jnp
+from piblin_jax.data.datasets import (
     Dataset,
     Distribution,
     Histogram,

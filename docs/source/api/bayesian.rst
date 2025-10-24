@@ -4,8 +4,8 @@ Bayesian Models
 Overview
 --------
 
-The ``quantiq.bayesian`` module provides a powerful framework for Bayesian inference
-and uncertainty quantification in quantiq. Built on NumPyro, it enables probabilistic
+The ``piblin_jax.bayesian`` module provides a powerful framework for Bayesian inference
+and uncertainty quantification in piblin_jax. Built on NumPyro, it enables probabilistic
 modeling with Markov Chain Monte Carlo (MCMC) sampling for robust parameter estimation
 and predictive uncertainty.
 
@@ -38,7 +38,7 @@ Fitting a Power Law Model
 
 Fit a rheological power law model with MCMC::
 
-    from quantiq.bayesian import PowerLawModel
+    from piblin_jax.bayesian import PowerLawModel
     import numpy as np
 
     # Prepare data
@@ -86,7 +86,7 @@ Custom Priors and Advanced Usage
 
 Customize priors based on domain knowledge::
 
-    from quantiq.bayesian import ArrheniusModel
+    from piblin_jax.bayesian import ArrheniusModel
 
     # Create model with custom priors
     model = ArrheniusModel()
@@ -119,7 +119,7 @@ API Reference
 Module Contents
 ^^^^^^^^^^^^^^^
 
-The ``quantiq.bayesian`` module provides the following classes:
+The ``piblin_jax.bayesian`` module provides the following classes:
 
 - :class:`BayesianModel` - Base class for all Bayesian models
 - :class:`PowerLawModel` - Power-law rheological model
@@ -130,7 +130,7 @@ The ``quantiq.bayesian`` module provides the following classes:
 Base Classes
 ------------
 
-.. automodule:: quantiq.bayesian.base
+.. automodule:: piblin_jax.bayesian.base
    :members:
    :undoc-members:
    :show-inheritance:
@@ -142,7 +142,7 @@ Rheological Models
 Power Law Model
 ^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.bayesian.models.power_law
+.. automodule:: piblin_jax.bayesian.models.power_law
    :members:
    :undoc-members:
    :show-inheritance:
@@ -151,7 +151,7 @@ Power Law Model
 Cross Model
 ^^^^^^^^^^^
 
-.. automodule:: quantiq.bayesian.models.cross
+.. automodule:: piblin_jax.bayesian.models.cross
    :members:
    :undoc-members:
    :show-inheritance:
@@ -160,7 +160,7 @@ Cross Model
 Carreau-Yasuda Model
 ^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.bayesian.models.carreau_yasuda
+.. automodule:: piblin_jax.bayesian.models.carreau_yasuda
    :members:
    :undoc-members:
    :show-inheritance:
@@ -172,7 +172,7 @@ Thermal Models
 Arrhenius Model
 ^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.bayesian.models.arrhenius
+.. automodule:: piblin_jax.bayesian.models.arrhenius
    :members:
    :undoc-members:
    :show-inheritance:

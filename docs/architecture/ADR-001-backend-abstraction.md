@@ -2,7 +2,7 @@
 
 ## Status
 
-**Accepted** - Implemented in `quantiq.backend`
+**Accepted** - Implemented in `piblin_jax.backend`
 
 Date: 2024-10-19
 
@@ -19,7 +19,7 @@ The core challenge: How do we provide JAX-level performance without forcing all 
 
 ## Decision
 
-We implement a **backend abstraction layer** (`quantiq.backend`) that provides a unified interface (`jnp`) that can be backed by either JAX or NumPy:
+We implement a **backend abstraction layer** (`piblin_jax.backend`) that provides a unified interface (`jnp`) that can be backed by either JAX or NumPy:
 
 ```python
 # quantiq/backend/__init__.py
@@ -36,7 +36,7 @@ jnp = backend_module  # Unified interface
 **Key Design Principles**:
 
 1. **Transparent Fallback**: If JAX is unavailable, automatically fall back to NumPy
-2. **Single Import**: All internal quantiq code uses `from quantiq.backend import jnp`
+2. **Single Import**: All internal piblin-jax code uses `from piblin_jax.backend import jnp`
 3. **API Compatibility**: Ensure operations work identically on both backends
 4. **Performance Portability**: Code written once automatically gains JAX speedups when available
 
@@ -84,14 +84,14 @@ jnp = backend_module  # Unified interface
    - Need fixtures for both backend types
 
 3. **Import Overhead**:
-   - Every internal module imports from `quantiq.backend`
+   - Every internal module imports from `piblin_jax.backend`
    - Small startup cost for backend detection
    - (Mitigated: Detection happens once at import time)
 
 4. **Advanced JAX Users**:
    - Power users wanting `jax.jit`, `jax.vmap` must import JAX directly
    - Backend abstraction doesn't expose all JAX capabilities
-   - (Mitigated: We provide `quantiq.backend.jnp` for access)
+   - (Mitigated: We provide `piblin_jax.backend.jnp` for access)
 
 ### Trade-offs Made
 
@@ -144,7 +144,7 @@ dependencies = ["numpy>=1.24"]
 
 ```python
 # Let users choose backend at runtime
-quantiq.set_backend("jax")  # or "numpy"
+piblin_jax.set_backend("jax")  # or "numpy"
 ```
 
 **Pros**:
@@ -163,8 +163,8 @@ quantiq.set_backend("jax")  # or "numpy"
 ### Alternative 4: Separate Packages
 
 ```python
-# quantiq-numpy and quantiq-jax as separate PyPI packages
-pip install quantiq-numpy  # or quantiq-jax
+# quantiq-numpy and piblin-jax as separate PyPI packages
+pip install quantiq-numpy  # or piblin-jax
 ```
 
 **Pros**:
@@ -184,11 +184,11 @@ pip install quantiq-numpy  # or quantiq-jax
 
 ### For Internal Developers
 
-When writing new quantiq code:
+When writing new piblin-jax code:
 
 ```python
 # ✅ CORRECT: Use backend abstraction
-from quantiq.backend import jnp
+from piblin_jax.backend import jnp
 
 def my_transform(data):
     return jnp.sum(data, axis=0)  # Works with JAX or NumPy
@@ -207,7 +207,7 @@ def my_transform(data):
 Access JAX features when available:
 
 ```python
-from quantiq.backend import jnp, BACKEND, is_jax_available
+from piblin_jax.backend import jnp, BACKEND, is_jax_available
 
 if is_jax_available():
     from jax import jit, vmap
@@ -231,7 +231,7 @@ else:
 - JAX Documentation: https://jax.readthedocs.io/
 - JAX NumPy API: https://jax.readthedocs.io/en/latest/jax.numpy.html
 - NumPy Array API Standard: https://data-apis.org/array-api/latest/
-- Discussion: quantiq Issue #12 "Backend Abstraction Strategy"
+- Discussion: piblin-jax Issue #12 "Backend Abstraction Strategy"
 
 ## Revision History
 

@@ -4,8 +4,8 @@ Data Structures
 Overview
 --------
 
-The ``quantiq.data`` module provides the core data structures for representing
-measurement data in quantiq. It implements a hierarchical system for organizing
+The ``piblin_jax.data`` module provides the core data structures for representing
+measurement data in piblin_jax. It implements a hierarchical system for organizing
 experimental data, from individual measurements to complex experimental campaigns
 with multiple conditions and replicates.
 
@@ -35,7 +35,7 @@ Creating a 1D Dataset
 
 The most common use case is creating a 1D dataset from arrays::
 
-    from quantiq.data.datasets import OneDimensionalDataset
+    from piblin_jax.data.datasets import OneDimensionalDataset
     import numpy as np
 
     x = np.linspace(0, 10, 100)
@@ -66,7 +66,7 @@ Building Collections
 
 Organize multiple measurements into collections::
 
-    from quantiq.data.collections import Measurement, MeasurementSet
+    from piblin_jax.data.collections import Measurement, MeasurementSet
 
     # Create a measurement with multiple datasets
     measurement = Measurement(
@@ -93,7 +93,7 @@ API Reference
 Module Contents
 ^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.data
+.. automodule:: piblin_jax.data
 
 Datasets
 --------
@@ -101,7 +101,7 @@ Datasets
 Base Dataset
 ^^^^^^^^^^^^
 
-.. automodule:: quantiq.data.datasets.base
+.. automodule:: piblin_jax.data.datasets.base
    :members:
    :undoc-members:
    :show-inheritance:
@@ -110,7 +110,7 @@ Base Dataset
 Zero-Dimensional Dataset
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.data.datasets.zero_dimensional
+.. automodule:: piblin_jax.data.datasets.zero_dimensional
    :members:
    :undoc-members:
    :show-inheritance:
@@ -119,7 +119,7 @@ Zero-Dimensional Dataset
 One-Dimensional Dataset
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.data.datasets.one_dimensional
+.. automodule:: piblin_jax.data.datasets.one_dimensional
    :members:
    :undoc-members:
    :show-inheritance:
@@ -128,7 +128,7 @@ One-Dimensional Dataset
 Two-Dimensional Dataset
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.data.datasets.two_dimensional
+.. automodule:: piblin_jax.data.datasets.two_dimensional
    :members:
    :undoc-members:
    :show-inheritance:
@@ -137,7 +137,7 @@ Two-Dimensional Dataset
 Three-Dimensional Dataset
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.data.datasets.three_dimensional
+.. automodule:: piblin_jax.data.datasets.three_dimensional
    :members:
    :undoc-members:
    :show-inheritance:
@@ -146,7 +146,7 @@ Three-Dimensional Dataset
 Composite Dataset
 ^^^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.data.datasets.composite
+.. automodule:: piblin_jax.data.datasets.composite
    :members:
    :undoc-members:
    :show-inheritance:
@@ -155,7 +155,7 @@ Composite Dataset
 Distribution Dataset
 ^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.data.datasets.distribution
+.. automodule:: piblin_jax.data.datasets.distribution
    :members:
    :undoc-members:
    :show-inheritance:
@@ -164,7 +164,7 @@ Distribution Dataset
 Histogram Dataset
 ^^^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.data.datasets.histogram
+.. automodule:: piblin_jax.data.datasets.histogram
    :members:
    :undoc-members:
    :show-inheritance:
@@ -176,7 +176,7 @@ Collections
 Measurement
 ^^^^^^^^^^^
 
-.. automodule:: quantiq.data.collections.measurement
+.. automodule:: piblin_jax.data.collections.measurement
    :members:
    :undoc-members:
    :show-inheritance:
@@ -185,7 +185,7 @@ Measurement
 MeasurementSet
 ^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.data.collections.measurement_set
+.. automodule:: piblin_jax.data.collections.measurement_set
    :members:
    :undoc-members:
    :show-inheritance:
@@ -194,7 +194,7 @@ MeasurementSet
 ConsistentMeasurementSet
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.data.collections.consistent_measurement_set
+.. automodule:: piblin_jax.data.collections.consistent_measurement_set
    :members:
    :undoc-members:
    :show-inheritance:
@@ -203,7 +203,7 @@ ConsistentMeasurementSet
 TabularMeasurementSet
 ^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.data.collections.tabular_measurement_set
+.. automodule:: piblin_jax.data.collections.tabular_measurement_set
    :members:
    :undoc-members:
    :show-inheritance:
@@ -212,7 +212,7 @@ TabularMeasurementSet
 TidyMeasurementSet
 ^^^^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.data.collections.tidy_measurement_set
+.. automodule:: piblin_jax.data.collections.tidy_measurement_set
    :members:
    :undoc-members:
    :show-inheritance:
@@ -221,7 +221,7 @@ TidyMeasurementSet
 Experiment
 ^^^^^^^^^^
 
-.. automodule:: quantiq.data.collections.experiment
+.. automodule:: piblin_jax.data.collections.experiment
    :members:
    :undoc-members:
    :show-inheritance:
@@ -230,7 +230,7 @@ Experiment
 ExperimentSet
 ^^^^^^^^^^^^^
 
-.. automodule:: quantiq.data.collections.experiment_set
+.. automodule:: piblin_jax.data.collections.experiment_set
    :members:
    :undoc-members:
    :show-inheritance:
@@ -242,7 +242,7 @@ Utilities
 Metadata
 ^^^^^^^^
 
-.. automodule:: quantiq.data.metadata
+.. automodule:: piblin_jax.data.metadata
    :members:
    :undoc-members:
    :show-inheritance:
@@ -251,7 +251,7 @@ Metadata
 Region of Interest (ROI)
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.data.roi
+.. automodule:: piblin_jax.data.roi
    :members:
    :undoc-members:
    :show-inheritance:

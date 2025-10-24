@@ -19,21 +19,21 @@ Patch release with minor internal improvements to the release process.
 
 ### Summary
 
-Initial pre-release of **quantiq** - a modern JAX-powered framework for measurement data science. This release provides a complete reimplementation of [piblin](https://github.com/3mcloud/piblin) with dramatic performance improvements (5-10x CPU, 50-100x GPU), advanced Bayesian inference capabilities, and 100% backward compatibility.
+Initial pre-release of **piblin-jax** - a modern JAX-powered framework for measurement data science. This release provides a complete reimplementation of [piblin](https://github.com/3mcloud/piblin) with dramatic performance improvements (5-10x CPU, 50-100x GPU), advanced Bayesian inference capabilities, and 100% backward compatibility.
 
 **Status**: Pre-release version for testing and evaluation. The API is stable but not yet considered production-ready.
 
-**Repository**: The GitHub repository has been renamed to `quantiq-jax` to avoid name conflicts.
+**Repository**: The GitHub repository has been renamed to `piblin-jax` to avoid name conflicts.
 
-**Package Name**: Changed from `quantiq` to `quantiq-jax` on PyPI due to existing package with same name. The Python import name remains `quantiq` for backward compatibility.
+**Package Name**: Changed from `quantiq` to `piblin-jax` on PyPI due to existing package with same name. The Python import name remains `quantiq` for backward compatibility.
 
 ### Changed
-- **Repository Rename**: GitHub repository renamed from `quantiq` to `quantiq-jax`
-  - Repository URL: https://github.com/quantiq/quantiq-jax
-- **Package Name Change**: PyPI package name changed from `quantiq` to `quantiq-jax`
+- **Repository Rename**: GitHub repository renamed from `quantiq` to `piblin-jax`
+  - Repository URL: https://github.com/piblin/piblin-jax
+- **Package Name Change**: PyPI package name changed from `quantiq` to `piblin-jax`
   - Reason: Name `quantiq` already taken on PyPI by another project
-  - Installation: `pip install quantiq-jax` (was: `pip install quantiq`)
-  - Import name unchanged: `import quantiq` still works
+  - Installation: `pip install piblin-jax` (was: `pip install quantiq`)
+  - Import name unchanged: `import piblin_jax` still works
   - No code changes required for users (only installation command changes)
 - **BREAKING:** Removed `gpu-cuda` optional dependency extra from pyproject.toml
   - GPU installation now requires explicit manual installation or `make install-gpu-cuda`
@@ -197,7 +197,7 @@ This is the first pre-release of quantiq, a modern JAX-powered framework for mea
 
 For migration from piblin, simply change your import:
 ```python
-import quantiq as piblin  # All your piblin code works!
+import piblin_jax as piblin  # All your piblin code works!
 ```
 
 Note: This is a pre-release version (0.0.1) intended for testing and evaluation. The API is stable but not yet considered production-ready. Full 0.1.0 release with additional features and documentation coming soon.
@@ -261,7 +261,7 @@ quantiq gratefully acknowledges the original [piblin](https://github.com/3mcloud
 
 ## Links
 
-- [GitHub Repository](https://github.com/quantiq/quantiq-jax)
-- [Documentation](https://quantiq.readthedocs.io)
-- [Issue Tracker](https://github.com/quantiq/quantiq-jax/issues)
-- [Discussions](https://github.com/quantiq/quantiq-jax/discussions)
+- [GitHub Repository](https://github.com/piblin/piblin-jax)
+- [Documentation](https://piblin-jax.readthedocs.io)
+- [Issue Tracker](https://github.com/piblin/piblin-jax/issues)
+- [Discussions](https://github.com/piblin/piblin-jax/discussions)

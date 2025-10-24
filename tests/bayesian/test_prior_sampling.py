@@ -14,7 +14,7 @@ import numpy as np
 import numpyro
 from jax import random
 
-from quantiq.bayesian.models import (
+from piblin_jax.bayesian.models import (
     ArrheniusModel,
     CarreauYasudaModel,
     CrossModel,

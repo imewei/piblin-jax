@@ -1,12 +1,12 @@
 Core Concepts
 =============
 
-This guide explains the fundamental concepts and architecture of quantiq.
+This guide explains the fundamental concepts and architecture of piblin_jax.
 
 Architecture Overview
 ---------------------
 
-quantiq is built on a layered architecture designed for performance, composability, and ease of use:
+piblin-jax is built on a layered architecture designed for performance, composability, and ease of use:
 
 Layered Architecture
 ^^^^^^^^^^^^^^^^^^^^
@@ -64,7 +64,7 @@ Module Organization
 
 .. code-block:: text
 
-    quantiq/
+    piblin_jax/
     ├── data/                    # Data structures
     │   ├── datasets/            # Dataset types (0D, 1D, 2D, 3D)
     │   │   ├── base.py          # BaseDataset abstract class
@@ -170,37 +170,37 @@ Data Structures
 Datasets
 ^^^^^^^^
 
-Datasets are the core data containers in quantiq. They are immutable and
+Datasets are the core data containers in piblin_jax. They are immutable and
 type-specific:
 
 **Zero-Dimensional Dataset**
   Scalar values with uncertainty::
 
-    from quantiq.data import ZeroDimensionalDataset
+    from piblin_jax.data import ZeroDimensionalDataset
     temperature = ZeroDimensionalDataset(value=25.0, uncertainty=0.5)
 
 **One-Dimensional Dataset**
   Arrays of (x, y) data::
 
-    from quantiq.data import OneDimensionalDataset
+    from piblin_jax.data import OneDimensionalDataset
     dataset = OneDimensionalDataset(x=x_values, y=y_values)
 
 **Two-Dimensional Dataset**
   Gridded data (x, y, z)::
 
-    from quantiq.data import TwoDimensionalDataset
+    from piblin_jax.data import TwoDimensionalDataset
     surface = TwoDimensionalDataset(x=x, y=y, z=z_grid)
 
 **Three-Dimensional Dataset**
   Volumetric data::
 
-    from quantiq.data import ThreeDimensionalDataset
+    from piblin_jax.data import ThreeDimensionalDataset
     volume = ThreeDimensionalDataset(x=x, y=y, z=z, data=data_3d)
 
 **Composite Datasets**
   Multiple related datasets::
 
-    from quantiq.data import CompositeDataset
+    from piblin_jax.data import CompositeDataset
     composite = CompositeDataset(datasets={'temp': temp_ds, 'pressure': pressure_ds})
 
 Collections
@@ -211,20 +211,20 @@ Collections organize multiple datasets hierarchically:
 **Measurement**
   Related datasets from a single experimental run::
 
-    from quantiq.data.collections import Measurement
+    from piblin_jax.data.collections import Measurement
     measurement = Measurement(name='Trial 1')
     measurement.add_dataset('temperature', temp_dataset)
 
 **MeasurementSet**
   Multiple related measurements::
 
-    from quantiq.data.collections import MeasurementSet
+    from piblin_jax.data.collections import MeasurementSet
     measurement_set = MeasurementSet(name='Daily Experiments')
 
 **Experiment**
   Hierarchical organization of measurements::
 
-    from quantiq.data.collections import Experiment
+    from piblin_jax.data.collections import Experiment
     experiment = Experiment(name='Rheology Study')
 
 Metadata System
@@ -271,7 +271,7 @@ Transform Types
 **Lambda Transforms**
   Custom transformations::
 
-    from quantiq.transform import LambdaTransform
+    from piblin_jax.transform import LambdaTransform
     custom = LambdaTransform(func=lambda ds: modify(ds))
 
 Transform Pipeline
@@ -279,7 +279,7 @@ Transform Pipeline
 
 Compose transforms into reusable pipelines::
 
-    from quantiq.transform import Pipeline
+    from piblin_jax.transform import Pipeline
 
     pipeline = Pipeline([
         GaussianSmoothing(sigma=2.0),
@@ -299,11 +299,11 @@ Pipelines are:
 Backend Abstraction
 -------------------
 
-quantiq abstracts numerical operations through a backend layer:
+piblin-jax abstracts numerical operations through a backend layer:
 
 .. code-block:: python
 
-    from quantiq.backend import get_backend, array, exp, sin
+    from piblin_jax.backend import get_backend, array, exp, sin
 
     # Get current backend
     backend = get_backend()  # 'jax' or 'numpy'
@@ -321,14 +321,14 @@ This allows:
 Bayesian Inference
 ------------------
 
-quantiq integrates NumPyro for Bayesian parameter estimation:
+piblin-jax integrates NumPyro for Bayesian parameter estimation:
 
 Model Structure
 ^^^^^^^^^^^^^^^
 
 All Bayesian models inherit from ``BayesianModel``::
 
-    from quantiq.bayesian import BayesianModel
+    from piblin_jax.bayesian import BayesianModel
 
     class MyModel(BayesianModel):
         def model(self, x, y=None):
@@ -358,14 +358,14 @@ Bayesian models.
 piblin Compatibility
 --------------------
 
-quantiq maintains 100% API compatibility with piblin:
+piblin-jax maintains 100% API compatibility with piblin:
 
 Compatibility Layer
 ^^^^^^^^^^^^^^^^^^^
 
 ::
 
-    import quantiq as piblin
+    import piblin_jax as piblin
 
     # All piblin code works unchanged
     data = piblin.read_file('data.csv')
@@ -379,7 +379,7 @@ Performance Optimization
 JAX Integration
 ^^^^^^^^^^^^^^^
 
-quantiq leverages JAX for:
+piblin-jax leverages JAX for:
 
 - **JIT Compilation**: Automatic optimization
 - **Vectorization**: SIMD operations
@@ -399,10 +399,10 @@ Process multiple datasets efficiently using collections.
 Type System
 -----------
 
-quantiq is fully typed with comprehensive type hints::
+piblin-jax is fully typed with comprehensive type hints::
 
     from typing import Optional
-    from quantiq.data import OneDimensionalDataset
+    from piblin_jax.data import OneDimensionalDataset
 
     def process_data(
         dataset: OneDimensionalDataset,
@@ -433,12 +433,12 @@ Example: Complete Workflow
 
 ::
 
-    import quantiq
-    from quantiq.transform import Pipeline, GaussianSmoothing, Normalization
-    from quantiq.data.collections import MeasurementSet
+    import piblin_jax
+    from piblin_jax.transform import Pipeline, GaussianSmoothing, Normalization
+    from piblin_jax.data.collections import MeasurementSet
 
     # Load data
-    datasets = [quantiq.read_file(f'sample_{i}.csv') for i in range(10)]
+    datasets = [piblin_jax.read_file(f'sample_{i}.csv') for i in range(10)]
 
     # Create measurement set
     ms = MeasurementSet.from_datasets(datasets)
@@ -453,7 +453,7 @@ Example: Complete Workflow
     processed = ms.apply_transform(pipeline)
 
     # Bayesian analysis
-    from quantiq.bayesian import PowerLawModel
+    from piblin_jax.bayesian import PowerLawModel
     model = PowerLawModel()
 
     for measurement in processed.measurements:

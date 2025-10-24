@@ -39,8 +39,8 @@ Create a Simple Scaling Transform
 
 Let's create a transform that scales data by a factor::
 
-    from quantiq.transform.base import DatasetTransform
-    from quantiq.data.datasets import OneDimensionalDataset
+    from piblin_jax.transform.base import DatasetTransform
+    from piblin_jax.data.datasets import OneDimensionalDataset
 
     class ScaleTransform(DatasetTransform):
         """Scale dependent variable by a constant factor."""
@@ -83,7 +83,7 @@ Use the Transform
 ::
 
     import numpy as np
-    from quantiq.data.datasets import OneDimensionalDataset
+    from piblin_jax.data.datasets import OneDimensionalDataset
 
     # Create dataset
     x = np.linspace(0, 10, 100)
@@ -108,9 +108,9 @@ JIT-Compiled Transforms
 
 For performance-critical operations, use JAX JIT compilation::
 
-    from quantiq.transform.base import DatasetTransform
-    from quantiq.backend import jnp
-    from quantiq.backend.operations import jit
+    from piblin_jax.transform.base import DatasetTransform
+    from piblin_jax.backend import jnp
+    from piblin_jax.backend.operations import jit
 
     class FastNormalize(DatasetTransform):
         """Fast Z-score normalization with JIT compilation."""
@@ -145,9 +145,9 @@ Moving Average Filter
 
 Create a configurable moving average filter::
 
-    from quantiq.transform.base import DatasetTransform
-    from quantiq.backend import jnp
-    from quantiq.backend.operations import jit
+    from piblin_jax.transform.base import DatasetTransform
+    from piblin_jax.backend import jnp
+    from piblin_jax.backend.operations import jit
     import numpy as np
 
     class MovingAverageFilter(DatasetTransform):
@@ -220,8 +220,8 @@ Combine Multiple Transforms
 
 Chain transforms together using Pipeline::
 
-    from quantiq.transform import Pipeline
-    from quantiq.transform.dataset import (
+    from piblin_jax.transform import Pipeline
+    from piblin_jax.transform.dataset import (
         Derivative,
         GaussianSmoothing,
         Normalize
@@ -308,8 +308,8 @@ Measurement-Level Transform
 
 Operate across multiple datasets in a measurement::
 
-    from quantiq.transform.base import MeasurementTransform
-    from quantiq.data.collections import Measurement
+    from piblin_jax.transform.base import MeasurementTransform
+    from piblin_jax.data.collections import Measurement
 
     class CrossDatasetNormalize(MeasurementTransform):
         """Normalize all datasets to same scale."""
@@ -412,7 +412,7 @@ Best Practices
     Provide clear docstrings with Parameters, Returns, and Examples sections.
 
 **Backend agnostic**
-    Use ``jnp`` from ``quantiq.backend`` instead of direct NumPy/JAX imports
+    Use ``jnp`` from ``piblin_jax.backend`` instead of direct NumPy/JAX imports
     to ensure compatibility with both backends.
 
 Real-World Example: Baseline Correction
@@ -423,9 +423,9 @@ Complete Transform Implementation
 
 ::
 
-    from quantiq.transform.base import DatasetTransform
-    from quantiq.backend import jnp
-    from quantiq.backend.operations import jit
+    from piblin_jax.transform.base import DatasetTransform
+    from piblin_jax.backend import jnp
+    from piblin_jax.backend.operations import jit
     from scipy.signal import savgol_filter
     import numpy as np
 

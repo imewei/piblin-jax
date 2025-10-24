@@ -1,7 +1,7 @@
-quantiq Documentation
+piblin-jax Documentation
 =====================
 
-**quantiq** is a modern JAX-powered framework for measurement data science,
+**piblin-jax** is a modern JAX-powered framework for measurement data science,
 providing a complete reimplementation of piblin with dramatic performance
 improvements and advanced uncertainty quantification.
 
@@ -18,7 +18,7 @@ Key Features
 
 * **JAX-Powered Performance**: 5-10x CPU speedup, 50-100x GPU acceleration
 * **Bayesian Uncertainty Quantification**: NumPyro integration for rigorous uncertainty propagation
-* **100% piblin Compatibility**: Drop-in replacement with ``import quantiq as piblin``
+* **100% piblin Compatibility**: Drop-in replacement with ``import piblin_jax as piblin``
 * **Modern Python 3.12+**: Type-safe with modern syntax and functional programming
 * **Non-Linear Fitting**: NLSQ integration for advanced curve fitting
 * **Automatic GPU Acceleration**: Transparent device placement without configuration
@@ -36,17 +36,17 @@ Quick Start
 
 Installation::
 
-    pip install quantiq
+    pip install piblin-jax
 
 Basic usage::
 
-    import quantiq
+    import piblin_jax
 
     # Read data
-    data = quantiq.read_file('experiment.csv')
+    data = piblin_jax.read_file('experiment.csv')
 
     # Create a transform pipeline
-    from quantiq.transform import Pipeline, Interpolate1D, Smoothing
+    from piblin_jax.transform import Pipeline, Interpolate1D, Smoothing
 
     pipeline = Pipeline([
         Interpolate1D(new_x=new_points),
@@ -64,7 +64,7 @@ piblin Compatibility
 
 For seamless migration from piblin::
 
-    import quantiq as piblin
+    import piblin_jax as piblin
 
     # All your existing piblin code works!
     data = piblin.read_file('experiment.csv')

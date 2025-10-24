@@ -149,7 +149,7 @@ uv run ruff check .
 uv run ruff format --check .
 
 # 5. Run type checker (same as CI)
-uv run mypy quantiq
+uv run mypy piblin_jax
 ```
 
 ### First Push to GitHub
@@ -164,7 +164,7 @@ git commit -m "ci: setup CI/CD pipeline with dependency version consistency"
 # Push and watch CI run
 git push
 
-# Monitor CI at: https://github.com/imewei/quantiq/actions
+# Monitor CI at: https://github.com/piblin/piblin-jax/actions
 ```
 
 Expected workflow run time:

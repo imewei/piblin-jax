@@ -19,7 +19,7 @@ Each model uses NumPyro for MCMC sampling and provides:
 import matplotlib.pyplot as plt
 import numpy as np
 
-from quantiq.bayesian import (
+from piblin_jax.bayesian import (
     ArrheniusModel,
     CarreauYasudaModel,
     CrossModel,

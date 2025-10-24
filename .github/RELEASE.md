@@ -1,6 +1,6 @@
 # Release Process Guide
 
-This document describes how to release a new version of quantiq to PyPI.
+This document describes how to release a new version of piblin_jax to PyPI.
 
 ## Overview
 
@@ -23,9 +23,9 @@ The release process is fully automated via GitHub Actions. When you push a versi
 
 1. Go to https://test.pypi.org/manage/account/publishing/
 2. Add a new publisher:
-   - **PyPI Project Name**: `quantiq`
+   - **PyPI Project Name**: `piblin_jax`
    - **Owner**: `imewei` (or your org)
-   - **Repository name**: `quantiq` (or your repo)
+   - **Repository name**: `piblin_jax` (or your repo)
    - **Workflow name**: `release.yml`
    - **Environment name**: `testpypi`
 
@@ -33,9 +33,9 @@ The release process is fully automated via GitHub Actions. When you push a versi
 
 1. Go to https://pypi.org/manage/account/publishing/
 2. Add a new publisher:
-   - **PyPI Project Name**: `quantiq`
+   - **PyPI Project Name**: `piblin_jax`
    - **Owner**: `imewei` (or your org)
-   - **Repository name**: `quantiq` (or your repo)
+   - **Repository name**: `piblin_jax` (or your repo)
    - **Workflow name**: `release.yml`
    - **Environment name**: `pypi`
 
@@ -65,7 +65,7 @@ Create two protected environments in your repository settings:
 
 1. **Update version numbers** consistently across:
    - `pyproject.toml` (line 7): `version = "0.0.1"`
-   - `quantiq/__init__.py` (line 25): `__version__ = "0.0.1"`
+   - `piblin_jax/__init__.py` (line 25): `__version__ = "0.0.1"`
    - `docs/source/conf.py` (lines 18-19): `version` and `release`
    - `tests/test_package.py` (line 10): version assertion
 
@@ -123,7 +123,7 @@ git push origin v0.0.1
 
 ### Step 4: Monitor Release Workflow
 
-1. Go to: https://github.com/imewei/quantiq/actions
+1. Go to: https://github.com/imewei/piblin_jax/actions
 2. Watch the "Release to PyPI" workflow
 3. The workflow will:
    - ✅ Validate version consistency
@@ -147,18 +147,18 @@ If you set up environment protection (recommended):
 
 1. **Check TestPyPI**:
    ```bash
-   pip install --index-url https://test.pypi.org/simple/ quantiq==0.0.1
-   python -c "import quantiq; print(quantiq.__version__)"
+   pip install --index-url https://test.pypi.org/simple/ piblin_jax==0.0.1
+   python -c "import piblin_jax; print(piblin_jax.__version__)"
    ```
 
 2. **Check PyPI** (after approval):
    ```bash
-   pip install quantiq-jax==0.0.1
-   python -c "import quantiq; print(quantiq.__version__)"
+   pip install piblin-jax==0.0.1
+   python -c "import piblin_jax; print(piblin_jax.__version__)"
    ```
 
 3. **Check GitHub Release**:
-   - Go to: https://github.com/imewei/quantiq/releases
+   - Go to: https://github.com/imewei/piblin_jax/releases
    - Verify release notes and artifacts
 
 ## Manual Release (Fallback)
@@ -209,7 +209,7 @@ uv publish
 
 **Solution**: Ensure all version numbers match:
 ```bash
-grep -r "0.1.0" pyproject.toml quantiq/__init__.py docs/source/conf.py tests/test_package.py
+grep -r "0.1.0" pyproject.toml piblin_jax/__init__.py docs/source/conf.py tests/test_package.py
 ```
 
 ### Trusted Publishing Error

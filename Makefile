@@ -1,4 +1,4 @@
-# Makefile for quantiq - Modern JAX-Powered Framework for Measurement Data Science
+# Makefile for piblin_jax - Modern JAX-Powered Framework for Measurement Data Science
 # This Makefile provides comprehensive automation for development, testing, building, and deployment.
 #
 # Usage:
@@ -24,8 +24,8 @@ VENV_BIN := $(VENV)/bin
 PIP := $(VENV_BIN)/pip
 PYTEST := $(VENV_BIN)/pytest
 PYTHON_VENV := $(VENV_BIN)/python
-PROJECT := quantiq
-SRC_DIR := quantiq
+PROJECT := piblin_jax
+SRC_DIR := piblin_jax
 TEST_DIR := tests
 DOCS_DIR := docs
 
@@ -68,7 +68,7 @@ CYAN := \033[36m
 
 ## help: Show this help message
 help:
-	@echo "$(BOLD)$(BLUE)quantiq Makefile$(RESET)"
+	@echo "$(BOLD)$(BLUE)piblin_jax Makefile$(RESET)"
 	@echo ""
 	@echo "$(BOLD)Usage:$(RESET) make $(CYAN)<target>$(RESET)"
 	@echo ""
@@ -218,7 +218,7 @@ install-gpu-cuda:
 	@echo ""
 	@# Step 3: Verify GPU detection
 	@echo "$(BOLD)Step 3/4:$(RESET) Verifying GPU detection..."
-	@$(PYTHON_VENV) -c "from quantiq.backend import get_device_info; info = get_device_info(); print(f'  Backend: {info[\"backend\"]}'); print(f'  Device type: {info[\"device_type\"]}'); print(f'  Device count: {info[\"device_count\"]}'); assert info['device_type'] == 'gpu', 'GPU not detected!'" && \
+	@$(PYTHON_VENV) -c "from piblin_jax.backend import get_device_info; info = get_device_info(); print(f'  Backend: {info[\"backend\"]}'); print(f'  Device type: {info[\"device_type\"]}'); print(f'  Device count: {info[\"device_count\"]}'); assert info['device_type'] == 'gpu', 'GPU not detected!'" && \
 		echo "  ✓ GPU detected successfully" || \
 		(echo "  $(BOLD)$(RED)✗ GPU not detected$(RESET)" && \
 		echo "" && \

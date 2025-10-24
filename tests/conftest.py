@@ -1,5 +1,5 @@
 """
-Pytest configuration and fixtures for quantiq tests.
+Pytest configuration and fixtures for piblin-jax tests.
 """
 
 import numpy as np

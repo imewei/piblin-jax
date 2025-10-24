@@ -11,7 +11,7 @@ import numpy as np
 import pytest
 from numpy.testing import assert_array_equal
 
-from quantiq.data.roi import CompoundRegion, LinearRegion
+from piblin_jax.data.roi import CompoundRegion, LinearRegion
 
 
 class TestLinearRegion:

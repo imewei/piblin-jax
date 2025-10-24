@@ -16,7 +16,7 @@ class TestPlatformDetection:
 
     def test_platform_detection_helper(self):
         """Test _detect_platform() helper function."""
-        from quantiq.backend import _detect_platform
+        from piblin_jax.backend import _detect_platform
 
         # Test with different sys.platform values
         test_cases = [
@@ -36,7 +36,7 @@ class TestPlatformDetection:
 
     def test_cuda_version_validation_valid(self):
         """Test CUDA version validation for valid versions."""
-        from quantiq.backend import _validate_cuda_version
+        from piblin_jax.backend import _validate_cuda_version
 
         # Test valid CUDA versions (>= 12.0)
         assert _validate_cuda_version((12, 0)) is True
@@ -46,7 +46,7 @@ class TestPlatformDetection:
 
     def test_cuda_version_validation_invalid(self):
         """Test CUDA version validation for invalid versions."""
-        from quantiq.backend import _validate_cuda_version
+        from piblin_jax.backend import _validate_cuda_version
 
         # Test invalid CUDA versions (< 12.0)
         assert _validate_cuda_version((11, 8)) is False
@@ -56,7 +56,7 @@ class TestPlatformDetection:
 
     def test_cuda_version_detection_with_mock(self):
         """Test CUDA version detection with mocked JAX."""
-        from quantiq.backend import _get_cuda_version
+        from piblin_jax.backend import _get_cuda_version
 
         # Mock JAX with CUDA version
         mock_jax = MagicMock()
@@ -87,26 +87,26 @@ class TestPlatformDetection:
                     "jax.extend.backend": mock_jax_extend_backend,
                 },
             ),
-            patch("quantiq.backend.jax", mock_jax),
+            patch("piblin_jax.backend.jax", mock_jax),
         ):
             result = _get_cuda_version()
             assert result == (12, 3), f"Expected (12, 3), got {result}"
 
     def test_cuda_version_detection_exception(self):
         """Test CUDA version detection when exception occurs."""
-        from quantiq.backend import _get_cuda_version
+        from piblin_jax.backend import _get_cuda_version
 
         # Mock JAX that raises exception
         mock_jax = MagicMock()
         mock_jax.lib.xla_bridge.get_backend.side_effect = Exception("No CUDA")
 
-        with patch("quantiq.backend.jax", mock_jax):
+        with patch("piblin_jax.backend.jax", mock_jax):
             result = _get_cuda_version()
             assert result is None, "Should return None when CUDA unavailable"
 
     def test_device_info_includes_platform_fields(self):
         """Test that get_device_info() includes new platform validation fields."""
-        from quantiq.backend import get_device_info
+        from piblin_jax.backend import get_device_info
 
         info = get_device_info()
 
@@ -129,7 +129,7 @@ class TestPlatformDetection:
 
     def test_device_info_backward_compatibility(self):
         """Test that get_device_info() maintains backward compatibility."""
-        from quantiq.backend import get_device_info
+        from piblin_jax.backend import get_device_info
 
         info = get_device_info()
 
@@ -145,7 +145,7 @@ class TestPlatformDetection:
 
     def test_current_platform_detection(self):
         """Test that platform is correctly detected for current system."""
-        from quantiq.backend import get_device_info
+        from piblin_jax.backend import get_device_info
 
         info = get_device_info()
 

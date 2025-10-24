@@ -4,15 +4,15 @@ Basic package structure tests.
 
 
 def test_package_import():
-    """Test that quantiq package can be imported."""
-    import quantiq
+    """Test that piblin_jax package can be imported."""
+    import piblin_jax
 
-    assert quantiq.__version__ == "0.0.2"
+    assert piblin_jax.__version__ == "0.0.3"
 
 
 def test_package_has_version():
     """Test that package has a version attribute."""
-    import quantiq
+    import piblin_jax
 
-    assert hasattr(quantiq, "__version__")
-    assert isinstance(quantiq.__version__, str)
+    assert hasattr(piblin_jax, "__version__")
+    assert isinstance(piblin_jax.__version__, str)

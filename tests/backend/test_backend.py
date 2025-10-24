@@ -23,9 +23,9 @@ class TestBackendDetection:
             import jax
 
             # Reimport to get fresh backend detection
-            if "quantiq.backend" in sys.modules:
-                del sys.modules["quantiq.backend"]
-            from quantiq.backend import BACKEND, get_backend
+            if "piblin_jax.backend" in sys.modules:
+                del sys.modules["piblin_jax.backend"]
+            from piblin_jax.backend import BACKEND, get_backend
 
             # JAX should be available on all platforms (CPU mode minimum)
             # GPU support depends on platform: only Linux with CUDA 12+
@@ -39,12 +39,12 @@ class TestBackendDetection:
         # Mock JAX import failure
         with patch.dict("sys.modules", {"jax": None, "jax.numpy": None}):
             # Remove cached module to force re-import
-            if "quantiq.backend" in sys.modules:
-                del sys.modules["quantiq.backend"]
+            if "piblin_jax.backend" in sys.modules:
+                del sys.modules["piblin_jax.backend"]
 
             with warnings.catch_warnings(record=True) as w:
                 warnings.simplefilter("always")
-                from quantiq.backend import BACKEND, get_backend
+                from piblin_jax.backend import BACKEND, get_backend
 
                 assert BACKEND == "numpy", f"Expected BACKEND='numpy', got '{BACKEND}'"
                 assert get_backend() == "numpy", "get_backend() should return 'numpy'"
@@ -58,7 +58,7 @@ class TestBackendDetection:
 
     def test_jax_availability_query(self):
         """Test is_jax_available() function."""
-        from quantiq.backend import is_jax_available
+        from piblin_jax.backend import is_jax_available
 
         result = is_jax_available()
         assert isinstance(result, bool), "is_jax_available() should return bool"
@@ -75,7 +75,7 @@ class TestBackendDetection:
 
     def test_device_info_query(self):
         """Test get_device_info() function returns valid structure."""
-        from quantiq.backend import get_device_info
+        from piblin_jax.backend import get_device_info
 
         info = get_device_info()
         assert isinstance(info, dict), "get_device_info() should return dict"
@@ -89,7 +89,7 @@ class TestArrayOperations:
 
     def test_array_creation(self):
         """Test creating arrays using unified interface."""
-        from quantiq.backend import jnp
+        from piblin_jax.backend import jnp
 
         arr = jnp.array([1, 2, 3, 4])
         assert arr.shape == (4,), "Array should have shape (4,)"
@@ -97,8 +97,8 @@ class TestArrayOperations:
 
     def test_array_operations_on_backend(self):
         """Test that basic array operations work on current backend."""
-        from quantiq.backend import jnp
-        from quantiq.backend.operations import concatenate, copy, reshape, stack
+        from piblin_jax.backend import jnp
+        from piblin_jax.backend.operations import concatenate, copy, reshape, stack
 
         # Create test arrays
         arr1 = jnp.array([1, 2, 3])
@@ -125,13 +125,13 @@ class TestArrayOperations:
 
     def test_jit_decorator_works(self):
         """Test that JIT decorator works (even as no-op for NumPy)."""
-        from quantiq.backend.operations import jit
+        from piblin_jax.backend.operations import jit
 
         @jit
         def simple_function(x):
             return x * 2
 
-        from quantiq.backend import jnp
+        from piblin_jax.backend import jnp
 
         arr = jnp.array([1, 2, 3])
         result = simple_function(arr)
@@ -145,7 +145,7 @@ class TestBoundaryConversions:
 
     def test_to_numpy_conversion(self):
         """Test converting backend arrays to NumPy."""
-        from quantiq.backend import jnp, to_numpy
+        from piblin_jax.backend import jnp, to_numpy
 
         arr = jnp.array([1.0, 2.0, 3.0])
         np_arr = to_numpy(arr)
@@ -157,7 +157,7 @@ class TestBoundaryConversions:
 
     def test_from_numpy_conversion(self):
         """Test converting NumPy arrays to backend."""
-        from quantiq.backend import from_numpy, jnp
+        from piblin_jax.backend import from_numpy, jnp
 
         np_arr = np.array([1.0, 2.0, 3.0])
         backend_arr = from_numpy(np_arr)
@@ -168,7 +168,7 @@ class TestBoundaryConversions:
 
     def test_roundtrip_conversion(self):
         """Test that to_numpy and from_numpy are inverses."""
-        from quantiq.backend import from_numpy, jnp, to_numpy
+        from piblin_jax.backend import from_numpy, jnp, to_numpy
 
         original = jnp.array([1.0, 2.0, 3.0])
         np_arr = to_numpy(original)
@@ -213,7 +213,7 @@ class TestPlatformValidationIntegration:
         mock_jax_typing = MagicMock()
         mock_jax.typing = mock_jax_typing
 
-        # Mock numpyro to prevent import errors when quantiq.bayesian loads
+        # Mock numpyro to prevent import errors when bayesian module loads
         mock_numpyro = MagicMock()
         mock_numpyro_infer = MagicMock()
         mock_numpyro_distributions = MagicMock()
@@ -222,7 +222,7 @@ class TestPlatformValidationIntegration:
 
         # Remove cached modules
         for module in list(sys.modules.keys()):
-            if module.startswith("quantiq"):
+            if module.startswith("piblin_jax"):
                 del sys.modules[module]
 
         with (
@@ -249,11 +249,11 @@ class TestPlatformValidationIntegration:
             warnings.simplefilter("always")
             import importlib
 
-            import quantiq.backend
+            import piblin_jax.backend
 
-            importlib.reload(quantiq.backend)
+            importlib.reload(piblin_jax.backend)
 
-            from quantiq.backend import BACKEND, get_device_info
+            from piblin_jax.backend import BACKEND, get_device_info
 
             # On Linux with CUDA 12+, should use JAX backend
             assert BACKEND == "jax", "Should use JAX backend on Linux with CUDA 12+"
@@ -302,7 +302,7 @@ class TestPlatformValidationIntegration:
         mock_jax_typing = MagicMock()
         mock_jax.typing = mock_jax_typing
 
-        # Mock numpyro to prevent import errors when quantiq.bayesian loads
+        # Mock numpyro to prevent import errors when bayesian module loads
         mock_numpyro = MagicMock()
         mock_numpyro_infer = MagicMock()
         mock_numpyro_distributions = MagicMock()
@@ -311,7 +311,7 @@ class TestPlatformValidationIntegration:
 
         # Remove cached modules
         for module in list(sys.modules.keys()):
-            if module.startswith("quantiq"):
+            if module.startswith("piblin_jax"):
                 del sys.modules[module]
 
         with (
@@ -338,11 +338,11 @@ class TestPlatformValidationIntegration:
             warnings.simplefilter("always")
             import importlib
 
-            import quantiq.backend
+            import piblin_jax.backend
 
-            importlib.reload(quantiq.backend)
+            importlib.reload(piblin_jax.backend)
 
-            from quantiq.backend import BACKEND, get_device_info
+            from piblin_jax.backend import BACKEND, get_device_info
 
             # Should use JAX in CPU mode
             assert BACKEND == "jax", "Should use JAX CPU mode with CUDA 11.x"
@@ -366,8 +366,8 @@ class TestPlatformValidationIntegration:
         mock_jax.typing = MagicMock()  # Required by numpyro
 
         # Remove cached module
-        if "quantiq.backend" in sys.modules:
-            del sys.modules["quantiq.backend"]
+        if "piblin_jax.backend" in sys.modules:
+            del sys.modules["piblin_jax.backend"]
 
         with (
             patch("sys.platform", "darwin"),
@@ -380,11 +380,11 @@ class TestPlatformValidationIntegration:
             warnings.simplefilter("always")
             import importlib
 
-            import quantiq.backend
+            import piblin_jax.backend
 
-            importlib.reload(quantiq.backend)
+            importlib.reload(piblin_jax.backend)
 
-            from quantiq.backend import BACKEND, get_device_info
+            from piblin_jax.backend import BACKEND, get_device_info
 
             # Should use JAX in CPU mode
             assert BACKEND == "jax", "Should use JAX CPU mode on macOS"
@@ -408,8 +408,8 @@ class TestPlatformValidationIntegration:
         mock_jax.typing = MagicMock()  # Required by numpyro
 
         # Remove cached module
-        if "quantiq.backend" in sys.modules:
-            del sys.modules["quantiq.backend"]
+        if "piblin_jax.backend" in sys.modules:
+            del sys.modules["piblin_jax.backend"]
 
         with (
             patch("sys.platform", "win32"),
@@ -422,11 +422,11 @@ class TestPlatformValidationIntegration:
             warnings.simplefilter("always")
             import importlib
 
-            import quantiq.backend
+            import piblin_jax.backend
 
-            importlib.reload(quantiq.backend)
+            importlib.reload(piblin_jax.backend)
 
-            from quantiq.backend import BACKEND, get_device_info
+            from piblin_jax.backend import BACKEND, get_device_info
 
             # Should use JAX in CPU mode
             assert BACKEND == "jax", "Should use JAX CPU mode on Windows"
@@ -447,10 +447,10 @@ class TestPlatformValidationIntegration:
         """Test that CPU-only workflows remain unchanged."""
         # This tests that when JAX is not available, everything works as before
         with patch.dict("sys.modules", {"jax": None, "jax.numpy": None}):
-            if "quantiq.backend" in sys.modules:
-                del sys.modules["quantiq.backend"]
+            if "piblin_jax.backend" in sys.modules:
+                del sys.modules["piblin_jax.backend"]
 
-            from quantiq.backend import BACKEND, get_backend, jnp
+            from piblin_jax.backend import BACKEND, get_backend, jnp
 
             # Should use NumPy backend
             assert BACKEND == "numpy"
@@ -462,7 +462,7 @@ class TestPlatformValidationIntegration:
             assert jnp.sum(arr) == 6
 
             # Device info should work
-            from quantiq.backend import get_device_info
+            from piblin_jax.backend import get_device_info
 
             info = get_device_info()
             assert info["backend"] == "numpy"
@@ -507,7 +507,7 @@ class TestPlatformValidationIntegration:
 
         # Remove cached modules
         for module in list(sys.modules.keys()):
-            if module.startswith("quantiq"):
+            if module.startswith("piblin_jax"):
                 del sys.modules[module]
 
         with (
@@ -534,11 +534,11 @@ class TestPlatformValidationIntegration:
             warnings.simplefilter("always")
             import importlib
 
-            import quantiq.backend
+            import piblin_jax.backend
 
-            importlib.reload(quantiq.backend)
+            importlib.reload(piblin_jax.backend)
 
-            from quantiq.backend import BACKEND, get_device_info
+            from piblin_jax.backend import BACKEND, get_device_info
 
             # Should still use JAX in CPU mode when CUDA detection fails
             assert BACKEND == "jax", "Should use JAX in CPU mode when CUDA detection fails"
@@ -557,7 +557,7 @@ class TestPlatformValidationIntegration:
 
     def test_device_info_includes_all_platform_fields(self):
         """Test that get_device_info() includes all required platform fields."""
-        from quantiq.backend import get_device_info
+        from piblin_jax.backend import get_device_info
 
         info = get_device_info()
 
@@ -619,8 +619,8 @@ class TestPlatformValidationIntegration:
         mock_numpyro.distributions = mock_numpyro_distributions
 
         # Remove cached module
-        if "quantiq.backend" in sys.modules:
-            del sys.modules["quantiq.backend"]
+        if "piblin_jax.backend" in sys.modules:
+            del sys.modules["piblin_jax.backend"]
 
         with (
             patch("sys.platform", "linux"),
@@ -647,11 +647,11 @@ class TestPlatformValidationIntegration:
             warnings.simplefilter("always")
             import importlib
 
-            import quantiq.backend
+            import piblin_jax.backend
 
-            importlib.reload(quantiq.backend)
+            importlib.reload(piblin_jax.backend)
 
-            from quantiq.backend import BACKEND, get_device_info
+            from piblin_jax.backend import BACKEND, get_device_info
 
             # Should use JAX in CPU mode when CUDA unavailable
             assert BACKEND == "jax", "Should use JAX in CPU mode when no CUDA on Linux"
@@ -705,8 +705,8 @@ class TestPlatformValidationIntegration:
         mock_numpyro.distributions = mock_numpyro_distributions
 
         # Remove cached module
-        if "quantiq.backend" in sys.modules:
-            del sys.modules["quantiq.backend"]
+        if "piblin_jax.backend" in sys.modules:
+            del sys.modules["piblin_jax.backend"]
 
         # Test on macOS
         with (
@@ -734,9 +734,9 @@ class TestPlatformValidationIntegration:
             warnings.simplefilter("always")
             import importlib
 
-            import quantiq.backend
+            import piblin_jax.backend
 
-            importlib.reload(quantiq.backend)
+            importlib.reload(piblin_jax.backend)
 
             # Warning should mention Linux and CUDA 12+
             platform_warnings = [

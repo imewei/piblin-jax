@@ -3,8 +3,8 @@ requires = ["setuptools>=80.9.0", "wheel>=0.45.1"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "quantiq-jax"
-version = "0.0.2"
+name = "piblin-jax"
+version = "0.0.3"
 description = "Modern JAX-Powered Framework for Measurement Data Science"
 readme = "README.md"
 license = {text = "MIT"}
@@ -95,18 +95,18 @@ security = [
 # See README.md GPU Installation section for instructions
 
 all = [
-    "quantiq-jax[dev,test,docs]",
+    "piblin-jax[dev,test,docs]",
 ]
 
 [project.urls]
-Homepage = "https://github.com/quantiq/quantiq-jax"
-Documentation = "https://quantiq.readthedocs.io"
-Repository = "https://github.com/quantiq/quantiq-jax"
-"Bug Tracker" = "https://github.com/quantiq/quantiq-jax/issues"
+Homepage = "https://github.com/piblin/piblin-jax"
+Documentation = "https://piblin-jax.readthedocs.io"
+Repository = "https://github.com/piblin/piblin-jax"
+"Bug Tracker" = "https://github.com/piblin/piblin-jax/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["quantiq*"]
+include = ["piblin_jax*"]
 exclude = ["tests*", "docs*"]
 
 [tool.mypy]
@@ -152,7 +152,7 @@ addopts = [
     "-ra",
     "-q",
     "--strict-markers",
-    "--cov=quantiq",
+    "--cov=piblin_jax",
     "--cov-report=term-missing",
     "--cov-report=html",
     "--cov-report=xml",
@@ -170,7 +170,7 @@ markers = [
 ]
 
 [tool.coverage.run]
-source = ["quantiq"]
+source = ["piblin_jax"]
 omit = [
     "*/tests/*",
     "*/__init__.py",
@@ -286,10 +286,10 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 # Allow late imports in examples (for demonstration purposes)
 "examples/**/*.py" = ["E402"]
 # Allow abstract classes without abstract methods (valid design choice)
-"quantiq/data/datasets/base.py" = ["B024"]
+"piblin_jax/data/datasets/base.py" = ["B024"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["quantiq"]
+known-first-party = ["piblin_jax"]
 section-order = [
     "future",
     "standard-library",

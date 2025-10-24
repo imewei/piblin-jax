@@ -78,7 +78,7 @@ NLSQ Fitting Example
 Quick parameter estimation without uncertainty::
 
     import numpy as np
-    from quantiq.fitting import fit_curve
+    from piblin_jax.fitting import fit_curve
 
     # Experimental data
     shear_rate = np.array([0.1, 0.5, 1.0, 5.0, 10.0, 50.0, 100.0])
@@ -101,7 +101,7 @@ Bayesian Fitting Example
 
 Full uncertainty quantification::
 
-    from quantiq.bayesian.models import PowerLawModel
+    from piblin_jax.bayesian.models import PowerLawModel
 
     # Fit model
     model = PowerLawModel(n_samples=2000, n_warmup=1000)
@@ -185,7 +185,7 @@ Temperature Sensitivity
 
 Calculate viscosity change with temperature::
 
-    from quantiq.bayesian.models import ArrheniusModel
+    from piblin_jax.bayesian.models import ArrheniusModel
 
     # Temperature range (K)
     temperature = np.array([273, 298, 323, 348, 373])
@@ -287,7 +287,7 @@ Fitting Example
 
 ::
 
-    from quantiq.bayesian.models import CrossModel
+    from piblin_jax.bayesian.models import CrossModel
 
     # Wide shear rate range
     shear_rate = np.logspace(-3, 3, 50)
@@ -384,7 +384,7 @@ Fitting Example
 
 ::
 
-    from quantiq.bayesian.models import CarreauYasudaModel
+    from piblin_jax.bayesian.models import CarreauYasudaModel
 
     # Generate complex rheological data
     shear_rate = np.logspace(-2, 3, 60)
@@ -403,7 +403,7 @@ Fitting Example
     model.fit(shear_rate, viscosity)
 
     # Compare with Cross model
-    from quantiq.bayesian.models import CrossModel
+    from piblin_jax.bayesian.models import CrossModel
     cross_model = CrossModel(n_samples=2000)
     cross_model.fit(shear_rate, viscosity)
 
@@ -446,7 +446,7 @@ Comparing Multiple Models
 
 Fit all models and compare::
 
-    from quantiq.bayesian.models import (
+    from piblin_jax.bayesian.models import (
         PowerLawModel, CrossModel, CarreauYasudaModel
     )
 

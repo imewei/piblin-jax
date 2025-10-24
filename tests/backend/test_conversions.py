@@ -12,7 +12,7 @@ from unittest.mock import MagicMock, patch
 import numpy as np
 import pytest
 
-from quantiq.backend import (
+from piblin_jax.backend import (
     from_numpy,
     from_numpy_pytree,
     is_jax_available,
@@ -226,7 +226,7 @@ class TestCUDAVersionDetection:
 
     def test_get_cuda_version_with_single_digit_minor(self):
         """Test parsing CUDA version with single digit minor version."""
-        from quantiq.backend import _get_cuda_version
+        from piblin_jax.backend import _get_cuda_version
 
         mock_jax = MagicMock()
         mock_backend = MagicMock()
@@ -240,14 +240,14 @@ class TestCUDAVersionDetection:
 
         with (
             patch.dict("sys.modules", {"jax": mock_jax, "jax.extend": mock_jax_extend}),
-            patch("quantiq.backend.jax", mock_jax),
+            patch("piblin_jax.backend.jax", mock_jax),
         ):
             result = _get_cuda_version()
             assert result == (12, 0)
 
     def test_get_cuda_version_with_patch_version(self):
         """Test parsing CUDA version with patch version."""
-        from quantiq.backend import _get_cuda_version
+        from piblin_jax.backend import _get_cuda_version
 
         mock_jax = MagicMock()
         mock_backend = MagicMock()
@@ -261,14 +261,14 @@ class TestCUDAVersionDetection:
 
         with (
             patch.dict("sys.modules", {"jax": mock_jax, "jax.extend": mock_jax_extend}),
-            patch("quantiq.backend.jax", mock_jax),
+            patch("piblin_jax.backend.jax", mock_jax),
         ):
             result = _get_cuda_version()
             assert result == (12, 3)
 
     def test_get_cuda_version_invalid_format(self):
         """Test CUDA version detection with invalid version format."""
-        from quantiq.backend import _get_cuda_version
+        from piblin_jax.backend import _get_cuda_version
 
         mock_jax = MagicMock()
         mock_backend = MagicMock()
@@ -282,14 +282,14 @@ class TestCUDAVersionDetection:
 
         with (
             patch.dict("sys.modules", {"jax": mock_jax, "jax.extend": mock_jax_extend}),
-            patch("quantiq.backend.jax", mock_jax),
+            patch("piblin_jax.backend.jax", mock_jax),
         ):
             result = _get_cuda_version()
             assert result is None
 
     def test_get_cuda_version_single_component(self):
         """Test CUDA version detection with single version component."""
-        from quantiq.backend import _get_cuda_version
+        from piblin_jax.backend import _get_cuda_version
 
         mock_jax = MagicMock()
         mock_backend = MagicMock()
@@ -303,7 +303,7 @@ class TestCUDAVersionDetection:
 
         with (
             patch.dict("sys.modules", {"jax": mock_jax, "jax.extend": mock_jax_extend}),
-            patch("quantiq.backend.jax", mock_jax),
+            patch("piblin_jax.backend.jax", mock_jax),
         ):
             result = _get_cuda_version()
             assert result is None
@@ -321,8 +321,8 @@ class TestLegacyGPUExtras:
         mock_jax.devices.return_value = [mock_device]
 
         # Remove cached module
-        if "quantiq.backend" in sys.modules:
-            del sys.modules["quantiq.backend"]
+        if "piblin_jax.backend" in sys.modules:
+            del sys.modules["piblin_jax.backend"]
 
         with (
             patch("sys.platform", "darwin"),
@@ -332,9 +332,9 @@ class TestLegacyGPUExtras:
             warnings.simplefilter("always")
             import importlib
 
-            import quantiq.backend
+            import piblin_jax.backend
 
-            importlib.reload(quantiq.backend)
+            importlib.reload(piblin_jax.backend)
 
             # Should issue deprecation warning for Metal
             metal_warnings = [
@@ -351,8 +351,8 @@ class TestLegacyGPUExtras:
         mock_jax.devices.return_value = [mock_device]
 
         # Remove cached module
-        if "quantiq.backend" in sys.modules:
-            del sys.modules["quantiq.backend"]
+        if "piblin_jax.backend" in sys.modules:
+            del sys.modules["piblin_jax.backend"]
 
         with (
             patch("sys.platform", "linux"),
@@ -362,9 +362,9 @@ class TestLegacyGPUExtras:
             warnings.simplefilter("always")
             import importlib
 
-            import quantiq.backend
+            import piblin_jax.backend
 
-            importlib.reload(quantiq.backend)
+            importlib.reload(piblin_jax.backend)
 
             # Should issue deprecation warning for ROCm
             rocm_warnings = [
@@ -381,8 +381,8 @@ class TestLegacyGPUExtras:
         mock_jax.devices.return_value = [mock_device]
 
         # Remove cached module
-        if "quantiq.backend" in sys.modules:
-            del sys.modules["quantiq.backend"]
+        if "piblin_jax.backend" in sys.modules:
+            del sys.modules["piblin_jax.backend"]
 
         with (
             patch("sys.platform", "darwin"),
@@ -392,9 +392,9 @@ class TestLegacyGPUExtras:
             warnings.simplefilter("always")
             import importlib
 
-            import quantiq.backend
+            import piblin_jax.backend
 
-            importlib.reload(quantiq.backend)
+            importlib.reload(piblin_jax.backend)
 
             # Should issue warning for Metal
             metal_warnings = [w_msg for w_msg in w if "metal" in str(w_msg.message).lower()]
@@ -406,7 +406,7 @@ class TestUnknownPlatform:
 
     def test_unknown_platform_detection(self):
         """Test _detect_platform with unknown platform."""
-        from quantiq.backend import _detect_platform
+        from piblin_jax.backend import _detect_platform
 
         with patch("sys.platform", "freebsd"):
             result = _detect_platform()
@@ -420,7 +420,7 @@ class TestDeviceInfoEdgeCases:
         """Test get_device_info handles JAX exceptions gracefully."""
         # This test verifies that exceptions in JAX device detection are handled
         # The actual implementation catches exceptions and issues warnings
-        from quantiq.backend import get_device_info
+        from piblin_jax.backend import get_device_info
 
         # Even with potential errors, should return valid info structure
         info = get_device_info()
@@ -435,10 +435,10 @@ class TestDeviceInfoEdgeCases:
         if not is_jax_available():
             pytest.skip("This test requires JAX")
 
-        from quantiq.backend import get_device_info
+        from piblin_jax.backend import get_device_info
 
         # Mock to simulate old JAX API
-        with patch("quantiq.backend.jax") as mock_jax:
+        with patch("piblin_jax.backend.jax") as mock_jax:
             mock_device = MagicMock()
             mock_device.__str__ = MagicMock(return_value="cpu:0")
             mock_jax.devices.return_value = [mock_device]

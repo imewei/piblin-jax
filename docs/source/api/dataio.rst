@@ -4,7 +4,7 @@ Data I/O
 Overview
 --------
 
-The ``quantiq.dataio`` module provides a comprehensive file I/O system for reading and
+The ``piblin_jax.dataio`` module provides a comprehensive file I/O system for reading and
 writing measurement data. It implements an extensible architecture that supports multiple
 file formats with automatic format detection and intelligent hierarchy building.
 
@@ -43,7 +43,7 @@ Reading a Single File
 
 Read a data file with automatic format detection::
 
-    from quantiq.dataio import read_file
+    from piblin_jax.dataio import read_file
 
     # Read CSV file - format auto-detected
     measurement = read_file("experiment_data.csv")
@@ -57,7 +57,7 @@ Reading Multiple Files
 
 Read and organize multiple files into a hierarchy::
 
-    from quantiq.dataio import read_files
+    from piblin_jax.dataio import read_files
 
     # List of files to read
     files = [
@@ -81,7 +81,7 @@ Reading Entire Directories
 
 Process all files in a directory::
 
-    from quantiq.dataio import read_directory
+    from piblin_jax.dataio import read_directory
 
     # Read all CSV files in directory
     experiment_set = read_directory(
@@ -103,8 +103,8 @@ Registering Custom Readers
 
 Add support for custom file formats::
 
-    from quantiq.dataio import register_reader
-    from quantiq.data.collections import Measurement
+    from piblin_jax.dataio import register_reader
+    from piblin_jax.data.collections import Measurement
 
     def my_custom_reader(filepath):
         """Read custom instrument format."""
@@ -139,7 +139,7 @@ API Reference
 Module Contents
 ^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.dataio
+.. automodule:: piblin_jax.dataio
    :members:
    :undoc-members:
    :show-inheritance:
@@ -150,7 +150,7 @@ Readers
 Base Reader Interface
 ^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.dataio.readers
+.. automodule:: piblin_jax.dataio.readers
    :members:
    :undoc-members:
    :show-inheritance:
@@ -158,7 +158,7 @@ Base Reader Interface
 CSV Reader
 ^^^^^^^^^^
 
-.. automodule:: quantiq.dataio.readers.csv
+.. automodule:: piblin_jax.dataio.readers.csv
    :members:
    :undoc-members:
    :show-inheritance:
@@ -166,7 +166,7 @@ CSV Reader
 TXT Reader
 ^^^^^^^^^^
 
-.. automodule:: quantiq.dataio.readers.txt
+.. automodule:: piblin_jax.dataio.readers.txt
    :members:
    :undoc-members:
    :show-inheritance:
@@ -174,7 +174,7 @@ TXT Reader
 Hierarchy Building
 ------------------
 
-.. automodule:: quantiq.dataio.hierarchy
+.. automodule:: piblin_jax.dataio.hierarchy
    :members:
    :undoc-members:
    :show-inheritance:
@@ -182,7 +182,7 @@ Hierarchy Building
 Writers
 -------
 
-.. automodule:: quantiq.dataio.writers
+.. automodule:: piblin_jax.dataio.writers
    :members:
    :undoc-members:
    :show-inheritance:

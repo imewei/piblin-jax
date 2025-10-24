@@ -14,10 +14,10 @@ from unittest.mock import MagicMock, patch
 import numpy as np
 import pytest
 
-from quantiq.backend import is_jax_available, jnp
-from quantiq.data.collections import Experiment, ExperimentSet, Measurement, MeasurementSet
-from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.transform.base import (
+from piblin_jax.backend import is_jax_available, jnp
+from piblin_jax.data.collections import Experiment, ExperimentSet, Measurement, MeasurementSet
+from piblin_jax.data.datasets import OneDimensionalDataset
+from piblin_jax.transform.base import (
     DatasetTransform,
     ExperimentSetTransform,
     ExperimentTransform,
@@ -70,7 +70,7 @@ class TestDeepCopyFallback:
         dataset = OneDimensionalDataset(independent_variable_data=x, dependent_variable_data=y)
 
         # Mock JAX as unavailable to force NumPy path
-        with patch("quantiq.transform.base.is_jax_available", return_value=False):
+        with patch("piblin_jax.transform.base.is_jax_available", return_value=False):
             transform = SimpleDatasetTransform()
             result = transform.apply_to(dataset, make_copy=True)
 
@@ -117,7 +117,7 @@ class TestJITCompilationFallback:
             return x
 
         # Patch jit to raise an exception
-        with patch("quantiq.transform.base.jit", side_effect=Exception("JIT failed")):
+        with patch("piblin_jax.transform.base.jit", side_effect=Exception("JIT failed")):
             compiled = jit_transform(problematic_func)
 
             # Should fall back to uncompiled function
@@ -137,7 +137,7 @@ class TestJITCompilationFallback:
             return x * 3
 
         # Mock JAX as unavailable
-        with patch("quantiq.transform.base.is_jax_available", return_value=False):
+        with patch("piblin_jax.transform.base.is_jax_available", return_value=False):
             compiled = jit_transform(simple_func)
 
             # Should return uncompiled function

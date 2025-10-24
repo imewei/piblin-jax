@@ -11,10 +11,10 @@ Tests for:
 import numpy as np
 import pytest
 
-from quantiq.data.collections import Measurement, MeasurementSet
-from quantiq.data.datasets import OneDimensionalDataset, ZeroDimensionalDataset
-from quantiq.data.roi import LinearRegion
-from quantiq.transform.measurement import (
+from piblin_jax.data.collections import Measurement, MeasurementSet
+from piblin_jax.data.datasets import OneDimensionalDataset, ZeroDimensionalDataset
+from piblin_jax.data.roi import LinearRegion
+from piblin_jax.transform.measurement import (
     FilterDatasets,
     FilterMeasurements,
     MergeReplicates,

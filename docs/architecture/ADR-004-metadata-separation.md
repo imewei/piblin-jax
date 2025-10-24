@@ -2,7 +2,7 @@
 
 ## Status
 
-**Accepted** - Implemented in all `quantiq.data` structures
+**Accepted** - Implemented in all `piblin_jax.data` structures
 
 Date: 2024-10-19
 
@@ -77,7 +77,7 @@ dataset = OneDimensionalDataset(
 
 ```python
 # Group measurements by experimental conditions
-from quantiq.dataio.hierarchy import group_by_conditions
+from piblin_jax.dataio.hierarchy import group_by_conditions
 
 groups = group_by_conditions(measurements, keys=["temperature", "sample"])
 # Only looks in `conditions`, not `details`
@@ -281,7 +281,7 @@ class Metadata:
 ### For Dataset Creation
 
 ```python
-from quantiq.data.datasets import OneDimensionalDataset
+from piblin_jax.data.datasets import OneDimensionalDataset
 
 dataset = OneDimensionalDataset(
     independent_variable_data=shear_rate,
@@ -302,7 +302,7 @@ dataset = OneDimensionalDataset(
 ### For Grouping Operations
 
 ```python
-from quantiq.dataio.hierarchy import group_by_conditions, identify_varying_conditions
+from piblin_jax.dataio.hierarchy import group_by_conditions, identify_varying_conditions
 
 # Group measurements by specific conditions
 groups = group_by_conditions(measurements, keys=["temperature", "sample"])
@@ -338,7 +338,7 @@ piblin_metadata = {
     "timestamp": "2024-10-19"
 }
 
-# quantiq style - split appropriately
+# piblin-jax style - split appropriately
 conditions = {
     "temperature": 25.0,  # Experimental
     "sample": "A",         # Experimental

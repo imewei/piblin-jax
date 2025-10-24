@@ -1,5 +1,5 @@
 """
-Backward compatibility setup.py for quantiq.
+Backward compatibility setup.py for piblin-jax.
 
 Modern configuration is in pyproject.toml.
 This file exists for compatibility with tools that don't yet support PEP 517/518.

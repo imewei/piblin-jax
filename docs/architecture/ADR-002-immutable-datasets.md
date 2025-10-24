@@ -2,7 +2,7 @@
 
 ## Status
 
-**Accepted** - Implemented throughout `quantiq.data`
+**Accepted** - Implemented throughout `piblin_jax.data`
 
 Date: 2024-10-19
 
@@ -280,7 +280,7 @@ smooth.apply_to(original)  # Returns new dataset, original unchanged!
 ## Discussion History
 
 - piblin Issue #45: "Unexpected dataset modification in pipeline"
-- quantiq Design Doc: "Immutability for JAX Compatibility"
+- piblin-jax Design Doc: "Immutability for JAX Compatibility"
 - Team discussion 2024-09: Unanimous agreement on immutability
 
 ## Revision History

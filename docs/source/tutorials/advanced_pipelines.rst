@@ -2,7 +2,7 @@ Advanced Pipeline Composition
 ==============================
 
 This tutorial covers advanced patterns for composing and reusing transform pipelines
-in quantiq. You'll learn how to build complex data processing workflows that are
+in piblin_jax. You'll learn how to build complex data processing workflows that are
 modular, maintainable, and efficient.
 
 .. contents:: Table of Contents
@@ -14,7 +14,7 @@ Prerequisites
 
 This tutorial assumes you're familiar with:
 
-- :doc:`basic_workflow` - Basic quantiq usage
+- :doc:`basic_workflow` - Basic piblin-jax usage
 - :doc:`custom_transforms` - Creating custom transforms
 - Pipeline basics from the :doc:`../user_guide/concepts`
 
@@ -41,10 +41,10 @@ Sometimes you need to apply different processing based on data characteristics:
 
 .. code-block:: python
 
-    from quantiq.data.datasets import OneDimensionalDataset
-    from quantiq.transform.pipeline import Pipeline
-    from quantiq.transform.dataset.smoothing import GaussianSmoothing
-    from quantiq.transform.dataset.normalization import MinMaxNormalization
+    from piblin_jax.data.datasets import OneDimensionalDataset
+    from piblin_jax.transform.pipeline import Pipeline
+    from piblin_jax.transform.dataset.smoothing import GaussianSmoothing
+    from piblin_jax.transform.dataset.normalization import MinMaxNormalization
     import numpy as np
 
     def create_adaptive_pipeline(dataset):
@@ -92,7 +92,7 @@ Use factory functions to select pipelines based on conditions:
 
         if data_type == "rheology":
             # Rheological data: log-scale, smooth, normalize
-            from quantiq.transform.dataset import LogTransform
+            from piblin_jax.transform.dataset import LogTransform
             return Pipeline([
                 LogTransform(base=10),
                 GaussianSmoothing(sigma=2.0),
@@ -101,7 +101,7 @@ Use factory functions to select pipelines based on conditions:
 
         elif data_type == "spectroscopy":
             # Spectroscopy: baseline correction, normalization
-            from quantiq.transform.dataset.baseline import BaselineCorrection
+            from piblin_jax.transform.dataset.baseline import BaselineCorrection
             return Pipeline([
                 BaselineCorrection(method="polynomial", degree=2),
                 MinMaxNormalization()
@@ -109,7 +109,7 @@ Use factory functions to select pipelines based on conditions:
 
         else:  # timeseries
             # Time series: smoothing, derivative
-            from quantiq.transform.dataset.calculus import Derivative
+            from piblin_jax.transform.dataset.calculus import Derivative
             return Pipeline([
                 GaussianSmoothing(sigma=3.0),
                 Derivative(order=1)
@@ -129,7 +129,7 @@ Process different aspects of data in parallel, then combine results:
 
 .. code-block:: python
 
-    from quantiq.data.datasets import CompositeDataset
+    from piblin_jax.data.datasets import CompositeDataset
 
     def parallel_analysis(dataset):
         """
@@ -510,9 +510,9 @@ Here's a complete example bringing together multiple concepts:
 
     from typing import Literal
     import numpy as np
-    from quantiq.data.datasets import OneDimensionalDataset
-    from quantiq.transform.pipeline import Pipeline
-    from quantiq.transform.dataset import (
+    from piblin_jax.data.datasets import OneDimensionalDataset
+    from piblin_jax.transform.pipeline import Pipeline
+    from piblin_jax.transform.dataset import (
         GaussianSmoothing,
         MinMaxNormalization,
         Derivative,

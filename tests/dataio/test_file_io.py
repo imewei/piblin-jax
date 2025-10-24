@@ -5,9 +5,9 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from quantiq.data.collections import ExperimentSet, Measurement
-from quantiq.dataio import read_directory, read_files
-from quantiq.dataio.readers import GenericCSVReader, GenericTXTReader, detect_reader, read_file
+from piblin_jax.data.collections import ExperimentSet, Measurement
+from piblin_jax.dataio import read_directory, read_files
+from piblin_jax.dataio.readers import GenericCSVReader, GenericTXTReader, detect_reader, read_file
 
 # Test data directory
 TEST_DATA_DIR = Path(__file__).parent / "test_data"

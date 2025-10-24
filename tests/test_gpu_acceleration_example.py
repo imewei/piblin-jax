@@ -27,7 +27,7 @@ class TestGPUAccelerationExample:
                 "cuda_version": (12, 0),
             }
 
-            with patch.dict("sys.modules", {"quantiq.backend": mock_backend}):
+            with patch.dict("sys.modules", {"piblin_jax.backend": mock_backend}):
                 # Should not raise error
                 assert sys.platform == "linux"
 
@@ -43,7 +43,7 @@ class TestGPUAccelerationExample:
             }
             mock_backend._detect_platform.return_value = "macos"
 
-            with patch.dict("sys.modules", {"quantiq.backend": mock_backend}):
+            with patch.dict("sys.modules", {"piblin_jax.backend": mock_backend}):
                 # Verify platform is detected as macOS
                 assert sys.platform == "darwin"
 
@@ -59,7 +59,7 @@ class TestGPUAccelerationExample:
             }
             mock_backend._detect_platform.return_value = "windows"
 
-            with patch.dict("sys.modules", {"quantiq.backend": mock_backend}):
+            with patch.dict("sys.modules", {"piblin_jax.backend": mock_backend}):
                 # Verify platform is detected as Windows
                 assert sys.platform == "win32"
 
@@ -67,7 +67,7 @@ class TestGPUAccelerationExample:
         """Test GPU demonstrations skip on non-Linux platforms."""
         # Mock macOS platform
         with patch("sys.platform", "darwin"):
-            from quantiq.backend import get_device_info
+            from piblin_jax.backend import get_device_info
 
             info = get_device_info()
             platform = info.get("os_platform")
@@ -87,7 +87,7 @@ class TestGPUAccelerationExample:
             "platform": "gpu",
         }
 
-        with patch.dict("sys.modules", {"quantiq.backend": mock_backend}):
+        with patch.dict("sys.modules", {"piblin_jax.backend": mock_backend}):
             # Verify GPU is supported on Linux with CUDA 12+
             info = mock_backend.get_device_info()
             assert info["os_platform"] == "linux"
@@ -96,7 +96,7 @@ class TestGPUAccelerationExample:
 
     def test_device_info_includes_platform_fields(self):
         """Test that device info includes new platform validation fields."""
-        from quantiq.backend import get_device_info
+        from piblin_jax.backend import get_device_info
 
         info = get_device_info()
 
@@ -115,7 +115,7 @@ class TestGPUAccelerationExample:
         from io import StringIO
         from unittest.mock import patch
 
-        from quantiq.backend import get_device_info
+        from piblin_jax.backend import get_device_info
 
         # Capture output
         with patch("sys.stdout", new=StringIO()) as fake_out:

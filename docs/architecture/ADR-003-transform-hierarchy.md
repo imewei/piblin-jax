@@ -2,7 +2,7 @@
 
 ## Status
 
-**Accepted** - Implemented in `quantiq.transform`
+**Accepted** - Implemented in `piblin_jax.transform`
 
 Date: 2024-10-19
 
@@ -134,7 +134,7 @@ class MeasurementTransform:
 
 ```python
 # Simple API for common cases
-quantiq.smooth(data, sigma=2.0)  # Automatically uses right level
+piblin_jax.smooth(data, sigma=2.0)  # Automatically uses right level
 ```
 
 **For Boilerplate**:
@@ -276,7 +276,7 @@ class DatasetTransformMixin:
 Most transforms only need to implement dataset level:
 
 ```python
-from quantiq.transform.base import DatasetTransform
+from piblin_jax.transform.base import DatasetTransform
 
 class MyTransform(DatasetTransform):
     """My custom transform."""
@@ -319,8 +319,8 @@ class AverageReplicates(MeasurementSetTransform):
 ### Using Pipelines
 
 ```python
-from quantiq.transform import Pipeline
-from quantiq.transform.dataset import GaussianSmooth, Normalize
+from piblin_jax.transform import Pipeline
+from piblin_jax.transform.dataset import GaussianSmooth, Normalize
 
 pipeline = Pipeline([
     GaussianSmooth(sigma=2.0),     # DatasetTransform

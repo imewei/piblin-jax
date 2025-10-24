@@ -163,9 +163,9 @@ quantiq/bayesian/models/
 
 All models are accessible via:
 ```python
-from quantiq.bayesian import PowerLawModel, ArrheniusModel, CrossModel, CarreauYasudaModel
+from piblin_jax.bayesian import PowerLawModel, ArrheniusModel, CrossModel, CarreauYasudaModel
 # or
-from quantiq.bayesian.models import PowerLawModel
+from piblin_jax.bayesian.models import PowerLawModel
 ```
 
 ## Key Implementation Details
@@ -232,7 +232,7 @@ tests/bayesian/test_rheological_models.py ............                   [100%]
 
 ```python
 import numpy as np
-from quantiq.bayesian import PowerLawModel
+from piblin_jax.bayesian import PowerLawModel
 
 # Generate synthetic shear-thinning data
 shear_rate = np.logspace(-1, 2, 30)  # 0.1 to 100 s^-1
@@ -256,7 +256,7 @@ print(f"95% CI: [{predictions['lower'][1]:.2f}, {predictions['upper'][1]:.2f}]")
 ### Example 2: Temperature-Dependent Viscosity
 
 ```python
-from quantiq.bayesian import ArrheniusModel
+from piblin_jax.bayesian import ArrheniusModel
 
 # Temperature-viscosity data
 temperature = np.array([300, 320, 340, 360, 380, 400])  # K
@@ -277,7 +277,7 @@ print(f"95% CI: [{Ea_lower/1000:.1f}, {Ea_upper/1000:.1f}] kJ/mol")
 ### Example 3: Complex Flow Curve Analysis
 
 ```python
-from quantiq.bayesian import CarreauYasudaModel
+from piblin_jax.bayesian import CarreauYasudaModel
 
 # Wide-range shear rate data
 shear_rate = np.logspace(-2, 3, 50)
@@ -383,7 +383,7 @@ The rheological models integrate seamlessly with:
 
 2. **Backend abstraction**
    - Uses JAX/NumPy backend
-   - Compatible with quantiq.backend
+   - Compatible with piblin_jax.backend
 
 3. **Dataset API**
    - Can work with OneDimensionalDataset
@@ -399,7 +399,7 @@ The rheological models integrate seamlessly with:
 
 ## Conclusion
 
-Task Group 13 has been successfully completed. All four rheological models are implemented, tested, and documented. The models provide robust Bayesian parameter estimation with full uncertainty quantification, meeting all acceptance criteria. The implementation provides a solid foundation for rheological analysis in the quantiq package.
+Task Group 13 has been successfully completed. All four rheological models are implemented, tested, and documented. The models provide robust Bayesian parameter estimation with full uncertainty quantification, meeting all acceptance criteria. The implementation provides a solid foundation for rheological analysis in the piblin-jax package.
 
 ---
 

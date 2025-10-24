@@ -1,4 +1,4 @@
-# quantiq
+# piblin-jax
 
 **Modern JAX-Powered Framework for Measurement Data Science**
 
@@ -14,7 +14,7 @@
 
 ## Overview
 
-**quantiq** is a high-performance framework for measurement data science, providing a complete reimplementation of piblin with dramatic performance improvements and advanced Bayesian uncertainty quantification capabilities.
+**piblin-jax** is a high-performance framework for measurement data science, providing a complete reimplementation of piblin with dramatic performance improvements and advanced Bayesian uncertainty quantification capabilities.
 
 Built on JAX, quantiq delivers 5-10x CPU speedup and 50-100x GPU acceleration while maintaining 100% backward compatibility with piblin. Whether you're analyzing rheological data, performing uncertainty quantification, or building complex data transformation pipelines, quantiq provides the tools you need with modern Python ergonomics.
 
@@ -32,7 +32,7 @@ Built on JAX, quantiq delivers 5-10x CPU speedup and 50-100x GPU acceleration wh
 
 - **100% piblin Compatibility**: Drop-in replacement for existing code
   ```python
-  import quantiq as piblin  # Just change the import!
+  import piblin_jax as piblin  # Just change the import!
   ```
 
 - **Modern Python 3.12+**: Type-safe, functional programming approach
@@ -58,18 +58,18 @@ Built on JAX, quantiq delivers 5-10x CPU speedup and 50-100x GPU acceleration wh
 
 ### Basic Installation
 
-Install quantiq-jax with JAX CPU support using pip:
+Install piblin-jax with JAX CPU support using pip:
 
 ```bash
-pip install quantiq-jax
+pip install piblin-jax
 ```
 
-**Note**: The package name is `quantiq-jax` on PyPI, but you can still import it as `quantiq` for piblin compatibility:
+**Note**: The package name is `piblin-jax` on PyPI, but you can still import it as `quantiq` for piblin compatibility:
 
 ```python
-import quantiq  # Package installation: pip install quantiq-jax
+import piblin_jax  # Package installation: pip install piblin-jax
 # or for piblin compatibility:
-import quantiq as piblin
+import piblin_jax as piblin
 ```
 
 ### GPU Support (Linux + CUDA 12+ Only)
@@ -94,8 +94,8 @@ import quantiq as piblin
 **From repository (works with pip, uv, conda/mamba):**
 
 ```bash
-git clone https://github.com/quantiq/quantiq-jax.git
-cd quantiq-jax
+git clone https://github.com/piblin/piblin-jax.git
+cd piblin-jax
 make init
 make install-gpu-cuda  # Handles everything automatically
 ```
@@ -122,8 +122,8 @@ pip uninstall -y jax jaxlib
 # Step 2: Install GPU-enabled JAX
 pip install "jax[cuda12-local]>=0.8.0,<0.9.0"
 
-# Step 3: Install quantiq-jax (if not already installed)
-pip install quantiq-jax
+# Step 3: Install piblin-jax (if not already installed)
+pip install piblin-jax
 
 # Step 4: Verify GPU detection
 python -c "import jax; print('Devices:', jax.devices())"
@@ -166,7 +166,7 @@ pip install "jax[cuda12-local]>=0.8.0,<0.9.0"
 After installation, verify GPU is detected:
 
 ```bash
-python -c "from quantiq.backend import get_device_info; print(get_device_info())"
+python -c "from piblin_jax.backend import get_device_info; print(get_device_info())"
 ```
 
 **Expected output:**
@@ -225,7 +225,7 @@ Different package managers may install different versions. Always use the same i
 - **Production**: Docker with explicit JAX version
 - **Notebooks**: Manual pip installation with version pinning
 
-**Note**: The package name on PyPI is `quantiq-jax`, but the import name remains `quantiq` for backward compatibility with piblin.
+**Note**: The package name on PyPI is `piblin-jax`, but the import name remains `quantiq` for backward compatibility with piblin.
 
 ### Development Installation
 
@@ -237,8 +237,8 @@ Different package managers may install different versions. Always use the same i
 For development with all optional dependencies:
 
 ```bash
-git clone https://github.com/quantiq/quantiq-jax.git
-cd quantiq-jax
+git clone https://github.com/piblin/piblin-jax.git
+cd piblin-jax
 
 # Using uv (recommended for development)
 uv pip install -e ".[dev]"
@@ -252,13 +252,13 @@ pip install -e ".[dev]"
 ### Basic Usage
 
 ```python
-import quantiq
+import piblin_jax
 
 # Read experimental data
 data = quantiq.read_file('experiment.csv')
 
 # Create a transform pipeline
-from quantiq.transform import Pipeline, Interpolate1D, GaussianSmoothing
+from piblin_jax.transform import Pipeline, Interpolate1D, GaussianSmoothing
 
 pipeline = Pipeline([
     Interpolate1D(new_x=new_points),
@@ -275,7 +275,7 @@ result.visualize()
 ### Bayesian Parameter Estimation
 
 ```python
-from quantiq.bayesian import PowerLawModel
+from piblin_jax.bayesian import PowerLawModel
 import numpy as np
 
 # Your experimental data
@@ -308,7 +308,7 @@ import piblin
 data = piblin.read_file('data.csv')
 
 # New code - just change the import!
-import quantiq as piblin
+import piblin_jax as piblin
 data = piblin.read_file('data.csv')
 # All your existing piblin code works unchanged
 ```
@@ -326,13 +326,13 @@ data = piblin.read_file('data.csv')
 
 ## Documentation
 
-Full documentation is available at [quantiq.readthedocs.io](https://quantiq.readthedocs.io)
+Full documentation is available at [piblin-jax.readthedocs.io](https://piblin-jax.readthedocs.io)
 
-- [Installation Guide](https://quantiq.readthedocs.io/en/latest/user_guide/installation.html)
-- [Quick Start Tutorial](https://quantiq.readthedocs.io/en/latest/user_guide/quickstart.html)
-- [Core Concepts](https://quantiq.readthedocs.io/en/latest/user_guide/concepts.html)
-- [API Reference](https://quantiq.readthedocs.io/en/latest/api/)
-- [Examples](https://quantiq.readthedocs.io/en/latest/tutorials/)
+- [Installation Guide](https://piblin-jax.readthedocs.io/en/latest/user_guide/installation.html)
+- [Quick Start Tutorial](https://piblin-jax.readthedocs.io/en/latest/user_guide/quickstart.html)
+- [Core Concepts](https://piblin-jax.readthedocs.io/en/latest/user_guide/concepts.html)
+- [API Reference](https://piblin-jax.readthedocs.io/en/latest/api/)
+- [Examples](https://piblin-jax.readthedocs.io/en/latest/tutorials/)
 
 ## Examples
 
@@ -375,7 +375,7 @@ See [`examples/README.md`](examples/README.md) for detailed descriptions and usa
 python3.13 --version
 
 # Clone and install in development mode with uv (recommended)
-git clone https://github.com/quantiq/quantiq.git
+git clone https://github.com/piblin/piblin-jax.git
 cd quantiq
 uv pip install -e ".[dev]"
 
@@ -445,7 +445,7 @@ If you use quantiq in your research, please cite:
   author = {Chen, Wei},
   title = {quantiq: Modern JAX-Powered Framework for Measurement Data Science},
   year = {2025},
-  url = {https://github.com/quantiq/quantiq-jax}
+  url = {https://github.com/piblin/piblin-jax}
 }
 ```
 
@@ -461,9 +461,9 @@ quantiq is licensed under the [MIT License](LICENSE).
 
 ## Support
 
-- **Documentation**: [quantiq.readthedocs.io](https://quantiq.readthedocs.io)
-- **Issues**: [GitHub Issues](https://github.com/quantiq/quantiq-jax/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/quantiq/quantiq-jax/discussions)
+- **Documentation**: [piblin-jax.readthedocs.io](https://piblin-jax.readthedocs.io)
+- **Issues**: [GitHub Issues](https://github.com/piblin/piblin-jax/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/piblin/piblin-jax/discussions)
 
 ---
 

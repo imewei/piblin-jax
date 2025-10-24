@@ -1,7 +1,7 @@
 Migration from piblin
 =====================
 
-quantiq is 100% backward compatible with piblin.
+piblin-jax is 100% backward compatible with piblin.
 
 Quick Migration
 ---------------
@@ -12,7 +12,7 @@ Simply change your import::
     import piblin
 
     # New code
-    import quantiq as piblin
+    import piblin_jax as piblin
 
     # All your piblin code works unchanged!
 

@@ -284,4 +284,4 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 
 ---
 
-**Questions?** See the [main documentation](https://quantiq.readthedocs.io) or open an [issue](https://github.com/quantiq/quantiq/issues).
+**Questions?** See the [main documentation](https://quantiq.readthedocs.io) or open an [issue](https://github.com/piblin/piblin-jax/issues).

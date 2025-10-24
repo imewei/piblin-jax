@@ -6,7 +6,7 @@ metadata (conditions and details) across the data hierarchy.
 
 import pytest
 
-from quantiq.data import metadata
+from piblin_jax.data import metadata
 
 
 class TestMetadataMerging:

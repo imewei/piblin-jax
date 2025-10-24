@@ -11,8 +11,8 @@ from unittest.mock import MagicMock, patch
 import numpy as np
 import pytest
 
-from quantiq.backend import is_jax_available, jnp
-from quantiq.backend.operations import (
+from piblin_jax.backend import is_jax_available, jnp
+from piblin_jax.backend.operations import (
     astype,
     concatenate,
     copy,
@@ -43,8 +43,8 @@ class TestArrayOperations:
         """Test copy operation covers both JAX and NumPy paths."""
         # When JAX is available, even NumPy arrays get converted via jnp.array()
         # When JAX is not available, np.copy() is used
-        with patch("quantiq.backend.operations._JAX_AVAILABLE", False):
-            from quantiq.backend.operations import copy as copy_numpy
+        with patch("piblin_jax.backend.operations._JAX_AVAILABLE", False):
+            from piblin_jax.backend.operations import copy as copy_numpy
 
             np_arr = np.array([1.0, 2.0, 3.0])
             np_copy = copy_numpy(np_arr)
@@ -176,9 +176,9 @@ class TestJITCompilation:
     def test_jit_numpy_fallback(self):
         """Test JIT decorator with NumPy backend (no-op)."""
         # Mock JAX as unavailable
-        with patch("quantiq.backend.operations._JAX_AVAILABLE", False):
+        with patch("piblin_jax.backend.operations._JAX_AVAILABLE", False):
             # Re-import to get NumPy version of decorator
-            from quantiq.backend.operations import jit as jit_numpy
+            from piblin_jax.backend.operations import jit as jit_numpy
 
             @jit_numpy
             def multiply(x, y):
@@ -240,8 +240,8 @@ class TestVectorization:
 
     def test_vmap_numpy_fallback_single_arg(self):
         """Test vmap with NumPy backend fallback (single argument)."""
-        with patch("quantiq.backend.operations._JAX_AVAILABLE", False):
-            from quantiq.backend.operations import vmap as vmap_numpy
+        with patch("piblin_jax.backend.operations._JAX_AVAILABLE", False):
+            from piblin_jax.backend.operations import vmap as vmap_numpy
 
             def square(x):
                 return x * x
@@ -255,8 +255,8 @@ class TestVectorization:
 
     def test_vmap_numpy_fallback_multiple_args(self):
         """Test vmap with NumPy backend raises NotImplementedError for multiple args."""
-        with patch("quantiq.backend.operations._JAX_AVAILABLE", False):
-            from quantiq.backend.operations import vmap as vmap_numpy
+        with patch("piblin_jax.backend.operations._JAX_AVAILABLE", False):
+            from piblin_jax.backend.operations import vmap as vmap_numpy
 
             def add(x, y):
                 return x + y
@@ -273,8 +273,8 @@ class TestVectorization:
 
     def test_vmap_numpy_fallback_no_args(self):
         """Test vmap with NumPy backend and no arguments."""
-        with patch("quantiq.backend.operations._JAX_AVAILABLE", False):
-            from quantiq.backend.operations import vmap as vmap_numpy
+        with patch("piblin_jax.backend.operations._JAX_AVAILABLE", False):
+            from piblin_jax.backend.operations import vmap as vmap_numpy
 
             def constant():
                 return 42
@@ -338,8 +338,8 @@ class TestGradient:
 
     def test_grad_numpy_fallback(self):
         """Test grad with NumPy backend raises NotImplementedError."""
-        with patch("quantiq.backend.operations._JAX_AVAILABLE", False):
-            from quantiq.backend.operations import grad as grad_numpy
+        with patch("piblin_jax.backend.operations._JAX_AVAILABLE", False):
+            from piblin_jax.backend.operations import grad as grad_numpy
 
             def loss(x):
                 return np.sum(x**2)
@@ -382,8 +382,8 @@ class TestDeviceManagement:
 
     def test_device_put_numpy_fallback(self):
         """Test device_put with NumPy backend (no-op)."""
-        with patch("quantiq.backend.operations._JAX_AVAILABLE", False):
-            from quantiq.backend.operations import device_put as device_put_numpy
+        with patch("piblin_jax.backend.operations._JAX_AVAILABLE", False):
+            from piblin_jax.backend.operations import device_put as device_put_numpy
 
             arr = np.array([1, 2, 3])
             result = device_put_numpy(arr)
@@ -393,8 +393,8 @@ class TestDeviceManagement:
 
     def test_device_put_numpy_fallback_with_device(self):
         """Test device_put with NumPy backend ignores device parameter."""
-        with patch("quantiq.backend.operations._JAX_AVAILABLE", False):
-            from quantiq.backend.operations import device_put as device_put_numpy
+        with patch("piblin_jax.backend.operations._JAX_AVAILABLE", False):
+            from piblin_jax.backend.operations import device_put as device_put_numpy
 
             arr = np.array([1, 2, 3])
             result = device_put_numpy(arr, device="fake_device")

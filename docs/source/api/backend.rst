@@ -4,8 +4,8 @@ Backend Abstraction
 Overview
 --------
 
-The ``quantiq.backend`` module provides a unified interface for both JAX and NumPy
-array operations, enabling quantiq to leverage JAX's performance features (JIT
+The ``piblin_jax.backend`` module provides a unified interface for both JAX and NumPy
+array operations, enabling piblin-jax to leverage JAX's performance features (JIT
 compilation, GPU acceleration, automatic differentiation) while maintaining full
 compatibility with NumPy-only environments.
 
@@ -15,11 +15,11 @@ This abstraction layer is crucial for several reasons:
   import time and falls back to NumPy when JAX is unavailable. This ensures quantiq
   works in any Python environment without requiring JAX as a hard dependency.
 
-- **Unified API**: All quantiq code uses the ``jnp`` interface exported by this module,
+- **Unified API**: All piblin-jax code uses the ``jnp`` interface exported by this module,
   which points to either ``jax.numpy`` or ``numpy`` depending on availability. This
   enables writing backend-agnostic code that works optimally with both.
 
-- **Performance Benefits**: When JAX is available, quantiq automatically benefits from:
+- **Performance Benefits**: When JAX is available, piblin-jax automatically benefits from:
 
   - **JIT Compilation**: Functions are compiled to optimized machine code for significant
     speedups, especially for repeated operations
@@ -46,7 +46,7 @@ Basic Backend Detection
 
 Check which backend is being used::
 
-    from quantiq.backend import get_backend, is_jax_available
+    from piblin_jax.backend import get_backend, is_jax_available
 
     # Check backend
     backend = get_backend()
@@ -63,7 +63,7 @@ Using the Unified Array Interface
 
 Write backend-agnostic code::
 
-    from quantiq.backend import jnp
+    from piblin_jax.backend import jnp
 
     # Works with both JAX and NumPy
     def compute_mean_squared(x):
@@ -79,7 +79,7 @@ Device Information and Management
 
 Query available compute devices::
 
-    from quantiq.backend import get_device_info
+    from piblin_jax.backend import get_device_info
 
     # Get device information
     info = get_device_info()
@@ -102,7 +102,7 @@ Array Conversion Utilities
 
 Convert between backends for API boundaries::
 
-    from quantiq.backend import jnp, to_numpy, from_numpy
+    from piblin_jax.backend import jnp, to_numpy, from_numpy
 
     # Create array with current backend
     jax_array = jnp.array([1, 2, 3, 4, 5])
@@ -115,7 +115,7 @@ Convert between backends for API boundaries::
     backend_array = from_numpy(numpy_array)
 
     # Handle nested structures (pytrees)
-    from quantiq.backend import to_numpy_pytree, from_numpy_pytree
+    from piblin_jax.backend import to_numpy_pytree, from_numpy_pytree
 
     pytree = {
         'params': {'weights': jnp.array([1, 2]), 'bias': jnp.array([0.5])},
@@ -139,7 +139,7 @@ API Reference
 Module Contents
 ^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.backend
+.. automodule:: piblin_jax.backend
    :members:
    :undoc-members:
    :show-inheritance:
@@ -147,7 +147,7 @@ Module Contents
 Operations
 ----------
 
-.. automodule:: quantiq.backend.operations
+.. automodule:: piblin_jax.backend.operations
    :members:
    :undoc-members:
    :show-inheritance:

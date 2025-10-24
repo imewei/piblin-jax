@@ -1,15 +1,15 @@
-Contributing to quantiq
+Contributing to piblin-jax
 =======================
 
-We welcome contributions to quantiq! This guide will help you get started.
+We welcome contributions to piblin-jax! This guide will help you get started.
 
 Development Setup
 -----------------
 
 1. Fork and clone the repository::
 
-    git clone https://github.com/YOUR_USERNAME/quantiq.git
-    cd quantiq
+    git clone https://github.com/YOUR_USERNAME/piblin_jax.git
+    cd piblin-jax
 
 2. Create a virtual environment::
 
@@ -27,7 +27,7 @@ Development Setup
 Code Style
 ----------
 
-quantiq follows these style guidelines:
+piblin-jax follows these style guidelines:
 
 * **ruff** for code formatting and linting (line length 100, replaces black/isort/flake8)
 * **mypy** for type checking (strict mode)
@@ -44,7 +44,7 @@ Run the full test suite::
 
 Run tests with coverage::
 
-    pytest --cov=quantiq --cov-report=html
+    pytest --cov=piblin_jax --cov-report=html
 
 Run only fast tests::
 
@@ -59,7 +59,7 @@ Type Checking
 
 Run mypy type checking::
 
-    mypy quantiq
+    mypy piblin_jax
 
 Building Documentation
 ----------------------
@@ -76,7 +76,7 @@ Adding New Features
 Adding a New Transform
 ^^^^^^^^^^^^^^^^^^^^^^
 
-1. Create the transform class in ``quantiq/transform/``
+1. Create the transform class in ``piblin_jax/transform/``
 2. Inherit from appropriate base class (DatasetTransform, etc.)
 3. Implement ``_apply()`` method with JAX operations
 4. Add NumPy fallback if needed
@@ -87,7 +87,7 @@ Adding a New Transform
 Adding a New Bayesian Model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1. Create model class in ``quantiq/bayesian/models/``
+1. Create model class in ``piblin_jax/bayesian/models/``
 2. Inherit from ``BayesianModel``
 3. Implement ``model()`` method with NumPyro
 4. Define priors for parameters
@@ -124,7 +124,7 @@ Reporting Issues
 When reporting bugs, please include:
 
 * Python version
-* quantiq version
+* piblin-jax version
 * Operating system
 * JAX version and backend (CPU/GPU)
 * Minimal reproducible example
@@ -139,5 +139,5 @@ Questions and Support
 License
 -------
 
-By contributing to quantiq, you agree that your contributions will be
+By contributing to piblin-jax, you agree that your contributions will be
 licensed under the MIT License.

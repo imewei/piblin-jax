@@ -4,8 +4,8 @@ Transformations
 Overview
 --------
 
-The ``quantiq.transform`` module provides a comprehensive framework for data processing
-and manipulation in quantiq. Built on functional programming principles, the transform
+The ``piblin_jax.transform`` module provides a comprehensive framework for data processing
+and manipulation in piblin_jax. Built on functional programming principles, the transform
 system enables composable, reusable, and efficient data pipelines with JAX optimization
 support.
 
@@ -39,8 +39,8 @@ Basic Transform Pipeline
 
 Chain multiple transforms together for sequential processing::
 
-    from quantiq.transform import Pipeline
-    from quantiq.transform.dataset import SmoothingTransform, NormalizeTransform
+    from piblin_jax.transform import Pipeline
+    from piblin_jax.transform.dataset import SmoothingTransform, NormalizeTransform
 
     # Create a pipeline
     pipeline = Pipeline([
@@ -56,8 +56,8 @@ Lazy Evaluation for Performance
 
 Use lazy pipelines for JIT compilation and deferred execution::
 
-    from quantiq.transform import LazyPipeline
-    from quantiq.transform.dataset import InterpolateTransform, BaselineTransform
+    from piblin_jax.transform import LazyPipeline
+    from piblin_jax.transform.dataset import InterpolateTransform, BaselineTransform
 
     # Create lazy pipeline
     lazy_pipeline = LazyPipeline([
@@ -74,7 +74,7 @@ Custom Lambda Transforms
 
 Create custom transforms from functions::
 
-    from quantiq.transform import LambdaTransform
+    from piblin_jax.transform import LambdaTransform
     import numpy as np
 
     def custom_processing(dataset):
@@ -104,7 +104,7 @@ API Reference
 Module Contents
 ^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.transform
+.. automodule:: piblin_jax.transform
    :members:
    :undoc-members:
    :show-inheritance:
@@ -112,7 +112,7 @@ Module Contents
 Base Transform Classes
 ----------------------
 
-.. automodule:: quantiq.transform.base
+.. automodule:: piblin_jax.transform.base
    :members:
    :undoc-members:
    :show-inheritance:
@@ -120,7 +120,7 @@ Base Transform Classes
 Pipeline
 --------
 
-.. automodule:: quantiq.transform.pipeline
+.. automodule:: piblin_jax.transform.pipeline
    :members:
    :undoc-members:
    :show-inheritance:
@@ -128,7 +128,7 @@ Pipeline
 Region-Based Transforms
 -----------------------
 
-.. automodule:: quantiq.transform.region
+.. automodule:: piblin_jax.transform.region
    :members:
    :undoc-members:
    :show-inheritance:
@@ -136,7 +136,7 @@ Region-Based Transforms
 Lambda and Dynamic Transforms
 ------------------------------
 
-.. automodule:: quantiq.transform.lambda_transform
+.. automodule:: piblin_jax.transform.lambda_transform
    :members:
    :undoc-members:
    :show-inheritance:
@@ -147,7 +147,7 @@ Dataset Transforms
 Overview
 ^^^^^^^^
 
-.. automodule:: quantiq.transform.dataset
+.. automodule:: piblin_jax.transform.dataset
    :members:
    :undoc-members:
    :show-inheritance:
@@ -155,7 +155,7 @@ Overview
 Smoothing Transforms
 ^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.transform.dataset.smoothing
+.. automodule:: piblin_jax.transform.dataset.smoothing
    :members:
    :undoc-members:
    :show-inheritance:
@@ -164,7 +164,7 @@ Smoothing Transforms
 Interpolation Transforms
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.transform.dataset.interpolate
+.. automodule:: piblin_jax.transform.dataset.interpolate
    :members:
    :undoc-members:
    :show-inheritance:
@@ -173,7 +173,7 @@ Interpolation Transforms
 Normalization Transforms
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.transform.dataset.normalization
+.. automodule:: piblin_jax.transform.dataset.normalization
    :members:
    :undoc-members:
    :show-inheritance:
@@ -182,7 +182,7 @@ Normalization Transforms
 Baseline Correction Transforms
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.transform.dataset.baseline
+.. automodule:: piblin_jax.transform.dataset.baseline
    :members:
    :undoc-members:
    :show-inheritance:
@@ -191,7 +191,7 @@ Baseline Correction Transforms
 Calculus Transforms
 ^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.transform.dataset.calculus
+.. automodule:: piblin_jax.transform.dataset.calculus
    :members:
    :undoc-members:
    :show-inheritance:
@@ -203,7 +203,7 @@ Measurement Transforms
 Overview
 ^^^^^^^^
 
-.. automodule:: quantiq.transform.measurement
+.. automodule:: piblin_jax.transform.measurement
    :members:
    :undoc-members:
    :show-inheritance:
@@ -211,7 +211,7 @@ Overview
 Filtering Transforms
 ^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.transform.measurement.filter
+.. automodule:: piblin_jax.transform.measurement.filter
    :members:
    :undoc-members:
    :show-inheritance:

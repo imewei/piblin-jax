@@ -85,7 +85,7 @@ class OneDimensionalDataset:
 4. **Interoperability**:
    ```python
    # All of these just work
-   dataset = quantiq.OneDimensionalDataset(x=np_array, y=np_array)
+   dataset = piblin_jax.OneDimensionalDataset(x=np_array, y=np_array)
    df = pd.DataFrame({'x': dataset.x, 'y': dataset.y})  # pandas
    plt.plot(dataset.x, dataset.y)                        # matplotlib
    scipy.integrate.trapz(dataset.y, dataset.x)           # scipy
@@ -137,9 +137,9 @@ class OneDimensionalDataset:
 
 ```python
 # Provide internal access for advanced users
-from quantiq.backend import jnp
+from piblin_jax.backend import jnp
 
-if quantiq.backend.is_jax_available():
+if piblin_jax.backend.is_jax_available():
     # Access internal JAX arrays
     jax_data = dataset._y_internal  # Not officially supported, but possible
     # Use JAX features directly
@@ -246,9 +246,9 @@ class JAXOneDimensionalDataset:  # JAX-based
 
 ```python
 # User sets preferred array backend
-quantiq.set_array_api("jax")  # or "numpy"
+piblin_jax.set_array_api("jax")  # or "numpy"
 
-dataset = quantiq.OneDimensionalDataset(x, y)
+dataset = piblin_jax.OneDimensionalDataset(x, y)
 # Returns JAX or NumPy based on setting
 ```
 
@@ -270,7 +270,7 @@ dataset = quantiq.OneDimensionalDataset(x, y)
 
 ```python
 import numpy as np
-from quantiq.backend import jnp
+from piblin_jax.backend import jnp
 
 class OneDimensionalDataset:
     """1D dataset with NumPy API boundary."""
@@ -299,7 +299,7 @@ class OneDimensionalDataset:
 ### For Internal Transform Implementations
 
 ```python
-from quantiq.backend import jnp
+from piblin_jax.backend import jnp
 
 class GaussianSmooth(DatasetTransform):
     """Internal implementation uses pure JAX."""
@@ -321,7 +321,7 @@ class GaussianSmooth(DatasetTransform):
 
 ```python
 # Advanced: Access internal JAX arrays
-from quantiq.backend import jnp, is_jax_available
+from piblin_jax.backend import jnp, is_jax_available
 
 if is_jax_available():
     import jax

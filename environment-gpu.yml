@@ -1,8 +1,8 @@
 ---
-# Conda/Mamba Environment for quantiq with GPU Support
+# Conda/Mamba Environment for piblin-jax with GPU Support
 # ========================================================
 #
-# This environment file installs quantiq with GPU acceleration support.
+# This environment file installs piblin-jax with GPU acceleration support.
 #
 # REQUIREMENTS:
 # - Linux operating system
@@ -14,15 +14,15 @@
 #
 #   Using conda:
 #     conda env create -f environment-gpu.yml
-#     conda activate quantiq-gpu
+#     conda activate piblin-jax-gpu
 #
 #   Using mamba (faster):
 #     mamba env create -f environment-gpu.yml
-#     mamba activate quantiq-gpu
+#     mamba activate piblin-jax-gpu
 #
 # VERIFICATION:
 #
-#   python -c "from quantiq.backend import get_device_info;
+#   python -c "from piblin_jax.backend import get_device_info;
 #              print(get_device_info())"
 #
 #   Expected output should show:
@@ -31,12 +31,12 @@
 # NOTES:
 # - This uses conda-forge channel for all dependencies
 # - jaxlib explicitly specified with CUDA support (*cuda* selector)
-# - quantiq installed via pip after conda dependencies resolved
-# - For CPU-only installation, use standard pip: pip install quantiq
+# - piblin-jax installed via pip after conda dependencies resolved
+# - For CPU-only installation, use standard pip: pip install piblin-jax
 #
 # ========================================================
 
-name: quantiq-gpu
+name: piblin-jax-gpu
 channels:
   - conda-forge
   - defaults
@@ -65,10 +65,10 @@ dependencies:
   # Package managers
   - pip
 
-  # Install quantiq from PyPI via pip after conda deps resolved
+  # Install piblin-jax from PyPI via pip after conda deps resolved
   # This ensures conda's CUDA-enabled jaxlib is preserved
   - pip:
-      - quantiq
+      - piblin-jax
 
 # Environment variables (optional, usually not needed with proper conda setup)
 # If JAX detects wrong CUDA version, ensure LD_LIBRARY_PATH is NOT set

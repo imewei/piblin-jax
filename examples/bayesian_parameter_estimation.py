@@ -2,7 +2,7 @@
 Bayesian Parameter Estimation Example
 ======================================
 
-This example demonstrates quantiq's Bayesian uncertainty quantification capabilities:
+This example demonstrates piblin-jax's Bayesian uncertainty quantification capabilities:
 - Fitting rheological models (Power-Law) to experimental data
 - Comparing Bayesian (NumPyro) with classical NLSQ estimates
 - Extracting posterior distributions with credible intervals
@@ -21,10 +21,10 @@ Expected output: Plots showing fitted model with uncertainty quantification
 import matplotlib.pyplot as plt
 import numpy as np
 
-from quantiq import fit_curve
+from piblin_jax import fit_curve
 
-# Import quantiq Bayesian and fitting modules
-from quantiq.bayesian.models import PowerLawModel
+# Import piblin-jax Bayesian and fitting modules
+from piblin_jax.bayesian.models import PowerLawModel
 
 print("=" * 80)
 print("Bayesian Parameter Estimation Example")
@@ -73,7 +73,7 @@ def power_law(x, K, n):
     return K * x ** (n - 1)
 
 
-# Use quantiq's NLSQ fitter for quick parameter estimates
+# Use piblin-jax's NLSQ fitter for quick parameter estimates
 nlsq_result = fit_curve(power_law, shear_rate, viscosity_measured, p0=np.array([5.0, 0.5]))
 
 # Extract parameter estimates
@@ -254,7 +254,7 @@ ax5.set_title("Fit Residuals", fontsize=12, fontweight="bold")
 ax5.legend(fontsize=9)
 ax5.grid(True, alpha=0.3)
 
-fig.suptitle("Bayesian Parameter Estimation with quantiq", fontsize=16, fontweight="bold", y=0.995)
+fig.suptitle("Bayesian Parameter Estimation with piblin-jax", fontsize=16, fontweight="bold", y=0.995)
 print("   ✓ Visualization created")
 
 # =============================================================================

@@ -12,9 +12,9 @@ This module tests:
 import numpy as np
 import pytest
 
-from quantiq.backend import is_jax_available, jnp
-from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.transform.lambda_transform import (
+from piblin_jax.backend import is_jax_available, jnp
+from piblin_jax.data.datasets import OneDimensionalDataset
+from piblin_jax.transform.lambda_transform import (
     AutoBaselineTransform,
     AutoScaleTransform,
     DynamicTransform,
@@ -220,7 +220,7 @@ class TestDynamicTransformCombinations:
 
     def test_pipeline_with_lambda_and_dynamic(self):
         """Lambda and dynamic transforms work in pipeline."""
-        from quantiq.transform.pipeline import Pipeline
+        from piblin_jax.transform.pipeline import Pipeline
 
         # Create test dataset
         x = jnp.array([1.0, 2.0, 3.0, 4.0, 5.0])

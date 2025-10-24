@@ -11,8 +11,8 @@ This test file focuses on covering the uncovered lines identified:
 import numpy as np
 import pytest
 
-from quantiq.backend import is_jax_available
-from quantiq.data.datasets import OneDimensionalDataset
+from piblin_jax.backend import is_jax_available
+from piblin_jax.data.datasets import OneDimensionalDataset
 
 
 class TestOneDimensionalDatasetUncertainty:
@@ -77,7 +77,7 @@ class TestOneDimensionalDatasetUncertainty:
     def test_with_uncertainty_bootstrap_numpy_fallback(self, monkeypatch):
         """Test bootstrap uncertainty with NumPy fallback (JAX unavailable)."""
         # Mock JAX as unavailable
-        monkeypatch.setattr("quantiq.data.datasets.one_dimensional.is_jax_available", lambda: False)
+        monkeypatch.setattr("piblin_jax.data.datasets.one_dimensional.is_jax_available", lambda: False)
 
         x = np.linspace(0, 5, 30)
         y = x**2 + 0.1 * np.random.randn(len(x))

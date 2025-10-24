@@ -11,7 +11,7 @@ from unittest.mock import Mock, mock_open, patch
 import numpy as np
 import pytest
 
-from quantiq.dataio.readers.csv import GenericCSVReader
+from piblin_jax.dataio.readers.csv import GenericCSVReader
 
 
 class TestCSVReaderMockedErrors:
@@ -101,19 +101,19 @@ class TestCSVReaderMockedFileIO:
             with patch("builtins.open", mock_open(read_data=csv_content)):
                 # Mock metadata functions to avoid complex mocking
                 with patch(
-                    "quantiq.dataio.readers.csv.metadata.parse_header_metadata",
+                    "piblin_jax.dataio.readers.csv.metadata.parse_header_metadata",
                     return_value={"Temperature": "25"},
                 ):
                     with patch(
-                        "quantiq.dataio.readers.csv.metadata.extract_from_filename",
+                        "piblin_jax.dataio.readers.csv.metadata.extract_from_filename",
                         return_value={},
                     ):
                         with patch(
-                            "quantiq.dataio.readers.csv.metadata.merge_metadata",
+                            "piblin_jax.dataio.readers.csv.metadata.merge_metadata",
                             return_value={"Temperature": "25"},
                         ):
                             with patch(
-                                "quantiq.dataio.readers.csv.metadata.separate_conditions_details",
+                                "piblin_jax.dataio.readers.csv.metadata.separate_conditions_details",
                                 return_value=({"Temperature": "25"}, {}),
                             ):
                                 measurement = reader.read("test.csv")
@@ -140,19 +140,19 @@ class TestCSVReaderMockedFileIO:
         with patch.object(Path, "exists", return_value=True):
             with patch("builtins.open", mock_open(read_data=csv_content_tab)):
                 with patch(
-                    "quantiq.dataio.readers.csv.metadata.parse_header_metadata",
+                    "piblin_jax.dataio.readers.csv.metadata.parse_header_metadata",
                     return_value={},
                 ):
                     with patch(
-                        "quantiq.dataio.readers.csv.metadata.extract_from_filename",
+                        "piblin_jax.dataio.readers.csv.metadata.extract_from_filename",
                         return_value={},
                     ):
                         with patch(
-                            "quantiq.dataio.readers.csv.metadata.merge_metadata",
+                            "piblin_jax.dataio.readers.csv.metadata.merge_metadata",
                             return_value={},
                         ):
                             with patch(
-                                "quantiq.dataio.readers.csv.metadata.separate_conditions_details",
+                                "piblin_jax.dataio.readers.csv.metadata.separate_conditions_details",
                                 return_value=({}, {}),
                             ):
                                 measurement = reader_tab.read("test.tsv")
@@ -165,19 +165,19 @@ class TestCSVReaderMockedFileIO:
         with patch.object(Path, "exists", return_value=True):
             with patch("builtins.open", mock_open(read_data=csv_content_semi)):
                 with patch(
-                    "quantiq.dataio.readers.csv.metadata.parse_header_metadata",
+                    "piblin_jax.dataio.readers.csv.metadata.parse_header_metadata",
                     return_value={},
                 ):
                     with patch(
-                        "quantiq.dataio.readers.csv.metadata.extract_from_filename",
+                        "piblin_jax.dataio.readers.csv.metadata.extract_from_filename",
                         return_value={},
                     ):
                         with patch(
-                            "quantiq.dataio.readers.csv.metadata.merge_metadata",
+                            "piblin_jax.dataio.readers.csv.metadata.merge_metadata",
                             return_value={},
                         ):
                             with patch(
-                                "quantiq.dataio.readers.csv.metadata.separate_conditions_details",
+                                "piblin_jax.dataio.readers.csv.metadata.separate_conditions_details",
                                 return_value=({}, {}),
                             ):
                                 measurement = reader_semi.read("test.csv")
@@ -193,19 +193,19 @@ class TestCSVReaderMockedFileIO:
         with patch.object(Path, "exists", return_value=True):
             with patch("builtins.open", mock_open(read_data=csv_content)):
                 with patch(
-                    "quantiq.dataio.readers.csv.metadata.parse_header_metadata",
+                    "piblin_jax.dataio.readers.csv.metadata.parse_header_metadata",
                     return_value={},
                 ):
                     with patch(
-                        "quantiq.dataio.readers.csv.metadata.extract_from_filename",
+                        "piblin_jax.dataio.readers.csv.metadata.extract_from_filename",
                         return_value={},
                     ):
                         with patch(
-                            "quantiq.dataio.readers.csv.metadata.merge_metadata",
+                            "piblin_jax.dataio.readers.csv.metadata.merge_metadata",
                             return_value={},
                         ):
                             with patch(
-                                "quantiq.dataio.readers.csv.metadata.separate_conditions_details",
+                                "piblin_jax.dataio.readers.csv.metadata.separate_conditions_details",
                                 return_value=({}, {}),
                             ):
                                 measurement = reader.read("test.txt")
@@ -226,19 +226,19 @@ class TestCSVReaderMockedFileIO:
         with patch.object(Path, "exists", return_value=True):
             with patch("builtins.open", mock_open(read_data=csv_content)):
                 with patch(
-                    "quantiq.dataio.readers.csv.metadata.parse_header_metadata",
+                    "piblin_jax.dataio.readers.csv.metadata.parse_header_metadata",
                     return_value={},
                 ):
                     with patch(
-                        "quantiq.dataio.readers.csv.metadata.extract_from_filename",
+                        "piblin_jax.dataio.readers.csv.metadata.extract_from_filename",
                         return_value={},
                     ):
                         with patch(
-                            "quantiq.dataio.readers.csv.metadata.merge_metadata",
+                            "piblin_jax.dataio.readers.csv.metadata.merge_metadata",
                             return_value={},
                         ):
                             with patch(
-                                "quantiq.dataio.readers.csv.metadata.separate_conditions_details",
+                                "piblin_jax.dataio.readers.csv.metadata.separate_conditions_details",
                                 return_value=({}, {}),
                             ):
                                 measurement = reader.read("multi.csv")
@@ -266,19 +266,19 @@ class TestCSVReaderEdgeCases:
         with patch.object(Path, "exists", return_value=True):
             with patch("builtins.open", mock_open(read_data=csv_content)):
                 with patch(
-                    "quantiq.dataio.readers.csv.metadata.parse_header_metadata",
+                    "piblin_jax.dataio.readers.csv.metadata.parse_header_metadata",
                     return_value={},
                 ):
                     with patch(
-                        "quantiq.dataio.readers.csv.metadata.extract_from_filename",
+                        "piblin_jax.dataio.readers.csv.metadata.extract_from_filename",
                         return_value={},
                     ):
                         with patch(
-                            "quantiq.dataio.readers.csv.metadata.merge_metadata",
+                            "piblin_jax.dataio.readers.csv.metadata.merge_metadata",
                             return_value={},
                         ):
                             with patch(
-                                "quantiq.dataio.readers.csv.metadata.separate_conditions_details",
+                                "piblin_jax.dataio.readers.csv.metadata.separate_conditions_details",
                                 return_value=({}, {}),
                             ):
                                 measurement = reader.read("trailing.csv")
@@ -297,20 +297,20 @@ class TestCSVReaderEdgeCases:
         with patch.object(Path, "exists", return_value=True):
             with patch("builtins.open", mock_open(read_data=csv_content)):
                 with patch(
-                    "quantiq.dataio.readers.csv.metadata.parse_header_metadata",
+                    "piblin_jax.dataio.readers.csv.metadata.parse_header_metadata",
                     return_value={},
                 ):
                     with (
                         patch(
-                            "quantiq.dataio.readers.csv.metadata.extract_from_filename",
+                            "piblin_jax.dataio.readers.csv.metadata.extract_from_filename",
                             return_value={},
                         ),
                         patch(
-                            "quantiq.dataio.readers.csv.metadata.merge_metadata",
+                            "piblin_jax.dataio.readers.csv.metadata.merge_metadata",
                             return_value={},
                         ),
                         patch(
-                            "quantiq.dataio.readers.csv.metadata.separate_conditions_details",
+                            "piblin_jax.dataio.readers.csv.metadata.separate_conditions_details",
                             return_value=({}, {}),
                         ),
                     ):
@@ -335,20 +335,20 @@ class TestCSVReaderEdgeCases:
         with patch.object(Path, "exists", return_value=True):
             with patch("builtins.open", mock_open(read_data=csv_content)):
                 with patch(
-                    "quantiq.dataio.readers.csv.metadata.parse_header_metadata",
+                    "piblin_jax.dataio.readers.csv.metadata.parse_header_metadata",
                     return_value={},
                 ):
                     with (
                         patch(
-                            "quantiq.dataio.readers.csv.metadata.extract_from_filename",
+                            "piblin_jax.dataio.readers.csv.metadata.extract_from_filename",
                             return_value={},
                         ),
                         patch(
-                            "quantiq.dataio.readers.csv.metadata.merge_metadata",
+                            "piblin_jax.dataio.readers.csv.metadata.merge_metadata",
                             return_value={},
                         ),
                         patch(
-                            "quantiq.dataio.readers.csv.metadata.separate_conditions_details",
+                            "piblin_jax.dataio.readers.csv.metadata.separate_conditions_details",
                             return_value=({}, {}),
                         ),
                     ):

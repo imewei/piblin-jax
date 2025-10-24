@@ -11,7 +11,7 @@ using JAX's automatic device placement and JIT compilation.
 Prerequisites
 -------------
 
-- :doc:`basic_workflow` - Basic quantiq usage
+- :doc:`basic_workflow` - Basic piblin-jax usage
 - **Linux with NVIDIA GPU + CUDA 12+** (GPU acceleration is Linux-only)
 - JAX with GPU support installed (see :doc:`../user_guide/installation`)
 - Basic understanding of GPU computing concepts
@@ -36,8 +36,8 @@ guide in :doc:`../user_guide/installation`. Quick summary:
 
 .. code-block:: bash
 
-    git clone https://github.com/quantiq/quantiq.git
-    cd quantiq
+    git clone https://github.com/piblin/piblin-jax.git
+    cd piblin-jax
     make install-gpu-cuda
 
 **Manual installation:**
@@ -46,12 +46,12 @@ guide in :doc:`../user_guide/installation`. Quick summary:
 
     pip uninstall -y jax jaxlib
     pip install "jax[cuda12-local]>=0.8.0,<0.9.0"
-    pip install quantiq
+    pip install piblin-jax
 
 Overview
 --------
 
-quantiq leverages JAX's automatic GPU acceleration to deliver dramatic speedups
+piblin-jax leverages JAX's automatic GPU acceleration to deliver dramatic speedups
 (10-100x) for large datasets and compute-intensive operations. This tutorial shows
 you how to maximize GPU performance in your workflows.
 
@@ -69,7 +69,7 @@ First, verify GPU access:
 
 .. code-block:: python
 
-    from quantiq.backend import get_backend, get_device_info, is_jax_available
+    from piblin_jax.backend import get_backend, get_device_info, is_jax_available
 
     # Check backend
     backend = get_backend()
@@ -161,8 +161,8 @@ JIT compilation provides automatic optimization:
 
 .. code-block:: python
 
-    from quantiq.backend.operations import jit
-    from quantiq.backend import jnp
+    from piblin_jax.backend.operations import jit
+    from piblin_jax.backend import jnp
 
     # Decorate functions for JIT compilation
     @jit
@@ -221,8 +221,8 @@ GPUs excel at batch operations:
 
 .. code-block:: python
 
-    from quantiq.transform import Pipeline
-    from quantiq.transform.dataset import GaussianSmoothing
+    from piblin_jax.transform import Pipeline
+    from piblin_jax.transform.dataset import GaussianSmoothing
 
     # Instead of sequential processing
     results = []
@@ -253,7 +253,7 @@ Use ``vmap`` for automatic vectorization:
 
 .. code-block:: python
 
-    from quantiq.backend.operations import vmap
+    from piblin_jax.backend.operations import vmap
 
     def process_single(x):
         """Process a single 1D array."""
@@ -318,8 +318,8 @@ Pipeline-Level Optimization
 
 .. code-block:: python
 
-    from quantiq.transform import Pipeline
-    from quantiq.transform.dataset import (
+    from piblin_jax.transform import Pipeline
+    from piblin_jax.transform.dataset import (
         GaussianSmoothing,
         MinMaxNormalization,
         Derivative
@@ -346,8 +346,8 @@ Create transforms that leverage GPU:
 
 .. code-block:: python
 
-    from quantiq.transform.base import DatasetTransform
-    from quantiq.backend.operations import jit
+    from piblin_jax.transform.base import DatasetTransform
+    from piblin_jax.backend.operations import jit
 
     class GPUOptimizedTransform(DatasetTransform):
         """Transform optimized for GPU execution."""
@@ -373,7 +373,7 @@ Measuring GPU Speedup
 .. code-block:: python
 
     import time
-    from quantiq.backend import get_device_info
+    from piblin_jax.backend import get_device_info
 
     def benchmark_pipeline(pipeline, dataset, n_iterations=10):
         """Benchmark pipeline performance."""
@@ -414,7 +414,7 @@ Bayesian models benefit enormously from GPU:
 
 .. code-block:: python
 
-    from quantiq.bayesian import PowerLawModel
+    from piblin_jax.bayesian import PowerLawModel
 
     # Create model (automatically uses GPU if available)
     model = PowerLawModel(
@@ -447,7 +447,7 @@ Issue: GPU Not Detected
     # Symptom: JAX reports 'cpu' instead of 'gpu'
 
     # Solution 1: Verify platform support
-    from quantiq.backend import get_device_info
+    from piblin_jax.backend import get_device_info
     info = get_device_info()
     if not info['gpu_supported']:
         print(f"GPU not supported on {info['os_platform']}")

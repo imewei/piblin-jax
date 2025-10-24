@@ -4,8 +4,8 @@ Curve Fitting
 Overview
 --------
 
-The ``quantiq.fitting`` module provides non-linear least squares (NLSQ) curve fitting
-functionality for quantiq. It offers a fast, deterministic approach to parameter
+The ``piblin_jax.fitting`` module provides non-linear least squares (NLSQ) curve fitting
+functionality for piblin_jax. It offers a fast, deterministic approach to parameter
 estimation when uncertainty quantification is not required.
 
 This module integrates with the JAX-based NLSQ library for high-performance optimization
@@ -47,7 +47,7 @@ Basic Curve Fitting
 
 Fit a custom function to data::
 
-    from quantiq.fitting import fit_curve
+    from piblin_jax.fitting import fit_curve
     import numpy as np
 
     def power_law(x, K, n):
@@ -74,7 +74,7 @@ Automatic Initial Parameter Estimation
 
 Let the module estimate initial parameters for you::
 
-    from quantiq.fitting import fit_curve, estimate_initial_parameters
+    from piblin_jax.fitting import fit_curve, estimate_initial_parameters
 
     # Estimate initial parameters automatically
     p0 = estimate_initial_parameters(
@@ -125,7 +125,7 @@ API Reference
 Module Contents
 ^^^^^^^^^^^^^^^
 
-.. automodule:: quantiq.fitting
+.. automodule:: piblin_jax.fitting
    :members:
    :undoc-members:
    :show-inheritance:
@@ -133,7 +133,7 @@ Module Contents
 Non-Linear Least Squares
 -------------------------
 
-.. automodule:: quantiq.fitting.nlsq
+.. automodule:: piblin_jax.fitting.nlsq
    :members:
    :undoc-members:
    :show-inheritance:

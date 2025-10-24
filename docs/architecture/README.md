@@ -1,6 +1,6 @@
-# quantiq Architecture Decision Records (ADRs)
+# piblin-jax Architecture Decision Records (ADRs)
 
-This directory contains Architecture Decision Records (ADRs) documenting key design decisions in quantiq.
+This directory contains Architecture Decision Records (ADRs) documenting key design decisions in piblin_jax.
 
 ## What are ADRs?
 
@@ -82,7 +82,7 @@ What other approaches did we consider?
 
 Start with these ADRs to understand core architectural principles:
 
-1. **ADR-001** (Backend Abstraction) - Understand why we use `from quantiq.backend import jnp`
+1. **ADR-001** (Backend Abstraction) - Understand why we use `from piblin_jax.backend import jnp`
 2. **ADR-002** (Immutable Datasets) - Learn why datasets are frozen and transforms return new objects
 3. **ADR-005** (NumPy API Boundary) - Understand the NumPy/JAX interaction
 

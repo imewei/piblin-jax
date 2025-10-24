@@ -1,12 +1,12 @@
 """
-piblin to quantiq Migration Example
+piblin to piblin-jax Migration Example
 ====================================
 
-This example demonstrates the migration path from piblin to quantiq:
-- API compatibility between piblin and quantiq
+This example demonstrates the migration path from piblin to piblin-jax:
+- API compatibility between piblin and piblin-jax
 - Side-by-side code comparison
 - Performance improvements with JAX backend
-- New features in quantiq (Bayesian fitting, uncertainty propagation)
+- New features in piblin-jax (Bayesian fitting, uncertainty propagation)
 
 Key concepts:
 - Backward compatibility with piblin patterns
@@ -22,21 +22,21 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 
-from quantiq import fit_curve
+from piblin_jax import fit_curve
 
-# Import quantiq (successor to piblin)
-from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.transform import Pipeline
-from quantiq.transform.dataset import GaussianSmooth, MinMaxNormalize
+# Import piblin-jax (successor to piblin)
+from piblin_jax.data.datasets import OneDimensionalDataset
+from piblin_jax.transform import Pipeline
+from piblin_jax.transform.dataset import GaussianSmooth, MinMaxNormalize
 
 print("=" * 80)
-print("piblin → quantiq Migration Example")
+print("piblin → piblin-jax Migration Example")
 print("=" * 80)
 
 # =============================================================================
 # Section 1: Dataset Creation (API Compatibility)
 # =============================================================================
-print("\n[1] Dataset Creation - piblin vs quantiq")
+print("\n[1] Dataset Creation - piblin vs piblin-jax")
 
 # Generate test data
 np.random.seed(42)
@@ -44,11 +44,11 @@ x = np.linspace(0, 10, 200)
 y_clean = np.sin(x) * np.exp(-x / 10)
 y_noisy = y_clean + 0.1 * np.random.randn(len(x))
 
-print("\n--- piblin style (still works in quantiq) ---")
+print("\n--- piblin style (still works in piblin-jax) ---")
 print(
     """
 # Legacy piblin pattern (compatible)
-from quantiq.data.datasets import OneDimensionalDataset
+from piblin_jax.data.datasets import OneDimensionalDataset
 
 dataset = OneDimensionalDataset(
     independent_variable_data=x,
@@ -63,11 +63,11 @@ dataset_piblin_style = OneDimensionalDataset(
 )
 print(f"✓ piblin-style dataset created: {len(x)} points")
 
-print("\n--- quantiq enhanced style (recommended) ---")
+print("\n--- piblin-jax enhanced style (recommended) ---")
 print(
     """
-# quantiq enhanced pattern (with metadata)
-from quantiq.data.datasets import OneDimensionalDataset
+# piblin-jax enhanced pattern (with metadata)
+from piblin_jax.data.datasets import OneDimensionalDataset
 
 dataset = OneDimensionalDataset(
     independent_variable_data=x,
@@ -78,14 +78,14 @@ dataset = OneDimensionalDataset(
 """
 )
 
-# Create dataset with quantiq enhancements
-dataset_quantiq_style = OneDimensionalDataset(
+# Create dataset with piblin-jax enhancements
+dataset_piblin-jax_style = OneDimensionalDataset(
     independent_variable_data=x,
     dependent_variable_data=y_noisy,
     conditions={"temperature": 25.0, "sample": "A"},
     details={"instrument": "Rheometer", "operator": "User"},
 )
-print("✓ quantiq-style dataset created with metadata")
+print("✓ piblin-jax-style dataset created with metadata")
 
 # =============================================================================
 # Section 2: Transform Application (Performance Comparison)
@@ -107,15 +107,15 @@ print(f"✓ NumPy backend: 100 iterations in {time_numpy * 1000:.2f} ms")
 
 # Note: JAX acceleration would show greater speedup with larger datasets
 # or more complex transforms (JIT compilation overhead matters less)
-from quantiq.backend import get_backend, is_jax_available
+from piblin_jax.backend import get_backend, is_jax_available
 
 print(f"✓ JAX backend available: {is_jax_available()}")
 print(f"✓ Current backend: {get_backend()}")
 
 # =============================================================================
-# Section 3: Pipeline Building (Enhanced in quantiq)
+# Section 3: Pipeline Building (Enhanced in piblin-jax)
 # =============================================================================
-print("\n[3] Pipeline Building - quantiq Enhancement")
+print("\n[3] Pipeline Building - piblin-jax Enhancement")
 
 print("\n--- piblin style (manual chaining) ---")
 print(
@@ -137,11 +137,11 @@ result_manual = smooth_step1.apply_to(dataset_piblin_style, make_copy=True)
 result_manual = normalize_step2.apply_to(result_manual, make_copy=True)
 print("✓ Manual chaining completed")
 
-print("\n--- quantiq style (Pipeline) ---")
+print("\n--- piblin-jax style (Pipeline) ---")
 print(
     """
-# quantiq: Pipeline composition (cleaner)
-from quantiq.transform import Pipeline
+# piblin-jax: Pipeline composition (cleaner)
+from piblin_jax.transform import Pipeline
 
 pipeline = Pipeline([
     GaussianSmooth(sigma=2.0),
@@ -152,9 +152,9 @@ result = pipeline.apply_to(dataset, make_copy=True)
 """
 )
 
-# quantiq style: pipeline
+# piblin-jax style: pipeline
 pipeline = Pipeline([GaussianSmooth(sigma=2.0), MinMaxNormalize()])
-result_pipeline = pipeline.apply_to(dataset_quantiq_style, make_copy=True)
+result_pipeline = pipeline.apply_to(dataset_piblin-jax_style, make_copy=True)
 print("✓ Pipeline application completed")
 
 # Verify results are identical
@@ -181,11 +181,11 @@ def power_law(x, K, n):
     return K * x ** (n - 1)
 
 
-print("\n--- piblin/quantiq unified API ---")
+print("\n--- piblin/piblin-jax unified API ---")
 print(
     """
-# Same API in both piblin and quantiq
-from quantiq import fit_curve
+# Same API in both piblin and piblin-jax
+from piblin_jax import fit_curve
 
 # Define model function
 def power_law(x, K, n):
@@ -214,15 +214,15 @@ print(
 )
 
 # =============================================================================
-# Section 5: NEW in quantiq - Bayesian Uncertainty Quantification
+# Section 5: NEW in piblin-jax - Bayesian Uncertainty Quantification
 # =============================================================================
-print("\n[5] NEW Features in quantiq - Bayesian Fitting")
+print("\n[5] NEW Features in piblin-jax - Bayesian Fitting")
 
 print("\n--- Not available in piblin ---")
 print(
     """
-# NEW in quantiq: Bayesian parameter estimation
-from quantiq.bayesian.models import PowerLawModel
+# NEW in piblin-jax: Bayesian parameter estimation
+from piblin_jax.bayesian.models import PowerLawModel
 
 model = PowerLawModel(n_samples=1000, n_warmup=500, n_chains=2)
 model.fit(shear_rate, viscosity)
@@ -239,7 +239,7 @@ predictions = model.predict(shear_rate_pred, credible_interval=0.95)
 )
 
 print("✓ Bayesian models provide full uncertainty quantification")
-print("✓ Not available in piblin - major enhancement in quantiq")
+print("✓ Not available in piblin - major enhancement in piblin-jax")
 
 # =============================================================================
 # Section 6: Visualization - Side-by-Side Comparison
@@ -247,7 +247,7 @@ print("✓ Not available in piblin - major enhancement in quantiq")
 print("\n[6] Creating comparison visualization...")
 
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))
-fig.suptitle("piblin → quantiq Migration Example", fontsize=16, fontweight="bold")
+fig.suptitle("piblin → piblin-jax Migration Example", fontsize=16, fontweight="bold")
 
 # Plot 1: Dataset creation comparison
 axes[0, 0].plot(x, y_noisy, "o", markersize=3, alpha=0.5, label="Data")
@@ -269,7 +269,7 @@ axes[0, 1].plot(
 )
 axes[0, 1].set_xlabel("X")
 axes[0, 1].set_ylabel("Y (normalized)")
-axes[0, 1].set_title("Transform Pipeline\n(Enhanced in quantiq)", fontweight="bold")
+axes[0, 1].set_title("Transform Pipeline\n(Enhanced in piblin-jax)", fontweight="bold")
 axes[0, 1].legend()
 axes[0, 1].grid(True, alpha=0.3)
 
@@ -288,11 +288,11 @@ axes[1, 0].grid(True, alpha=0.3, which="both")
 # Plot 4: Feature comparison table
 axes[1, 1].axis("off")
 comparison_text = """
-Feature Comparison: piblin vs quantiq
+Feature Comparison: piblin vs piblin-jax
 
 ✓ = Available    ✗ = Not Available
 
-Feature                      piblin    quantiq
+Feature                      piblin    piblin-jax
 ─────────────────────────────────────────────
 Dataset creation             ✓         ✓
 Metadata support             Limited   ✓✓
@@ -308,7 +308,7 @@ Type hints (strict)         Partial   ✓✓
 Modern Python 3.12+         ✗         ✓
 
 Migration Path:
-1. Replace 'import piblin' → 'import quantiq'
+1. Replace 'import piblin' → 'import piblin_jax'
 2. Existing code continues to work
 3. Gradually adopt new features:
    - Add metadata to datasets
@@ -342,16 +342,16 @@ print(
 Key Points:
 
 1. Backward Compatibility:
-   - quantiq maintains piblin API compatibility
+   - piblin-jax maintains piblin API compatibility
    - Existing piblin code works without changes
-   - Replace 'import piblin' with 'import quantiq'
+   - Replace 'import piblin' with 'import piblin_jax'
 
 2. Performance Improvements:
    - JAX backend for automatic acceleration
    - JIT compilation for complex transforms
    - Vectorized operations throughout
 
-3. Enhanced Features in quantiq:
+3. Enhanced Features in piblin-jax:
    - Transform pipelines for cleaner code
    - Bayesian uncertainty quantification (NumPyro)
    - Comprehensive metadata support
@@ -359,7 +359,7 @@ Key Points:
    - Backend abstraction (JAX/NumPy)
 
 4. Migration Strategy:
-   Step 1: Replace imports (piblin → quantiq)
+   Step 1: Replace imports (piblin → piblin-jax)
    Step 2: Run existing code (should work as-is)
    Step 3: Add metadata to datasets
    Step 4: Convert manual transform chains to Pipelines
@@ -372,7 +372,7 @@ Key Points:
    - Check documentation for specific cases
 
 Next Steps:
-- Review basic_usage_example.py for quantiq fundamentals
+- Review basic_usage_example.py for piblin-jax fundamentals
 - Explore bayesian_parameter_estimation.py for new Bayesian features
 - See transform_pipeline_example.py for advanced pipeline usage
 """

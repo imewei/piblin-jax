@@ -1,7 +1,7 @@
 """
-Custom Transforms Example for quantiq.
+Custom Transforms Example for piblin-jax.
 
-This example demonstrates how to extend quantiq by creating custom
+This example demonstrates how to extend piblin-jax by creating custom
 transform classes for domain-specific data processing.
 
 Key concepts:
@@ -14,17 +14,17 @@ Key concepts:
 
 Run time: <1 second
 
-Author: quantiq developers
+Author: piblin-jax developers
 Date: 2025-10-20
 """
 
 import numpy as np
 
-from quantiq.backend import jnp
-from quantiq.backend.operations import jit
-from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.transform.base import DatasetTransform
-from quantiq.transform.pipeline import Pipeline
+from piblin_jax.backend import jnp
+from piblin_jax.backend.operations import jit
+from piblin_jax.data.datasets import OneDimensionalDataset
+from piblin_jax.transform.base import DatasetTransform
+from piblin_jax.transform.pipeline import Pipeline
 
 
 class LogTransform(DatasetTransform):
@@ -418,7 +418,7 @@ def print_implementation_guide():
     print()
     print("1. **Subclass DatasetTransform:**")
     print("   ```python")
-    print("   from quantiq.transform.base import DatasetTransform")
+    print("   from piblin_jax.transform.base import DatasetTransform")
     print()
     print("   class MyTransform(DatasetTransform):")
     print("       def __init__(self, param1, param2):")
@@ -445,7 +445,7 @@ def print_implementation_guide():
     print()
     print("4. **Use JIT for performance (optional):**")
     print("   ```python")
-    print("   from quantiq.backend.operations import jit")
+    print("   from piblin_jax.backend.operations import jit")
     print()
     print("   @staticmethod")
     print("   @jit")
@@ -473,7 +473,7 @@ def main():
     print("\n")
     print("╔" + "=" * 68 + "╗")
     print("║" + " " * 16 + "CUSTOM TRANSFORMS EXAMPLE" + " " * 27 + "║")
-    print("║" + " " * 18 + "quantiq Framework" + " " * 33 + "║")
+    print("║" + " " * 18 + "piblin-jax Framework" + " " * 33 + "║")
     print("╚" + "=" * 68 + "╝")
     print()
 
@@ -505,7 +505,7 @@ def main():
     print("✓ Implementation guide provided")
     print()
     print("💡 Key takeaways:")
-    print("   - Custom transforms extend quantiq for domain-specific needs")
+    print("   - Custom transforms extend piblin-jax for domain-specific needs")
     print("   - Use @jit for performance-critical operations")
     print("   - Validate parameters in __init__")
     print("   - Preserve metadata for traceability")

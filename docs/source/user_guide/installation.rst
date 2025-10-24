@@ -17,9 +17,9 @@ Requirements
 Basic Installation
 ------------------
 
-Install quantiq using pip::
+Install piblin-jax using pip::
 
-    pip install quantiq
+    pip install piblin-jax
 
 This will install quantiq with JAX CPU support and all core dependencies.
 
@@ -61,8 +61,8 @@ Recommended Installation (Makefile)
 
 .. code-block:: bash
 
-    git clone https://github.com/quantiq/quantiq.git
-    cd quantiq
+    git clone https://github.com/piblin/piblin-jax.git
+    cd piblin-jax
     make init
     make install-gpu-cuda  # Handles everything automatically
 
@@ -94,8 +94,8 @@ are actually using CPU.
     # Step 2: Install GPU-enabled JAX
     pip install "jax[cuda12-local]>=0.8.0,<0.9.0"
 
-    # Step 3: Install quantiq (if not already installed)
-    pip install quantiq
+    # Step 3: Install piblin-jax (if not already installed)
+    pip install piblin-jax
 
     # Step 4: Verify GPU detection
     python -c "import jax; print('Devices:', jax.devices())"
@@ -143,7 +143,7 @@ After installation, verify GPU is detected:
 
 .. code-block:: bash
 
-    python -c "from quantiq.backend import get_device_info; print(get_device_info())"
+    python -c "from piblin_jax.backend import get_device_info; print(get_device_info())"
 
 **Expected output:**
 
@@ -217,8 +217,8 @@ For development with all optional dependencies:
 
 .. code-block:: bash
 
-    git clone https://github.com/quantiq/quantiq.git
-    cd quantiq
+    git clone https://github.com/piblin/piblin-jax.git
+    cd piblin-jax
 
     # Using uv (recommended for development)
     uv pip install -e ".[dev]"
@@ -250,11 +250,11 @@ Verification
 
 Verify your installation::
 
-    python -c "import quantiq; print(quantiq.__version__)"
+    python -c "import piblin_jax; print(piblin_jax.__version__)"
 
 Check backend availability::
 
-    python -c "from quantiq.backend import get_backend; print(f'Backend: {get_backend()}')"
+    python -c "from piblin_jax.backend import get_backend; print(f'Backend: {get_backend()}')"
 
 Expected output:
 
@@ -263,7 +263,7 @@ Expected output:
 
 Check device type::
 
-    python -c "from quantiq.backend import get_device_info; print(get_device_info())"
+    python -c "from piblin_jax.backend import get_device_info; print(get_device_info())"
 
 This provides comprehensive information about:
 
@@ -283,7 +283,7 @@ quantiq supports several optional dependency groups:
 
 .. code-block:: bash
 
-    pip install quantiq-jax[dev]
+    pip install piblin-jax[dev]
 
 Includes: ruff, mypy, pre-commit hooks, pytest
 
@@ -291,7 +291,7 @@ Includes: ruff, mypy, pre-commit hooks, pytest
 
 .. code-block:: bash
 
-    pip install quantiq-jax[test]
+    pip install piblin-jax[test]
 
 Includes: pytest, pytest-cov, pytest-benchmark
 
@@ -299,7 +299,7 @@ Includes: pytest, pytest-cov, pytest-benchmark
 
 .. code-block:: bash
 
-    pip install quantiq-jax[docs]
+    pip install piblin-jax[docs]
 
 Includes: Sphinx, sphinx-rtd-theme, sphinx-autodoc-typehints
 
@@ -307,7 +307,7 @@ Includes: Sphinx, sphinx-rtd-theme, sphinx-autodoc-typehints
 
 .. code-block:: bash
 
-    pip install quantiq-jax[security]
+    pip install piblin-jax[security]
 
 Includes: pip-audit, bandit, safety
 
@@ -315,7 +315,7 @@ Includes: pip-audit, bandit, safety
 
 .. code-block:: bash
 
-    pip install quantiq-jax[all]
+    pip install piblin-jax[all]
 
 Docker Installation
 -------------------
@@ -331,13 +331,13 @@ For reproducible environments with GPU support:
     # Install Python
     RUN apt-get update && apt-get install -y python3.12 python3-pip
 
-    # Install quantiq with GPU support
+    # Install piblin-jax with GPU support
     RUN pip3 uninstall -y jax jaxlib && \
         pip3 install "jax[cuda12-local]>=0.8.0,<0.9.0" && \
         pip3 install quantiq
 
     # Verify installation
-    RUN python3 -c "from quantiq.backend import get_device_info; print(get_device_info())"
+    RUN python3 -c "from piblin_jax.backend import get_device_info; print(get_device_info())"
 
 **Build and run:**
 

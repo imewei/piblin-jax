@@ -1,6 +1,6 @@
 # Documentation System Maintainer's Guide
 
-**Purpose:** Quick reference for maintaining quantiq's documentation system
+**Purpose:** Quick reference for maintaining piblin-jax's documentation system
 **Audience:** Documentation maintainers and core contributors
 **Last Updated:** 2025-10-20
 
@@ -23,7 +23,7 @@
 
 ### What This Guide Covers
 
-This guide documents the quantiq documentation system for maintainers:
+This guide documents the piblin-jax documentation system for maintainers:
 
 - **System architecture** - How documentation components fit together
 - **Current state** - What we have and where it lives
@@ -34,7 +34,7 @@ This guide documents the quantiq documentation system for maintainers:
 ### What This Guide Does NOT Cover
 
 - **General development** → See [CONTRIBUTING.md](../CONTRIBUTING.md)
-- **Using quantiq** → See [Sphinx user guides](source/user_guide/)
+- **Using piblin-jax** → See [Sphinx user guides](source/user_guide/)
 - **API reference** → See [Sphinx API docs](source/api/)
 - **Tutorials** → See [Sphinx tutorials](source/tutorials/)
 
@@ -69,7 +69,7 @@ This guide documents the quantiq documentation system for maintainers:
 ### Components Overview
 
 ```
-quantiq/
+piblin_jax/
 ├── Code Docstrings (100% coverage)
 │   └── NumPy-style, inline in all modules
 │
@@ -133,7 +133,7 @@ make html
 
    Brief description.
 
-   .. automodule:: quantiq.path.to.module
+   .. automodule:: piblin_jax.path.to.module
       :members:
       :undoc-members:
       :show-inheritance:
@@ -165,7 +165,7 @@ Example: [Descriptive Title]
 
 Requirements
 ------------
-- quantiq installed
+- piblin-jax installed
 - [Any special requirements]
 
 Usage
@@ -173,7 +173,7 @@ Usage
 python script_name.py
 """
 
-import quantiq
+import piblin_jax
 # ...
 ```
 
@@ -331,7 +331,7 @@ CHANGELOG.md                     # Project changelog
 
 **Modified Source Files:**
 ```
-quantiq/
+piblin_jax/
 ├── backend/operations.py                     # +4 docstrings
 └── data/collections/
     ├── consistent_measurement_set.py # Fixed duplicates
@@ -383,5 +383,5 @@ quantiq/
 
 **For:**
 - General contribution guidelines → [CONTRIBUTING.md](../CONTRIBUTING.md)
-- Using quantiq → [Sphinx Documentation](https://quantiq.readthedocs.io)
-- Bug reports → [GitHub Issues](https://github.com/quantiq/quantiq/issues)
+- Using piblin-jax → [Sphinx Documentation](https://piblin-jax.readthedocs.io)
+- Bug reports → [GitHub Issues](https://github.com/piblin/piblin-jax/issues)

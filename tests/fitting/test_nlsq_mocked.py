@@ -12,7 +12,7 @@ from unittest.mock import MagicMock, Mock, patch
 import numpy as np
 import pytest
 
-from quantiq.fitting.nlsq import estimate_initial_parameters, fit_curve
+from piblin_jax.fitting.nlsq import estimate_initial_parameters, fit_curve
 
 
 def linear_model(x, a, b):

@@ -10,9 +10,9 @@ This module tests Task Group 14:
 import numpy as np
 import pytest
 
-from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.transform.base import DatasetTransform
-from quantiq.transform.pipeline import LazyPipeline, Pipeline
+from piblin_jax.data.datasets import OneDimensionalDataset
+from piblin_jax.transform.base import DatasetTransform
+from piblin_jax.transform.pipeline import LazyPipeline, Pipeline
 
 
 class MultiplyTransform(DatasetTransform):

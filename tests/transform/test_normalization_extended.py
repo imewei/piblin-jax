@@ -11,9 +11,9 @@ import numpy as np
 import pytest
 from numpy.testing import assert_allclose
 
-from quantiq.backend import is_jax_available, jnp
-from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.transform.dataset import (
+from piblin_jax.backend import is_jax_available, jnp
+from piblin_jax.data.datasets import OneDimensionalDataset
+from piblin_jax.transform.dataset import (
     MaxNormalize,
     MinMaxNormalize,
     RobustNormalize,

@@ -108,7 +108,7 @@ class TestPackageDependencies:
         # This test verifies the syntax is valid, not that it actually installs
         # We use pip's dry-run capabilities to check dependency resolution
         result = subprocess.run(
-            [sys.executable, "-m", "pip", "install", "--dry-run", "quantiq[gpu-cuda]"],
+            [sys.executable, "-m", "pip", "install", "--dry-run", "piblin-jax[gpu-cuda]"],
             capture_output=True,
             text=True,
         )

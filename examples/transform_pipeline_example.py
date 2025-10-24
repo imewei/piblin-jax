@@ -2,7 +2,7 @@
 Transform Pipeline Example
 ==========================
 
-This example demonstrates quantiq's advanced transform pipeline capabilities:
+This example demonstrates piblin-jax's advanced transform pipeline capabilities:
 - Building complex multi-step pipelines
 - Applying pipelines to different dataset dimensionalities
 - Understanding pipeline composition and reusability
@@ -21,10 +21,10 @@ Expected output: Plots showing pipeline effects on different datasets
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Import quantiq dataset and transform classes
-from quantiq.data.datasets import OneDimensionalDataset, TwoDimensionalDataset
-from quantiq.transform import Pipeline
-from quantiq.transform.dataset import Derivative, GaussianSmooth, MinMaxNormalize, ZScoreNormalize
+# Import piblin-jax dataset and transform classes
+from piblin_jax.data.datasets import OneDimensionalDataset, TwoDimensionalDataset
+from piblin_jax.transform import Pipeline
+from piblin_jax.transform.dataset import Derivative, GaussianSmooth, MinMaxNormalize, ZScoreNormalize
 
 print("=" * 80)
 print("Transform Pipeline Example")

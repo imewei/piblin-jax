@@ -10,8 +10,8 @@ This module tests Task Group 15:
 import numpy as np
 import pytest
 
-from quantiq.backend import is_jax_available
-from quantiq.fitting.nlsq import estimate_initial_parameters, fit_curve
+from piblin_jax.backend import is_jax_available
+from piblin_jax.fitting.nlsq import estimate_initial_parameters, fit_curve
 
 
 def linear_model(x, a, b):
@@ -187,7 +187,7 @@ class TestBayesianModelIntegration:
         import numpyro
         import numpyro.distributions as dist
 
-        from quantiq.bayesian.base import BayesianModel
+        from piblin_jax.bayesian.base import BayesianModel
 
         class SimpleLinearModel(BayesianModel):
             def model(self, x, y=None):
@@ -221,7 +221,7 @@ class TestBayesianModelIntegration:
         import numpyro
         import numpyro.distributions as dist
 
-        from quantiq.bayesian.base import BayesianModel
+        from piblin_jax.bayesian.base import BayesianModel
 
         class SimpleLinearModel(BayesianModel):
             def model(self, x, y=None):

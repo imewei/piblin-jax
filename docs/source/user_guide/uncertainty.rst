@@ -1,13 +1,13 @@
 Uncertainty Quantification
 ==========================
 
-This guide provides a comprehensive overview of uncertainty quantification in quantiq,
+This guide provides a comprehensive overview of uncertainty quantification in piblin-jax,
 covering both the theoretical foundations and practical implementation details.
 
 Overview
 --------
 
-quantiq provides comprehensive Bayesian uncertainty quantification through NumPyro,
+piblin-jax provides comprehensive Bayesian uncertainty quantification through NumPyro,
 a probabilistic programming framework built on JAX. This enables:
 
 **Full posterior distributions**
@@ -77,7 +77,7 @@ Standard Analysis Pipeline
 1. **Specify the Model**
    Define the mathematical relationship between parameters and data::
 
-       from quantiq.bayesian.models import PowerLawModel
+       from piblin_jax.bayesian.models import PowerLawModel
        model = PowerLawModel(n_samples=2000)
 
 2. **Fit the Model**
@@ -134,7 +134,7 @@ Power-Law Model
 
 ::
 
-    from quantiq.bayesian.models import PowerLawModel
+    from piblin_jax.bayesian.models import PowerLawModel
     import numpy as np
 
     # Data
@@ -179,7 +179,7 @@ Arrhenius Model
 
 ::
 
-    from quantiq.bayesian.models import ArrheniusModel
+    from piblin_jax.bayesian.models import ArrheniusModel
 
     # Temperature data (K)
     temperature = np.array([273, 298, 323, 348, 373])
@@ -222,7 +222,7 @@ Cross Model
 
 ::
 
-    from quantiq.bayesian.models import CrossModel
+    from piblin_jax.bayesian.models import CrossModel
 
     # Wide shear rate range
     shear_rate = np.logspace(-3, 3, 50)
@@ -268,7 +268,7 @@ Carreau-Yasuda Model
 
 ::
 
-    from quantiq.bayesian.models import CarreauYasudaModel
+    from piblin_jax.bayesian.models import CarreauYasudaModel
 
     model = CarreauYasudaModel(n_samples=2000)
     model.fit(shear_rate, viscosity)
@@ -303,7 +303,7 @@ distributions that are difficult to sample from directly.
 
 **NumPyro's NUTS sampler:**
 
-quantiq uses the No-U-Turn Sampler (NUTS), a variant of Hamiltonian Monte Carlo:
+piblin-jax uses the No-U-Turn Sampler (NUTS), a variant of Hamiltonian Monte Carlo:
 
 - Automatically tunes step size and trajectory length
 - More efficient than basic MCMC (Metropolis-Hastings)
@@ -425,7 +425,7 @@ Credible Intervals
     Shortest interval containing 95% of probability mass.
     Preferred for skewed distributions::
 
-        from quantiq.bayesian.utils import compute_hdi
+        from piblin_jax.bayesian.utils import compute_hdi
         lower, upper = compute_hdi(K_samples, credible_mass=0.95)
 
 Parameter Correlations
@@ -470,7 +470,7 @@ Similar to AIC but penalizes complexity more heavily::
 
 ::
 
-    from quantiq.bayesian.models import PowerLawModel, CrossModel
+    from piblin_jax.bayesian.models import PowerLawModel, CrossModel
 
     # Fit both models
     power_law = PowerLawModel(n_samples=2000)
@@ -512,7 +512,7 @@ Dataset Integration
 
 Add uncertainty to datasets::
 
-    from quantiq.data.datasets import OneDimensionalDataset
+    from piblin_jax.data.datasets import OneDimensionalDataset
 
     # Create dataset
     dataset = OneDimensionalDataset(
@@ -539,7 +539,7 @@ Transform Propagation
 
 Propagate uncertainty through transforms::
 
-    from quantiq.transform.dataset import GaussianSmoothing
+    from piblin_jax.transform.dataset import GaussianSmoothing
 
     # Apply transform with uncertainty propagation
     smoother = GaussianSmoothing(sigma=2.0)

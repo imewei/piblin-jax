@@ -12,9 +12,9 @@ This module tests:
 import numpy as np
 import pytest
 
-from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.data.roi import CompoundRegion, LinearRegion
-from quantiq.transform.region import RegionMultiplyTransform, RegionTransform
+from piblin_jax.data.datasets import OneDimensionalDataset
+from piblin_jax.data.roi import CompoundRegion, LinearRegion
+from piblin_jax.transform.region import RegionMultiplyTransform, RegionTransform
 
 
 class TestLinearRegion:

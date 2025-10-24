@@ -8,7 +8,7 @@ ExperimentSet → Experiment → MeasurementSet → Measurement → Dataset
 import numpy as np
 import pytest
 
-from quantiq.data.collections import (
+from piblin_jax.data.collections import (
     ConsistentMeasurementSet,
     Experiment,
     ExperimentSet,
@@ -17,7 +17,7 @@ from quantiq.data.collections import (
     TabularMeasurementSet,
     TidyMeasurementSet,
 )
-from quantiq.data.datasets import (
+from piblin_jax.data.datasets import (
     OneDimensionalDataset,
     TwoDimensionalDataset,
     ZeroDimensionalDataset,

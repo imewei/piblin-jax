@@ -1,7 +1,7 @@
 """
 Task Group 17: Performance Benchmarks
 
-Benchmark tests comparing quantiq performance against baseline.
+Benchmark tests comparing piblin-jax performance against baseline.
 Uses pytest-benchmark for systematic performance testing.
 """
 
@@ -13,12 +13,12 @@ jax = pytest.importorskip("jax", reason="JAX required for bayesian benchmarks")
 
 # Imports after importorskip are intentional (tests only run if JAX available)
 # ruff: noqa: E402
-from quantiq.bayesian.models import PowerLawModel
-from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.fitting import fit_curve
-from quantiq.transform.dataset.normalization import MinMaxNormalize
-from quantiq.transform.dataset.smoothing import GaussianSmooth, MovingAverageSmooth
-from quantiq.transform.pipeline import Pipeline
+from piblin_jax.bayesian.models import PowerLawModel
+from piblin_jax.data.datasets import OneDimensionalDataset
+from piblin_jax.fitting import fit_curve
+from piblin_jax.transform.dataset.normalization import MinMaxNormalize
+from piblin_jax.transform.dataset.smoothing import GaussianSmooth, MovingAverageSmooth
+from piblin_jax.transform.pipeline import Pipeline
 
 
 class TestDatasetPerformance:

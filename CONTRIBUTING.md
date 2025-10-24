@@ -716,13 +716,13 @@ When documenting features or contributing code, ensure consistency with these pl
 - [TESTING.md](TESTING.md) - Comprehensive testing strategy
 - [README.md](README.md) - Project overview and quick start
 - [Documentation](https://quantiq.readthedocs.io) - Full documentation
-- [GitHub Issues](https://github.com/quantiq/quantiq/issues) - Bug reports and feature requests
-- [GitHub Discussions](https://github.com/quantiq/quantiq/discussions) - Questions and community
+- [GitHub Issues](https://github.com/piblin/piblin-jax/issues) - Bug reports and feature requests
+- [GitHub Discussions](https://github.com/piblin/piblin-jax/discussions) - Questions and community
 
 ## Getting Help
 
-- **Questions**: Open a [GitHub Discussion](https://github.com/quantiq/quantiq/discussions)
-- **Bugs**: File an [Issue](https://github.com/quantiq/quantiq/issues)
+- **Questions**: Open a [GitHub Discussion](https://github.com/piblin/piblin-jax/discussions)
+- **Bugs**: File an [Issue](https://github.com/piblin/piblin-jax/issues)
 - **Security**: Email security concerns to maintainers
 
 ## License

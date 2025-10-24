@@ -10,7 +10,7 @@ This test file focuses on covering uncovered lines identified:
 import numpy as np
 import pytest
 
-from quantiq.data.collections import (
+from piblin_jax.data.collections import (
     Experiment,
     ExperimentSet,
     Measurement,
@@ -18,7 +18,7 @@ from quantiq.data.collections import (
     TabularMeasurementSet,
     TidyMeasurementSet,
 )
-from quantiq.data.datasets import OneDimensionalDataset, ZeroDimensionalDataset
+from piblin_jax.data.datasets import OneDimensionalDataset, ZeroDimensionalDataset
 
 
 class TestTabularMeasurementSetExtended:
@@ -518,7 +518,7 @@ class TestThreeDimensionalDatasetExtended:
 
     def test_three_dimensional_dimension_mismatch_error_message(self):
         """Test detailed error message for dimension mismatch."""
-        from quantiq.data.datasets import ThreeDimensionalDataset
+        from piblin_jax.data.datasets import ThreeDimensionalDataset
 
         x = np.linspace(0, 5, 10)
         y = np.linspace(0, 5, 20)
@@ -536,7 +536,7 @@ class TestThreeDimensionalDatasetExtended:
 
     def test_three_dimensional_correct_dimensions(self):
         """Test that correct dimensions are accepted."""
-        from quantiq.data.datasets import ThreeDimensionalDataset
+        from piblin_jax.data.datasets import ThreeDimensionalDataset
 
         x = np.linspace(0, 5, 10)
         y = np.linspace(0, 5, 20)

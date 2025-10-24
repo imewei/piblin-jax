@@ -10,9 +10,9 @@ This module tests:
 import numpy as np
 import pytest
 
-from quantiq.data.collections import Experiment, ExperimentSet, Measurement, MeasurementSet
-from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.dataio.hierarchy import (
+from piblin_jax.data.collections import Experiment, ExperimentSet, Measurement, MeasurementSet
+from piblin_jax.data.datasets import OneDimensionalDataset
+from piblin_jax.dataio.hierarchy import (
     build_hierarchy,
     group_by_conditions,
     identify_varying_conditions,

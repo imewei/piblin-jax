@@ -86,7 +86,7 @@ The CI/CD pipeline enforces **dependency version consistency** to ensure reprodu
 
    # ❌ WRONG - Resolves dependencies (non-deterministic)
    uv sync
-   uv pip install quantiq
+   uv pip install piblin_jax
    ```
 
 ### Local Development Workflow

@@ -1,7 +1,7 @@
 API Reference
 =============
 
-Complete API documentation for quantiq.
+Complete API documentation for piblin_jax.
 
 .. toctree::
    :maxdepth: 2

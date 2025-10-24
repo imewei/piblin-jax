@@ -12,9 +12,9 @@ import sys
 sys.path.insert(0, os.path.abspath("../.."))
 
 # -- Project information -----------------------------------------------------
-project = "quantiq"
-copyright = "2025, quantiq developers"
-author = "quantiq developers"
+project = "piblin-jax"
+copyright = "2025, piblin-jax developers"
+author = "piblin-jax developers"
 release = "0.0.2"
 version = "0.0.2"
 
@@ -134,7 +134,7 @@ nitpick_ignore = [
     ("py:class", "ints"),
     ("py:class", "int/None"),
     ("py:class", "Reader instance"),
-    # quantiq-specific types (data structures)
+    # piblin-jax-specific types (data structures)
     ("py:class", "Dataset"),
     ("py:class", "OneDimensionalDataset"),
     ("py:class", "Measurement"),
@@ -143,16 +143,16 @@ nitpick_ignore = [
     ("py:class", "ExperimentSet"),
     ("py:class", "Transform"),
     ("py:class", "LinearRegion | CompoundRegion"),
-    ("py:class", "quantiq.data.datasets.base.Dataset"),
-    ("py:class", "quantiq.data.collections.measurement.Measurement"),
-    # quantiq-specific types (models)
+    ("py:class", "piblin_jax.data.datasets.base.Dataset"),
+    ("py:class", "piblin_jax.data.collections.measurement.Measurement"),
+    # piblin-jax-specific types (models)
     ("py:class", "BayesianModel"),
     ("py:class", "PowerLawModel"),
     ("py:class", "CrossModel"),
     ("py:class", "CarreauYasudaModel"),
     ("py:class", "ArrheniusModel"),
-    ("py:class", "quantiq.bayesian.base.BayesianModel"),
-    # quantiq-specific collection types
+    ("py:class", "piblin_jax.bayesian.base.BayesianModel"),
+    # piblin-jax-specific collection types
     ("py:class", "list[Transform]"),
     ("py:class", "list[Measurement]"),
     ("py:class", "list[Dataset]"),
@@ -171,8 +171,8 @@ nitpick_ignore = [
     ("py:obj", "datasets"),
     ("py:obj", "independent_variable_data"),
     ("py:obj", "dependent_variable_data"),
-    ("py:obj", "quantiq.transform.pipeline.T"),
-    ("py:obj", "quantiq.transform.base.T"),
+    ("py:obj", "piblin_jax.transform.pipeline.T"),
+    ("py:obj", "piblin_jax.transform.base.T"),
     # Additional type hint patterns from collections module
     ("py:class", "list[str] | None"),
     ("py:class", "list[Experiment]"),
@@ -188,12 +188,12 @@ nitpick_ignore = [
     ("py:class", "Any]]"),
     ("py:class", "list[dict[str"),
     ("py:class", "TidyMeasurementSet"),
-    ("py:class", "quantiq.data.collections.measurement_set.MeasurementSet"),
-    ("py:class", "quantiq.data.collections.experiment.Experiment"),
+    ("py:class", "piblin_jax.data.collections.measurement_set.MeasurementSet"),
+    ("py:class", "piblin_jax.data.collections.experiment.Experiment"),
     # Additional patterns from recent Sphinx warnings
-    ("py:class", "quantiq.data.collections.experiment_set.ExperimentSet"),
-    ("py:class", "quantiq.transform.pipeline.T"),
-    ("py:class", "quantiq.transform.base.T"),
+    ("py:class", "piblin_jax.data.collections.experiment_set.ExperimentSet"),
+    ("py:class", "piblin_jax.transform.pipeline.T"),
+    ("py:class", "piblin_jax.transform.base.T"),
     # Complex union type fragments from metadata module
     ("py:class", "type | Callable[[Any]"),
     ("py:class", "bool]] | None"),

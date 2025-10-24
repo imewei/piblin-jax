@@ -1,8 +1,8 @@
 """
-Basic Usage Example for quantiq
+Basic Usage Example for piblin-jax
 ================================
 
-This example demonstrates the fundamental usage patterns of quantiq:
+This example demonstrates the fundamental usage patterns of piblin-jax:
 - Creating 1D datasets from NumPy arrays
 - Applying simple transformations (smoothing, normalization)
 - Building transform pipelines
@@ -20,13 +20,13 @@ Expected output: Matplotlib figures showing original vs. transformed data
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Import quantiq dataset and transform classes
-from quantiq.data.datasets import OneDimensionalDataset
-from quantiq.transform import Pipeline
-from quantiq.transform.dataset import GaussianSmooth, MinMaxNormalize
+# Import piblin-jax dataset and transform classes
+from piblin_jax.data.datasets import OneDimensionalDataset
+from piblin_jax.transform import Pipeline
+from piblin_jax.transform.dataset import GaussianSmooth, MinMaxNormalize
 
 print("=" * 70)
-print("quantiq Basic Usage Example")
+print("piblin-jax Basic Usage Example")
 print("=" * 70)
 
 # =============================================================================
@@ -41,7 +41,7 @@ y_clean = np.sin(x) * np.exp(-x / 10)  # Damped sine wave
 noise = 0.15 * np.random.randn(len(x))
 y_noisy = y_clean + noise
 
-# Create quantiq dataset with metadata
+# Create piblin-jax dataset with metadata
 dataset = OneDimensionalDataset(
     independent_variable_data=x,
     dependent_variable_data=y_noisy,
@@ -104,7 +104,7 @@ print("\n[4] Creating visualizations...")
 
 # Create figure with subplots
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))
-fig.suptitle("quantiq Basic Usage Example", fontsize=16, fontweight="bold")
+fig.suptitle("piblin-jax Basic Usage Example", fontsize=16, fontweight="bold")
 
 # Plot 1: Original noisy data
 axes[0, 0].plot(x, y_noisy, "o", markersize=3, alpha=0.5, label="Noisy data")

@@ -49,7 +49,7 @@ Generate Synthetic Data
 First, create some synthetic data with noise::
 
     import numpy as np
-    from quantiq.bayesian.models import PowerLawModel
+    from piblin_jax.bayesian.models import PowerLawModel
 
     # True parameters
     K_true = 5.0
@@ -175,7 +175,7 @@ Working with Datasets
 
 Quantiq integrates Bayesian uncertainty with the Dataset API::
 
-    from quantiq.data.datasets import OneDimensionalDataset
+    from piblin_jax.data.datasets import OneDimensionalDataset
 
     # Create dataset
     dataset = OneDimensionalDataset(
@@ -207,7 +207,7 @@ Propagating Uncertainty Through Transforms
 
 Uncertainty can be propagated through data transformations::
 
-    from quantiq.transform.dataset import GaussianSmoothing
+    from piblin_jax.transform.dataset import GaussianSmoothing
 
     # Create dataset with uncertainty
     dataset_with_unc = dataset.with_uncertainty(
@@ -243,7 +243,7 @@ Generate Temperature-Dependent Data
 
 ::
 
-    from quantiq.bayesian.models import ArrheniusModel
+    from piblin_jax.bayesian.models import ArrheniusModel
 
     # True parameters
     A_true = 1e-3  # Pa·s
@@ -304,7 +304,7 @@ Model Comparison
 
 Compare different rheological models using Bayesian evidence::
 
-    from quantiq.bayesian.models import PowerLawModel, CrossModel
+    from piblin_jax.bayesian.models import PowerLawModel, CrossModel
 
     # Fit competing models
     power_law = PowerLawModel(n_samples=2000)
@@ -343,7 +343,7 @@ Tips and Best Practices
             # Increase n_samples or n_warmup
 
 **Prior sensitivity**
-    Bayesian results depend on priors. quantiq uses weakly informative
+    Bayesian results depend on priors. piblin-jax uses weakly informative
     priors by default. For custom priors, see the API documentation.
 
 **Computational cost**

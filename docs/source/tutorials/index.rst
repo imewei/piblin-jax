@@ -1,7 +1,7 @@
 Tutorials
 =========
 
-Step-by-step tutorials for learning quantiq.
+Step-by-step tutorials for learning piblin_jax.
 
 .. toctree::
    :maxdepth: 2
