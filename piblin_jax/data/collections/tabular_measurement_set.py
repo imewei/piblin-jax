@@ -1,5 +1,5 @@
 """
-TabularMeasurementSet class for quantiq.
+TabularMeasurementSet class for piblin-jax.
 
 MeasurementSet variant with tabular access patterns (rows and columns).
 """

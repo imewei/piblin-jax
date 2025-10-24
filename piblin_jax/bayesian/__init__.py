@@ -1,5 +1,5 @@
 """
-Bayesian inference module for quantiq.
+Bayesian inference module for piblin-jax.
 
 This module provides Bayesian modeling capabilities using NumPyro,
 including MCMC sampling and uncertainty quantification.

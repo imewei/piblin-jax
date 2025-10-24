@@ -8,7 +8,7 @@ Date: 2024-10-19
 
 ## Context
 
-quantiq aims to provide high-performance data processing for measurement science applications. We identified several competing requirements:
+piblin-jax aims to provide high-performance data processing for measurement science applications. We identified several competing requirements:
 
 1. **Performance**: Need JAX's JIT compilation and GPU acceleration for large datasets
 2. **Portability**: Must work on systems without GPU or where JAX installation is problematic
@@ -22,7 +22,7 @@ The core challenge: How do we provide JAX-level performance without forcing all 
 We implement a **backend abstraction layer** (`piblin_jax.backend`) that provides a unified interface (`jnp`) that can be backed by either JAX or NumPy:
 
 ```python
-# quantiq/backend/__init__.py
+# piblin_jax/backend/__init__.py
 try:
     import jax.numpy as backend_module
     BACKEND = "jax"
@@ -42,7 +42,7 @@ jnp = backend_module  # Unified interface
 
 **Implementation Details**:
 
-- Module: `quantiq/backend/__init__.py` (280 lines of documentation)
+- Module: `piblin_jax/backend/__init__.py` (280 lines of documentation)
 - Exports: `jnp`, `BACKEND`, `is_jax_available()`
 - Convention: All array operations use `jnp.array()`, `jnp.sum()`, etc.
 - Testing: Tests run on both backends to ensure compatibility
@@ -119,7 +119,7 @@ dependencies = ["jax>=0.4.0", "jaxlib>=0.4.0"]
 - Overkill for small datasets (<1000 points)
 - Barrier to entry for teaching/exploration
 
-**Why Rejected**: Too restrictive, reduces quantiq's accessibility
+**Why Rejected**: Too restrictive, reduces piblin-jax's accessibility
 
 ### Alternative 2: Pure NumPy, No JAX
 
@@ -163,8 +163,8 @@ piblin_jax.set_backend("jax")  # or "numpy"
 ### Alternative 4: Separate Packages
 
 ```python
-# quantiq-numpy and piblin-jax as separate PyPI packages
-pip install quantiq-numpy  # or piblin-jax
+# piblin-jax-numpy and piblin-jax as separate PyPI packages
+pip install piblin-jax-numpy  # or piblin-jax
 ```
 
 **Pros**:

@@ -1,7 +1,7 @@
 GPU Acceleration Best Practices
 =================================
 
-This tutorial covers best practices for leveraging GPU acceleration in quantiq
+This tutorial covers best practices for leveraging GPU acceleration in piblin-jax
 using JAX's automatic device placement and JIT compilation.
 
 .. contents:: Table of Contents
@@ -548,6 +548,6 @@ Next Steps
 
 .. seealso::
 
-   - :doc:`basic_workflow` - Getting started with quantiq
+   - :doc:`basic_workflow` - Getting started with piblin-jax
    - :doc:`custom_transforms` - Creating GPU-optimized transforms
    - `JAX Documentation <https://jax.readthedocs.io/>`_ - Deep dive into JAX

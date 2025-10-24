@@ -15,7 +15,7 @@ Successfully implemented built-in rheological models using the BayesianModel bas
 ### 1. Implemented Models (4 total)
 
 #### 1.1 PowerLawModel
-**File:** `/Users/b80985/Projects/quantiq/quantiq/bayesian/models/power_law.py`
+**File:** `/Users/b80985/Projects/piblin-jax/piblin_jax/bayesian/models/power_law.py`
 
 **Model Equation:**
 ```
@@ -38,7 +38,7 @@ Successfully implemented built-in rheological models using the BayesianModel bas
 - Pastes and slurries
 
 #### 1.2 ArrheniusModel
-**File:** `/Users/b80985/Projects/quantiq/quantiq/bayesian/models/arrhenius.py`
+**File:** `/Users/b80985/Projects/piblin-jax/piblin_jax/bayesian/models/arrhenius.py`
 
 **Model Equation:**
 ```
@@ -63,7 +63,7 @@ Successfully implemented built-in rheological models using the BayesianModel bas
 - Temperature-viscosity characterization
 
 #### 1.3 CrossModel
-**File:** `/Users/b80985/Projects/quantiq/quantiq/bayesian/models/cross.py`
+**File:** `/Users/b80985/Projects/piblin-jax/piblin_jax/bayesian/models/cross.py`
 
 **Model Equation:**
 ```
@@ -89,7 +89,7 @@ Successfully implemented built-in rheological models using the BayesianModel bas
 - Flow curve analysis
 
 #### 1.4 CarreauYasudaModel
-**File:** `/Users/b80985/Projects/quantiq/quantiq/bayesian/models/carreau_yasuda.py`
+**File:** `/Users/b80985/Projects/piblin-jax/piblin_jax/bayesian/models/carreau_yasuda.py`
 
 **Model Equation:**
 ```
@@ -118,7 +118,7 @@ Successfully implemented built-in rheological models using the BayesianModel bas
 
 ### 2. Test Suite
 
-**File:** `/Users/b80985/Projects/quantiq/tests/bayesian/test_rheological_models.py`
+**File:** `/Users/b80985/Projects/piblin_jax/tests/bayesian/test_rheological_models.py`
 
 **Test Coverage:** 12 tests total, all passing
 
@@ -147,7 +147,7 @@ Successfully implemented built-in rheological models using the BayesianModel bas
 ### 3. Package Structure
 
 ```
-quantiq/bayesian/models/
+piblin_jax/bayesian/models/
 ├── __init__.py                # Module exports
 ├── power_law.py              # PowerLawModel
 ├── arrhenius.py              # ArrheniusModel
@@ -156,8 +156,8 @@ quantiq/bayesian/models/
 ```
 
 **Updated Files:**
-- `/Users/b80985/Projects/quantiq/quantiq/bayesian/models/__init__.py`
-- `/Users/b80985/Projects/quantiq/quantiq/bayesian/__init__.py`
+- `/Users/b80985/Projects/piblin-jax/piblin_jax/bayesian/models/__init__.py`
+- `/Users/b80985/Projects/piblin-jax/piblin_jax/bayesian/__init__.py`
 
 ### 4. API Exports
 

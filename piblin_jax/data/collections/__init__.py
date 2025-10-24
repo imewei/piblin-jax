@@ -1,5 +1,5 @@
 """
-Collection classes for quantiq.
+Collection classes for piblin-jax.
 
 This module provides the hierarchical data model for organizing experimental data:
 

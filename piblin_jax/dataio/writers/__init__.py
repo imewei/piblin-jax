@@ -1,7 +1,7 @@
 """
-Data writers module for quantiq.
+Data writers module for piblin-jax.
 
-This module provides functionality for writing quantiq data structures
+This module provides functionality for writing piblin-jax data structures
 to various file formats. Writer implementations will be added in future
 phases to support common data serialization formats.
 

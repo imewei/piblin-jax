@@ -1,5 +1,5 @@
 """
-Dataset classes for quantiq.
+Dataset classes for piblin-jax.
 
 This module provides all dataset types for storing experimental and computed data:
 - Dataset: Abstract base class

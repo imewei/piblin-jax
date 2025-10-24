@@ -2,19 +2,19 @@
 
 ## Status
 
-**Accepted** - Implemented throughout `quantiq` public API
+**Accepted** - Implemented throughout `piblin_jax` public API
 
 Date: 2024-10-19
 
 ## Context
 
-quantiq internally uses JAX for high performance (5-100x speedups), but JAX arrays (`jax.Array`) are different from NumPy arrays (`np.ndarray`):
+piblin-jax internally uses JAX for high performance (5-100x speedups), but JAX arrays (`jax.Array`) are different from NumPy arrays (`np.ndarray`):
 
 - **Memory Location**: JAX arrays may be on GPU, NumPy arrays are CPU-only
 - **Type System**: Different types in the type system
 - **Interoperability**: Most external tools (pandas, matplotlib, scipy) expect NumPy
 
-**Problem**: Should quantiq's public API accept and return JAX arrays or NumPy arrays?
+**Problem**: Should piblin-jax's public API accept and return JAX arrays or NumPy arrays?
 
 **Scenarios**:
 1. User creates data from NumPy arrays (most common)

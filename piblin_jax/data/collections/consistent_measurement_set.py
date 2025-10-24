@@ -1,5 +1,5 @@
 """
-ConsistentMeasurementSet class for quantiq.
+ConsistentMeasurementSet class for piblin-jax.
 
 MeasurementSet variant where all measurements have the same dataset structure.
 """

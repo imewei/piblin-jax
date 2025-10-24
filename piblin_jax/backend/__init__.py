@@ -1,5 +1,5 @@
 """
-Backend abstraction layer for quantiq.
+Backend abstraction layer for piblin-jax.
 
 This module provides a unified interface for both JAX and NumPy backends,
 with automatic fallback to NumPy when JAX is unavailable.

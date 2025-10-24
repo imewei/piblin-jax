@@ -21,7 +21,7 @@ Install piblin-jax using pip::
 
     pip install piblin-jax
 
-This will install quantiq with JAX CPU support and all core dependencies.
+This will install piblin-jax with JAX CPU support and all core dependencies.
 
 **What's Included:**
 
@@ -51,7 +51,7 @@ GPU Support (Linux + CUDA 12+ Only)
 
 .. note::
 
-   **Breaking Change (v0.1.0):** The ``quantiq[gpu-cuda]`` pip extra has been removed.
+   **Breaking Change (v0.1.0):** The ``piblin-jax[gpu-cuda]`` pip extra has been removed.
    GPU installation now requires explicit manual installation to avoid silent CPU/GPU conflicts.
 
 Recommended Installation (Makefile)
@@ -117,11 +117,11 @@ Option A: Using environment file (recommended):
 
     # Using conda
     conda env create -f environment-gpu.yml
-    conda activate quantiq-gpu
+    conda activate piblin-jax-gpu
 
     # Using mamba (faster)
     mamba env create -f environment-gpu.yml
-    mamba activate quantiq-gpu
+    mamba activate piblin-jax-gpu
 
 Option B: Manual within conda environment:
 
@@ -133,7 +133,7 @@ Option B: Manual within conda environment:
 
 .. warning::
 
-   Conda's extras syntax (``conda install quantiq[gpu-cuda]``) is not supported.
+   Conda's extras syntax (``conda install piblin-jax[gpu-cuda]``) is not supported.
    Always use pip within your conda environment for JAX GPU installation.
 
 Verify GPU Installation
@@ -277,7 +277,7 @@ This provides comprehensive information about:
 Optional Dependencies
 ---------------------
 
-quantiq supports several optional dependency groups:
+piblin-jax supports several optional dependency groups:
 
 **Development dependencies:**
 
@@ -334,7 +334,7 @@ For reproducible environments with GPU support:
     # Install piblin-jax with GPU support
     RUN pip3 uninstall -y jax jaxlib && \
         pip3 install "jax[cuda12-local]>=0.8.0,<0.9.0" && \
-        pip3 install quantiq
+        pip3 install piblin-jax
 
     # Verify installation
     RUN python3 -c "from piblin_jax.backend import get_device_info; print(get_device_info())"
@@ -343,12 +343,12 @@ For reproducible environments with GPU support:
 
 .. code-block:: bash
 
-    docker build -t quantiq-gpu .
-    docker run --gpus all -it quantiq-gpu python3
+    docker build -t piblin-jax-gpu .
+    docker run --gpus all -it piblin-jax-gpu python3
 
 Next Steps
 ----------
 
-* :doc:`quickstart` - Getting started with quantiq
+* :doc:`quickstart` - Getting started with piblin-jax
 * :doc:`../tutorials/gpu_acceleration` - Maximizing GPU performance
 * :doc:`../api/index` - API reference documentation

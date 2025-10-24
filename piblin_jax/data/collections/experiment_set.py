@@ -1,5 +1,5 @@
 """
-ExperimentSet class for quantiq.
+ExperimentSet class for piblin-jax.
 
 Top-level container for multiple Experiment objects representing a study or project.
 """

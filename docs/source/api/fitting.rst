@@ -10,7 +10,7 @@ estimation when uncertainty quantification is not required.
 
 This module integrates with the JAX-based NLSQ library for high-performance optimization
 on CPU/GPU, with automatic fallback to scipy's curve_fit when JAX is unavailable. The
-fitting functions are designed to work seamlessly with quantiq's data structures while
+fitting functions are designed to work seamlessly with piblin-jax's data structures while
 providing a simple, familiar interface.
 
 Key characteristics:

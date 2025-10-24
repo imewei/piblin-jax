@@ -1,7 +1,7 @@
 Basic Workflow Tutorial
 =======================
 
-This tutorial demonstrates a complete data analysis workflow using quantiq,
+This tutorial demonstrates a complete data analysis workflow using piblin-jax,
 from data loading through transformation to visualization and analysis.
 
 Overview
@@ -380,7 +380,7 @@ Create a polished figure for publication::
                   fontfamily='monospace',
                   bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.3))
 
-    plt.suptitle('Rheological Analysis with quantiq', fontsize=15,
+    plt.suptitle('Rheological Analysis with piblin-jax', fontsize=15,
                  fontweight='bold', y=0.98)
 
     # Save figure

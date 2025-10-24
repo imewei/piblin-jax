@@ -1,5 +1,5 @@
 """
-Region of Interest (ROI) classes for quantiq.
+Region of Interest (ROI) classes for piblin-jax.
 
 This module provides classes for defining regions on independent variables:
 - LinearRegion: Contiguous region on a 1D independent variable

@@ -1,5 +1,5 @@
 """
-Measurement class for quantiq.
+Measurement class for piblin-jax.
 
 Container for multiple Dataset objects representing a single measurement event.
 """

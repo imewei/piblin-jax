@@ -1,5 +1,5 @@
 """
-Region-based transforms for quantiq.
+Region-based transforms for piblin-jax.
 
 This module provides transforms that operate on specific regions of data:
 - RegionTransform: Base class for region-based transforms

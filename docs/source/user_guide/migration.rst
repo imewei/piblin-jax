@@ -40,8 +40,8 @@ No code changes required!
 Testing Your Migration
 -----------------------
 
-1. Run existing tests with quantiq
+1. Run existing tests with piblin-jax
 2. Compare results (should match piblin)
 3. Benchmark performance improvements
 
-See :doc:`../tutorials/basic_workflow` for quantiq-specific features.
+See :doc:`../tutorials/basic_workflow` for piblin-jax-specific features.

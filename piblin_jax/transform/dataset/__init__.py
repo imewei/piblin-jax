@@ -1,5 +1,5 @@
 """
-Core dataset-level transforms for quantiq.
+Core dataset-level transforms for piblin-jax.
 
 This module provides fundamental transforms for processing 1D datasets:
 - Interpolation: Resample to new x-values

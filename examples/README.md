@@ -1,11 +1,11 @@
-# quantiq Examples
+# piblin-jax Examples
 
-This directory contains complete, runnable examples demonstrating key features of the quantiq framework.
+This directory contains complete, runnable examples demonstrating key features of the piblin-jax framework.
 
 ## Prerequisites
 
 ```bash
-# Install quantiq with examples dependencies
+# Install piblin-jax with examples dependencies
 pip install -e ".[dev]"
 
 # For GPU examples (Linux only, CUDA 12+)
@@ -115,10 +115,10 @@ python uncertainty_propagation_example.py
 ---
 
 ### 6. **piblin_migration_example.py** - piblin Compatibility
-**What it demonstrates:** Migrating from piblin to quantiq.
+**What it demonstrates:** Migrating from piblin to piblin-jax.
 
 **Key concepts:**
-- Drop-in replacement (`import quantiq as piblin`)
+- Drop-in replacement (`import piblin_jax as piblin`)
 - API compatibility
 - Performance comparison
 - Migration best practices
@@ -151,7 +151,7 @@ python gpu_acceleration_example.py
 
 ---
 
-### 8. **custom_transforms_example.py** - Extending quantiq
+### 8. **custom_transforms_example.py** - Extending piblin-jax
 **What it demonstrates:** Building custom transform classes.
 
 **Key concepts:**
@@ -238,7 +238,7 @@ pip install -e ".[dev]"  # Install all dependencies
 
 **GPU not detected:**
 ```python
-from quantiq.backend import get_device_info
+from piblin_jax.backend import get_device_info
 print(get_device_info())  # Check available devices
 ```
 
@@ -284,4 +284,4 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 
 ---
 
-**Questions?** See the [main documentation](https://quantiq.readthedocs.io) or open an [issue](https://github.com/piblin/piblin-jax/issues).
+**Questions?** See the [main documentation](https://piblin-jax.readthedocs.io) or open an [issue](https://github.com/piblin/piblin-jax/issues).

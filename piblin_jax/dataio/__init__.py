@@ -1,4 +1,4 @@
-"""Data I/O system for quantiq.
+"""Data I/O system for piblin-jax.
 
 This module provides a comprehensive file I/O system with:
 - Generic CSV and TXT readers

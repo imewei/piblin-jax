@@ -240,7 +240,7 @@ Migrating from piblin? piblin-jax is 100% backward compatible::
     data = piblin.read_file('experiment.csv')
     # ... rest of your piblin code ...
 
-This allows you to migrate gradually and take advantage of quantiq's
+This allows you to migrate gradually and take advantage of piblin-jax's
 performance improvements without rewriting your code.
 
 Performance Tips

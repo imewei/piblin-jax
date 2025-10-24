@@ -8,7 +8,7 @@ Date: 2024-10-19
 
 ## Context
 
-quantiq processes scientific measurement data through transformation pipelines. We need to decide how datasets behave when transformed:
+piblin-jax processes scientific measurement data through transformation pipelines. We need to decide how datasets behave when transformed:
 
 1. **In-place Modification** (mutable): `dataset.smooth(sigma=2.0)` modifies `dataset` directly
 2. **Copy-on-Transform** (immutable): `dataset.smooth(sigma=2.0)` returns a new dataset, leaving original unchanged

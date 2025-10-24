@@ -1,5 +1,5 @@
 """
-Measurement-level transforms for quantiq.
+Measurement-level transforms for piblin-jax.
 
 This module provides transforms that operate on Measurement and MeasurementSet objects:
 - FilterDatasets: Filter datasets within a Measurement

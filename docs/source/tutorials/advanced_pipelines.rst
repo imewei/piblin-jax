@@ -617,6 +617,6 @@ Next Steps
 
 .. seealso::
 
-   - :doc:`basic_workflow` - Introduction to quantiq
+   - :doc:`basic_workflow` - Introduction to piblin-jax
    - :doc:`custom_transforms` - Creating custom transforms
    - :doc:`rheological_models` - Domain-specific examples

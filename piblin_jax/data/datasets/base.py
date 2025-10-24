@@ -1,5 +1,5 @@
 """
-Base dataset class for quantiq.
+Base dataset class for piblin-jax.
 
 Provides the abstract base class for all dataset types with metadata support.
 """
@@ -13,7 +13,7 @@ class Dataset(ABC):
     """
     Abstract base class for all dataset types.
 
-    All quantiq datasets inherit from this class and provide:
+    All piblin-jax datasets inherit from this class and provide:
     - Metadata system (conditions and details)
     - Internal storage using backend arrays (JAX or NumPy)
     - External NumPy conversion for API boundaries

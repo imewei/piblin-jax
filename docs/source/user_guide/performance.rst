@@ -7,7 +7,7 @@ to advanced GPU acceleration and profiling techniques.
 Overview
 --------
 
-quantiq is designed for high-performance scientific computing through:
+piblin-jax is designed for high-performance scientific computing through:
 
 **JAX Backend**
     Automatic JIT (Just-In-Time) compilation for CPU/GPU acceleration.
@@ -30,7 +30,7 @@ Quick Start
 Check Your Backend
 ~~~~~~~~~~~~~~~~~~
 
-Verify which backend quantiq is using::
+Verify which backend piblin-jax is using::
 
     from piblin_jax.backend import get_backend, is_jax_available
 
@@ -773,7 +773,7 @@ GPU Not Used
 1. JAX installed with GPU support?
 2. CUDA/ROCm installed?
 3. ``jax.devices('gpu')`` returns devices?
-4. Data moved to GPU? (Automatic in quantiq)
+4. Data moved to GPU? (Automatic in piblin-jax)
 
 Compilation Warnings
 ~~~~~~~~~~~~~~~~~~~~

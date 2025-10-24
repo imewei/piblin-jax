@@ -1,5 +1,5 @@
 """
-Transform system for quantiq.
+Transform system for piblin-jax.
 
 This module provides the transform framework for data processing:
 - Base transform classes for each hierarchy level

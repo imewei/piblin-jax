@@ -1,5 +1,5 @@
 """
-Transform base classes for quantiq.
+Transform base classes for piblin-jax.
 
 This module provides the abstract base class and hierarchy for all transforms:
 - Transform: Abstract base class for all transforms

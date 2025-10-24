@@ -590,7 +590,7 @@ Model Selection
 Prior Selection
 ~~~~~~~~~~~~~~~
 
-**Weakly informative priors** (default in quantiq):
+**Weakly informative priors** (default in piblin-jax):
 
 - Constrain parameters to physically reasonable ranges
 - Don't dominate the data

@@ -1,5 +1,5 @@
 """
-Experiment class for quantiq.
+Experiment class for piblin-jax.
 
 Container for multiple MeasurementSet objects representing a single experiment.
 """

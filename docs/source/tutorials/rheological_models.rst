@@ -1,7 +1,7 @@
 Rheological Models Tutorial
 ============================
 
-This tutorial covers quantiq's built-in rheological models for analyzing
+This tutorial covers piblin-jax's built-in rheological models for analyzing
 fluid behavior. Learn how to:
 
 - Choose the appropriate model for your data

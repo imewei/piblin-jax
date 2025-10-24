@@ -1,5 +1,5 @@
 """
-TidyMeasurementSet class for quantiq.
+TidyMeasurementSet class for piblin-jax.
 
 MeasurementSet variant where measurements share comparable experimental conditions.
 """

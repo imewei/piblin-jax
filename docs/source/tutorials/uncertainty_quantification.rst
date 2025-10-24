@@ -2,7 +2,7 @@ Uncertainty Quantification Tutorial
 ====================================
 
 This tutorial demonstrates how to perform Bayesian uncertainty quantification
-in quantiq for rheological and scientific data analysis. You'll learn how to:
+in piblin-jax for rheological and scientific data analysis. You'll learn how to:
 
 - Fit Bayesian models to experimental data
 - Obtain parameter estimates with credible intervals

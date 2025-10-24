@@ -1,6 +1,6 @@
-# Contributing to quantiq
+# Contributing to piblin-jax
 
-Thank you for your interest in contributing to quantiq! This document provides guidelines and instructions for contributing to the project.
+Thank you for your interest in contributing to piblin-jax! This document provides guidelines and instructions for contributing to the project.
 
 ## Table of Contents
 
@@ -60,8 +60,8 @@ Before submitting a pull request, ensure:
 
 ```bash
 # Fork the repository on GitHub, then:
-git clone https://github.com/YOUR_USERNAME/quantiq.git
-cd quantiq
+git clone https://github.com/YOUR_USERNAME/piblin-jax.git
+cd piblin-jax
 ```
 
 ### 2. Install Development Dependencies
@@ -139,7 +139,7 @@ uv sync --extra gpu-cuda
 After installation, verify GPU is detected:
 
 ```bash
-python -c "from quantiq.backend import get_device_info; print(get_device_info())"
+python -c "from piblin_jax.backend import get_device_info; print(get_device_info())"
 ```
 
 Expected output:
@@ -206,11 +206,11 @@ pre-commit run --all-files
 pytest
 
 # Check type hints
-mypy quantiq
+mypy piblin_jax
 
 # Verify code formatting
-ruff check quantiq tests
-ruff format --check quantiq tests
+ruff check piblin_jax tests
+ruff format --check piblin_jax tests
 ```
 
 ## Development Workflow
@@ -241,16 +241,16 @@ git checkout -b fix/your-bug-fix
 pytest
 
 # Run tests with coverage
-pytest --cov=quantiq --cov-report=html
+pytest --cov=piblin_jax --cov-report=html
 
 # Check type hints
-mypy quantiq
+mypy piblin_jax
 
 # Format code (pre-commit hooks will do this automatically)
-ruff format quantiq tests
+ruff format piblin_jax tests
 
 # Run linter
-ruff check quantiq tests
+ruff check piblin_jax tests
 ```
 
 ### 4. Commit Changes
@@ -287,7 +287,7 @@ git push origin feature/your-feature-name
 
 ## Code Quality Standards
 
-quantiq maintains high code quality through automated tooling and manual review.
+piblin-jax maintains high code quality through automated tooling and manual review.
 
 ### Code Style
 
@@ -349,9 +349,9 @@ from typing import Any
 import numpy as np
 import jax.numpy as jnp
 
-# Local/quantiq
-from quantiq.backend import jnp, to_numpy
-from quantiq.data.datasets import Dataset
+# Local/piblin-jax
+from piblin_jax.backend import jnp, to_numpy
+from piblin_jax.data.datasets import Dataset
 ```
 
 ### Backend Abstraction
@@ -360,7 +360,7 @@ from quantiq.data.datasets import Dataset
 
 ```python
 # Good: Use backend abstraction
-from quantiq.backend import jnp, to_numpy
+from piblin_jax.backend import jnp, to_numpy
 
 def transform_data(x):
     x_backend = jnp.asarray(x)
@@ -368,7 +368,7 @@ def transform_data(x):
     return to_numpy(result)
 
 # Bad: Direct JAX import
-import jax.numpy as jnp  # Don't do this in quantiq modules
+import jax.numpy as jnp  # Don't do this in piblin-jax modules
 ```
 
 ## Testing Requirements
@@ -429,7 +429,7 @@ pytest tests/bayesian/test_numpyro_integration.py::test_power_law_fit
 pytest -m "not slow"
 
 # Run with coverage
-pytest --cov=quantiq --cov-report=html
+pytest --cov=piblin_jax --cov-report=html
 
 # Run benchmarks
 pytest -m benchmark
@@ -506,7 +506,7 @@ def fit_curve(
     Examples
     --------
     >>> import numpy as np
-    >>> from quantiq import fit_curve
+    >>> from piblin_jax import fit_curve
     >>> shear_rate = np.logspace(-1, 2, 30)
     >>> viscosity = 5.0 * shear_rate ** (0.6 - 1)
     >>> result = fit_curve(shear_rate, viscosity, model='power_law')
@@ -529,11 +529,11 @@ def fit_curve(
     and n is the power-law index.
 
     For more advanced uncertainty quantification, use the Bayesian
-    models from `quantiq.bayesian.models`.
+    models from `piblin_jax.bayesian.models`.
 
     See Also
     --------
-    quantiq.bayesian.models.PowerLawModel : Bayesian power-law fitting
+    piblin_jax.bayesian.models.PowerLawModel : Bayesian power-law fitting
     estimate_initial_parameters : Automatic parameter initialization
 
     References
@@ -588,7 +588,7 @@ All modules should have docstrings explaining purpose:
 
 ```python
 """
-Transform system for quantiq.
+Transform system for piblin_jax.
 
 This module provides the transform framework for data processing:
 - Base transform classes for each hierarchy level
@@ -619,10 +619,10 @@ When adding new features:
 ### Before Submitting
 
 - [ ] All tests pass (`pytest`)
-- [ ] Coverage remains >95% (`pytest --cov=quantiq`)
-- [ ] Type checking passes (`mypy quantiq`)
-- [ ] Code formatted (`ruff format quantiq tests`)
-- [ ] Linting passes (`ruff check quantiq tests`)
+- [ ] Coverage remains >95% (`pytest --cov=piblin_jax`)
+- [ ] Type checking passes (`mypy piblin_jax`)
+- [ ] Code formatted (`ruff format piblin_jax tests`)
+- [ ] Linting passes (`ruff check piblin_jax tests`)
 - [ ] Documentation built successfully (`cd docs && make html`)
 - [ ] CHANGELOG.md updated (for user-facing changes)
 
@@ -674,7 +674,7 @@ Describe tests added/modified:
 
 ### Versioning
 
-quantiq follows [Semantic Versioning](https://semver.org/):
+piblin-jax follows [Semantic Versioning](https://semver.org/):
 
 - **MAJOR**: Incompatible API changes (e.g., 1.0.0 → 2.0.0)
 - **MINOR**: Backwards-compatible functionality (e.g., 0.1.0 → 0.2.0)
@@ -685,7 +685,7 @@ quantiq follows [Semantic Versioning](https://semver.org/):
 - [ ] All tests pass on main branch
 - [ ] Coverage >95%
 - [ ] CHANGELOG.md updated with all changes
-- [ ] Version bumped in `pyproject.toml` and `quantiq/__init__.py`
+- [ ] Version bumped in `pyproject.toml` and `piblin_jax/__init__.py`
 - [ ] Documentation built and deployed
 - [ ] Git tag created: `git tag v0.1.0`
 - [ ] Tag pushed: `git push --tags`
@@ -715,7 +715,7 @@ When documenting features or contributing code, ensure consistency with these pl
 
 - [TESTING.md](TESTING.md) - Comprehensive testing strategy
 - [README.md](README.md) - Project overview and quick start
-- [Documentation](https://quantiq.readthedocs.io) - Full documentation
+- [Documentation](https://piblin_jax.readthedocs.io) - Full documentation
 - [GitHub Issues](https://github.com/piblin/piblin-jax/issues) - Bug reports and feature requests
 - [GitHub Discussions](https://github.com/piblin/piblin-jax/discussions) - Questions and community
 
@@ -731,4 +731,4 @@ By contributing, you agree that your contributions will be licensed under the MI
 
 ---
 
-Thank you for contributing to quantiq!
+Thank you for contributing to piblin-jax!

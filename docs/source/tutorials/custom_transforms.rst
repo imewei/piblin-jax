@@ -1,7 +1,7 @@
 Custom Transforms Tutorial
 ===========================
 
-This tutorial shows you how to create custom data transformations in quantiq
+This tutorial shows you how to create custom data transformations in piblin-jax
 that integrate seamlessly with the transform pipeline system. You'll learn:
 
 - How to subclass the base transform classes
@@ -502,7 +502,7 @@ Next Steps
 
 - See :doc:`../user_guide/concepts` for transform architecture details
 - See :doc:`uncertainty_quantification` for uncertainty-aware transforms
-- See ``quantiq/transform/dataset/`` for built-in transform implementations
+- See ``piblin_jax/transform/dataset/`` for built-in transform implementations
 - See API docs for complete transform class reference
 
 Tips

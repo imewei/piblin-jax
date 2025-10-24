@@ -1,4 +1,4 @@
-"""Data types and utilities for quantiq.
+"""Data types and utilities for piblin-jax.
 
 This package provides the core data structures for measurement data science:
 - **Datasets**: Typed array containers (0D, 1D, 2D, 3D, composite, distributions)
@@ -8,7 +8,7 @@ This package provides the core data structures for measurement data science:
 
 ## Package Structure
 
-### Datasets Module (`quantiq.data.datasets`)
+### Datasets Module (`piblin_jax.data.datasets`)
 
 Core dataset classes for different dimensionalities:
 - **ZeroDimensionalDataset**: Scalar values with metadata
@@ -26,7 +26,7 @@ All datasets include:
 - Immutable design for functional programming
 - Type-safe API with comprehensive type hints
 
-### Collections Module (`quantiq.data.collections`)
+### Collections Module (`piblin_jax.data.collections`)
 
 Hierarchical organization for experimental data::
 
@@ -44,7 +44,7 @@ Hierarchical organization for experimental data::
 - **Experiment**: Collection of measurement sets under same conditions
 - **ExperimentSet**: Top-level container for multiple experiments
 
-### Metadata Module (`quantiq.data.metadata`)
+### Metadata Module (`piblin_jax.data.metadata`)
 
 Metadata management utilities:
 - **Merging**: Combine metadata from multiple sources with conflict resolution
@@ -60,7 +60,7 @@ Metadata management utilities:
 - `parse_header_metadata()` - Parse comment headers in data files
 - `separate_conditions_details()` - Split metadata into conditions and details
 
-### ROI Module (`quantiq.data.roi`)
+### ROI Module (`piblin_jax.data.roi`)
 
 Region of interest definitions for selective analysis:
 - **ROI**: Base class for defining regions in datasets
@@ -135,10 +135,10 @@ Example::
 
 ## See Also
 
-- `quantiq.transform` - Transform pipelines for data processing
-- `quantiq.bayesian` - Bayesian uncertainty quantification
-- `quantiq.dataio` - File I/O for reading experimental data
-- `quantiq.backend` - Backend abstraction layer (JAX/NumPy)
+- `piblin_jax.transform` - Transform pipelines for data processing
+- `piblin_jax.bayesian` - Bayesian uncertainty quantification
+- `piblin_jax.dataio` - File I/O for reading experimental data
+- `piblin_jax.backend` - Backend abstraction layer (JAX/NumPy)
 """
 
 from . import collections, datasets, metadata, roi

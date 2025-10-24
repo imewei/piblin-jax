@@ -1,5 +1,5 @@
 """
-MeasurementSet base class for quantiq.
+MeasurementSet base class for piblin-jax.
 
 Container for multiple Measurement objects representing a series of related measurements.
 """

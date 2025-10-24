@@ -37,7 +37,7 @@ make install-gpu-cuda        # CUDA GPU support (Linux only)
 ```
 
 **IMPORTANT - GPU Installation (Breaking Change)**:
-- The `quantiq[gpu-cuda]` pip extra has been removed
+- The `piblin-jax[gpu-cuda]` pip extra has been removed
 - GPU installation now requires `make install-gpu-cuda` (recommended) or manual installation
 - Reason: pip extras cause silent CPU/GPU conflicts across package managers
 - See README.md GPU Installation section for details
@@ -266,7 +266,7 @@ This project uses **uv** (not pip or conda) for all package management:
 ## Breaking Changes
 
 ### v0.0.1 (First Pre-Release)
-- **GPU Installation**: Removed `quantiq[gpu-cuda]` pip extra
+- **GPU Installation**: Removed `piblin-jax[gpu-cuda]` pip extra
   - **Migration**: Use `make install-gpu-cuda` or manual installation
   - **Rationale**: pip extras cause silent CPU/GPU conflicts
   - **Documentation**: See README.md GPU Installation section

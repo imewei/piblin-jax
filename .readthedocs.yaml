@@ -1,5 +1,5 @@
 ---
-# Read the Docs configuration file for quantiq
+# Read the Docs configuration file for piblin-jax
 # See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
 
 version: 2
@@ -18,7 +18,7 @@ formats:
 # Python configuration
 python:
   install:
-    # Install quantiq package with documentation dependencies
+    # Install piblin-jax package with documentation dependencies
     - method: pip
       path: .
       extra_requirements:
@@ -31,8 +31,8 @@ build:
     python: "3.13"
   jobs:
     post_install:
-      # Verify quantiq installation
-      - python -c "import quantiq; print(quantiq.__version__)"
+      # Verify piblin-jax installation
+      - python -c "import piblin_jax; print(piblin_jax.__version__)"
 
 # Search configuration
 search:

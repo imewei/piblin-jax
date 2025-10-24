@@ -1,5 +1,5 @@
 """
-Lambda transforms and dynamic parameter transforms for quantiq.
+Lambda transforms and dynamic parameter transforms for piblin-jax.
 
 This module provides:
 - LambdaTransform: Wraps arbitrary functions as transforms

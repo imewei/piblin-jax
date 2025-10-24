@@ -1,4 +1,4 @@
-"""Curve fitting module for quantiq.
+"""Curve fitting module for piblin-jax.
 
 This module provides non-linear least squares (NLSQ) curve fitting for
 rheological and scientific models, with automatic parameter initialization
@@ -6,7 +6,7 @@ and robust optimization.
 
 ## Overview
 
-The fitting module bridges quantiq's Bayesian models with classical NLSQ
+The fitting module bridges piblin-jax's Bayesian models with classical NLSQ
 optimization, providing:
 - **Fast parameter estimation** for model initialization
 - **Multiple rheological models** (power-law, Arrhenius, Cross, Carreau-Yasuda)
@@ -17,7 +17,7 @@ optimization, providing:
 ## When to Use
 
 - **NLSQ fitting**: Quick parameter estimates, no uncertainty quantification
-- **Bayesian fitting** (`quantiq.bayesian`): Full posterior distributions, uncertainty propagation
+- **Bayesian fitting** (`piblin_jax.bayesian`): Full posterior distributions, uncertainty propagation
 
 **Typical workflow**:
 1. Use `fit_curve()` for initial parameter estimates
@@ -173,9 +173,9 @@ Example::
 
 ## See Also
 
-- `quantiq.bayesian.models` - Bayesian fitting with uncertainty quantification
-- `quantiq.bayesian.models.PowerLawModel` - Bayesian power-law fitting
-- `quantiq.bayesian.models.ArrheniusModel` - Bayesian Arrhenius fitting
+- `piblin_jax.bayesian.models` - Bayesian fitting with uncertainty quantification
+- `piblin_jax.bayesian.models.PowerLawModel` - Bayesian power-law fitting
+- `piblin_jax.bayesian.models.ArrheniusModel` - Bayesian Arrhenius fitting
 - `scipy.optimize.curve_fit` - Underlying optimization routine
 
 ## References

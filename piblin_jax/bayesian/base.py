@@ -1,7 +1,7 @@
 """
 Base class for Bayesian models using NumPyro.
 
-This module provides the abstract base class for all Bayesian models in quantiq.
+This module provides the abstract base class for all Bayesian models in piblin-jax.
 Models use NumPyro for MCMC sampling and uncertainty quantification.
 """
 

@@ -12,7 +12,7 @@ compatibility with NumPy-only environments.
 This abstraction layer is crucial for several reasons:
 
 - **Graceful Degradation**: The module automatically detects available backends at
-  import time and falls back to NumPy when JAX is unavailable. This ensures quantiq
+  import time and falls back to NumPy when JAX is unavailable. This ensures piblin-jax
   works in any Python environment without requiring JAX as a hard dependency.
 
 - **Unified API**: All piblin-jax code uses the ``jnp`` interface exported by this module,
@@ -35,7 +35,7 @@ This abstraction layer is crucial for several reasons:
   API boundaries.
 
 The backend abstraction is transparent to most users - you simply import and use
-``quantiq`` and it will automatically use the best available backend. Advanced users
+``piblin_jax`` and it will automatically use the best available backend. Advanced users
 can query backend status and device information for performance tuning.
 
 Quick Examples
