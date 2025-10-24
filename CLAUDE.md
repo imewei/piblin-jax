@@ -207,7 +207,7 @@ def test_numpy_fallback(monkeypatch):
 
 ## piblin Compatibility
 
-quantiq maintains 100% behavioral compatibility with piblin:
+piblin-jax maintains 100% behavioral compatibility with piblin:
 - Users can `import piblin_jax as piblin` and existing code works unchanged
 - Same API surface, same behavior, dramatically better performance
 - All dataset types, transforms, and I/O operations are compatible

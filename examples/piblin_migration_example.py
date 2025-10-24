@@ -79,7 +79,7 @@ dataset = OneDimensionalDataset(
 )
 
 # Create dataset with piblin-jax enhancements
-dataset_piblin-jax_style = OneDimensionalDataset(
+dataset_piblin_jax_style = OneDimensionalDataset(
     independent_variable_data=x,
     dependent_variable_data=y_noisy,
     conditions={"temperature": 25.0, "sample": "A"},
@@ -154,7 +154,7 @@ result = pipeline.apply_to(dataset, make_copy=True)
 
 # piblin-jax style: pipeline
 pipeline = Pipeline([GaussianSmooth(sigma=2.0), MinMaxNormalize()])
-result_pipeline = pipeline.apply_to(dataset_piblin-jax_style, make_copy=True)
+result_pipeline = pipeline.apply_to(dataset_piblin_jax_style, make_copy=True)
 print("✓ Pipeline application completed")
 
 # Verify results are identical

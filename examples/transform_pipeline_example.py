@@ -24,7 +24,12 @@ import numpy as np
 # Import piblin-jax dataset and transform classes
 from piblin_jax.data.datasets import OneDimensionalDataset, TwoDimensionalDataset
 from piblin_jax.transform import Pipeline
-from piblin_jax.transform.dataset import Derivative, GaussianSmooth, MinMaxNormalize, ZScoreNormalize
+from piblin_jax.transform.dataset import (
+    Derivative,
+    GaussianSmooth,
+    MinMaxNormalize,
+    ZScoreNormalize,
+)
 
 print("=" * 80)
 print("Transform Pipeline Example")

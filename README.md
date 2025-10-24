@@ -8,7 +8,7 @@
 
 ---
 
-> **Acknowledgement**: quantiq is an enhanced fork of [piblin](https://github.com/3mcloud/piblin) by 3M. We gratefully acknowledge the original piblin project for establishing the foundational concepts and API design that quantiq builds upon. quantiq extends piblin with JAX-powered performance improvements, advanced Bayesian inference capabilities, and modern Python features while maintaining backward compatibility.
+> **Acknowledgement**: piblin-jax is an enhanced fork of [piblin](https://github.com/3mcloud/piblin) by 3M. We gratefully acknowledge the original piblin project for establishing the foundational concepts and API design that piblin-jax builds upon. piblin-jax extends piblin with JAX-powered performance improvements, advanced Bayesian inference capabilities, and modern Python features while maintaining backward compatibility.
 
 ---
 
@@ -16,7 +16,7 @@
 
 **piblin-jax** is a high-performance framework for measurement data science, providing a complete reimplementation of piblin with dramatic performance improvements and advanced Bayesian uncertainty quantification capabilities.
 
-Built on JAX, quantiq delivers 5-10x CPU speedup and 50-100x GPU acceleration while maintaining 100% backward compatibility with piblin. Whether you're analyzing rheological data, performing uncertainty quantification, or building complex data transformation pipelines, quantiq provides the tools you need with modern Python ergonomics.
+Built on JAX, piblin-jax delivers 5-10x CPU speedup and 50-100x GPU acceleration while maintaining 100% backward compatibility with piblin. Whether you're analyzing rheological data, performing uncertainty quantification, or building complex data transformation pipelines, piblin-jax provides the tools you need with modern Python ergonomics.
 
 ## Key Features
 
@@ -64,7 +64,7 @@ Install piblin-jax with JAX CPU support using pip:
 pip install piblin-jax
 ```
 
-**Note**: The package name is `piblin-jax` on PyPI, but you can still import it as `quantiq` for piblin compatibility:
+**Note**: The package name is `piblin-jax` on PyPI, and you import it as `piblin_jax`:
 
 ```python
 import piblin_jax  # Package installation: pip install piblin-jax
@@ -143,11 +143,11 @@ Option A: Using environment file (recommended):
 ```bash
 # Using conda
 conda env create -f environment-gpu.yml
-conda activate quantiq-gpu
+conda activate piblin-jax-gpu
 
 # Using mamba (faster)
 mamba env create -f environment-gpu.yml
-mamba activate quantiq-gpu
+mamba activate piblin-jax-gpu
 ```
 
 Option B: Manual within conda environment:
@@ -157,7 +157,7 @@ pip uninstall -y jax jaxlib
 pip install "jax[cuda12-local]>=0.8.0,<0.9.0"
 ```
 
-**Note:** Conda's extras syntax (`conda install quantiq[gpu-cuda]`) is not supported. Always use pip within your conda environment for JAX GPU installation.
+**Note:** Conda's extras syntax is not supported. Always use pip within your conda environment for JAX GPU installation.
 
 ---
 
@@ -225,7 +225,7 @@ Different package managers may install different versions. Always use the same i
 - **Production**: Docker with explicit JAX version
 - **Notebooks**: Manual pip installation with version pinning
 
-**Note**: The package name on PyPI is `piblin-jax`, but the import name remains `quantiq` for backward compatibility with piblin.
+**Note**: The package name on PyPI is `piblin-jax`, and the import name is `piblin_jax`.
 
 ### Development Installation
 
@@ -255,7 +255,7 @@ pip install -e ".[dev]"
 import piblin_jax
 
 # Read experimental data
-data = quantiq.read_file('experiment.csv')
+data = piblin_jax.read_file('experiment.csv')
 
 # Create a transform pipeline
 from piblin_jax.transform import Pipeline, Interpolate1D, GaussianSmoothing
@@ -315,7 +315,7 @@ data = piblin.read_file('data.csv')
 
 ## Performance Comparison
 
-| Operation | piblin (CPU) | quantiq (CPU) | quantiq (GPU) | Speedup (GPU) |
+| Operation | piblin (CPU) | piblin-jax (CPU) | piblin-jax (GPU) | Speedup (GPU) |
 |-----------|--------------|---------------|---------------|---------------|
 | Dataset creation | 180 μs | 70 μs | - | 2.6x |
 | Gaussian smoothing | 2000 μs | 1100 μs | 50 μs | 40x |
@@ -343,7 +343,7 @@ Explore complete, runnable examples in the [`examples/`](examples/) directory:
 - **bayesian_rheological_models.py** - Rheological model fitting (Power Law, Cross, Carreau-Yasuda, Arrhenius)
 - **bayesian_parameter_estimation.py** - Advanced Bayesian inference techniques
 - **uncertainty_propagation_example.py** - Propagating uncertainty through pipelines
-- **piblin_migration_example.py** - Migrating from piblin to quantiq
+- **piblin_migration_example.py** - Migrating from piblin to piblin-jax
 - **gpu_acceleration_example.py** - Leveraging GPU for 10-100x speedups (Linux + CUDA 12+ only)
 - **custom_transforms_example.py** - Building domain-specific transforms
 
@@ -376,7 +376,7 @@ python3.13 --version
 
 # Clone and install in development mode with uv (recommended)
 git clone https://github.com/piblin/piblin-jax.git
-cd quantiq
+cd piblin-jax
 uv pip install -e ".[dev]"
 
 # Or with pip
@@ -393,7 +393,7 @@ pre-commit install
 pytest
 
 # Run with coverage
-pytest --cov=quantiq --cov-report=html
+pytest --cov=piblin_jax --cov-report=html
 
 # Run only fast tests (skip slow/GPU tests)
 pytest -m "not slow and not gpu"
@@ -404,7 +404,7 @@ pytest -m benchmark
 
 ### Code Quality
 
-quantiq maintains high code quality standards:
+piblin-jax maintains high code quality standards:
 
 - **Test Coverage**: >95% required
 - **Type Checking**: mypy strict mode
@@ -438,12 +438,12 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 ## Citation
 
-If you use quantiq in your research, please cite:
+If you use piblin-jax in your research, please cite:
 
 ```bibtex
-@software{quantiq2025,
+@software{piblin_jax2025,
   author = {Chen, Wei},
-  title = {quantiq: Modern JAX-Powered Framework for Measurement Data Science},
+  title = {piblin-jax: Modern JAX-Powered Framework for Measurement Data Science},
   year = {2025},
   url = {https://github.com/piblin/piblin-jax}
 }
@@ -451,7 +451,7 @@ If you use quantiq in your research, please cite:
 
 ## License
 
-quantiq is licensed under the [MIT License](LICENSE).
+piblin-jax is licensed under the [MIT License](LICENSE).
 
 ## Acknowledgments
 
@@ -467,4 +467,4 @@ quantiq is licensed under the [MIT License](LICENSE).
 
 ---
 
-Made with ❤️ by Wei Chen and the quantiq developers
+Made with ❤️ by Wei Chen and the piblin-jax developers
