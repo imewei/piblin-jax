@@ -77,7 +77,9 @@ class TestOneDimensionalDatasetUncertainty:
     def test_with_uncertainty_bootstrap_numpy_fallback(self, monkeypatch):
         """Test bootstrap uncertainty with NumPy fallback (JAX unavailable)."""
         # Mock JAX as unavailable
-        monkeypatch.setattr("piblin_jax.data.datasets.one_dimensional.is_jax_available", lambda: False)
+        monkeypatch.setattr(
+            "piblin_jax.data.datasets.one_dimensional.is_jax_available", lambda: False
+        )
 
         x = np.linspace(0, 5, 30)
         y = x**2 + 0.1 * np.random.randn(len(x))

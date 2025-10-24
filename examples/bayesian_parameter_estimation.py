@@ -254,7 +254,9 @@ ax5.set_title("Fit Residuals", fontsize=12, fontweight="bold")
 ax5.legend(fontsize=9)
 ax5.grid(True, alpha=0.3)
 
-fig.suptitle("Bayesian Parameter Estimation with piblin-jax", fontsize=16, fontweight="bold", y=0.995)
+fig.suptitle(
+    "Bayesian Parameter Estimation with piblin-jax", fontsize=16, fontweight="bold", y=0.995
+)
 print("   ✓ Visualization created")
 
 # =============================================================================
