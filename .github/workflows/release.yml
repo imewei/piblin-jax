@@ -45,7 +45,7 @@ jobs:
           echo "Determined tag: $TAG"
 
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ steps.determine_tag.outputs.tag }}
           fetch-depth: 0  # Full history to verify tags
@@ -72,12 +72,12 @@ jobs:
           echo "📦 Release version: $VERSION"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v7
         with:
           version: "latest"
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -122,15 +122,15 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v7
         with:
           version: "latest"
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -154,7 +154,7 @@ jobs:
           echo "✅ All build artifacts present"
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: dist
           path: dist/
@@ -176,7 +176,7 @@ jobs:
 
     steps:
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: dist
           path: dist/
@@ -211,7 +211,7 @@ jobs:
 
     steps:
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: dist
           path: dist/
@@ -252,13 +252,13 @@ jobs:
           echo "Determined tag: $TAG"
 
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ steps.determine_tag.outputs.tag }}
           fetch-depth: 0
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: dist
           path: dist/
